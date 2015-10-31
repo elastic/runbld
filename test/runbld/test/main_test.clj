@@ -24,6 +24,12 @@
     (testing "usage"
       (is (.startsWith (main/-main) "runbld ")))
 
+    (testing "config file"
+      (is (= 0 (:status
+                (main/-main "-c" "test/runbld.yaml" "/path/to/script.bash"))))
+      (is (.startsWith (main/-main "-c" "/tmp/noexist"
+                                   "/path/to/script.bash") "config file ")))
+
     (testing "unexpected exception"
       (with-redefs [proc/run (fn [& args] (throw
                                            (Exception.
