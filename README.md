@@ -35,7 +35,7 @@ exit 0
 
 ## Example
 
-``
+```
 % cat fail.bash 
 echo this is gonna fail
 exit 1
