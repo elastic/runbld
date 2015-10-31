@@ -36,6 +36,9 @@
    (catch [:error :runbld.opts/parse-error] {:keys [msg]}
      (die 2 msg))
 
+   (catch [:error :runbld.opts/file-not-found] {:keys [msg]}
+     (die 2 msg))
+
    (catch [:help :runbld.opts/version] {:keys [msg]}
      (die 0 msg))
 
