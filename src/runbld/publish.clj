@@ -8,9 +8,11 @@
     s))
 
 (defn make-doc [opts]
-  {;; don't use this for :_id so we can take advantage of flake
-   :id (get-in opts [:id])
-   :status (get-in opts [:proc :status])})
+  (merge
+   (dissoc (get opts :proc) :proc)
+   {
+    ;; don't use this for :_id so we can take advantage of flake
+    :id (get-in opts [:id])}))
 
 (defn prepare-opts [opts]
   (assoc opts

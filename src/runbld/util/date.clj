@@ -1,5 +1,6 @@
 (ns runbld.util.date
-  (:require [clj-time.core :as t]
+  (:require [clj-time.coerce :as c]
+            [clj-time.core :as t]
             [clj-time.format :as f]
             [slingshot.slingshot :refer [throw+]]))
 
@@ -23,3 +24,11 @@
   ([d]
    (let [formatter (f/formatter "yyyyMMddHHmmss")]
      (f/unparse formatter d))))
+
+(defn ms-to-iso
+  ([]
+   (ms-to-iso (t/now)))
+  ([ms]
+   (f/unparse
+    (f/formatters :date-time)
+    (c/from-long ms))))
