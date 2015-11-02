@@ -1,4 +1,10 @@
-(ns runbld.util.data)
+(ns runbld.util.data
+  (:refer-clojure :exclude [map?])
+  (:require [clojure.walk :refer [postwalk]]))
+
+(defn map? [x]
+  (or (instance? clojure.lang.IPersistentMap x)
+      (instance? java.util.Map x)))
 
 ;; http://dev.clojure.org/jira/browse/CLJ-1468
 (defn deep-merge
@@ -21,3 +27,10 @@
        (apply f maps)))
    maps))
 
+(defn keywordize-keys
+  "clojure.walk/keywordize-keys breaks when a map is actually a
+  j.u.LinkedHashMap, which is what happens with interop, in our case
+  Yaml#load()"
+  [m]
+  (with-redefs [clojure.core/map? map?]
+    (clojure.walk/keywordize-keys m)))
