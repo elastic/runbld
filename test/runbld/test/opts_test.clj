@@ -10,6 +10,7 @@
             :from.the.config.file "this",
             :config "test/runbld.yaml",
             :scriptfile "/path/to/script.bash"}
-           (opts/parse-args ["-c" "test/runbld.yaml"
-                             "--es.index.build" "FOO"
-                             "/path/to/script.bash"])))))
+           (dissoc (opts/parse-args ["-c" "test/runbld.yaml"
+                                     "--es.index.build" "FOO"
+                                     "/path/to/script.bash"])
+                   :es.conn)))))

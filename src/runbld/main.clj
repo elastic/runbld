@@ -1,8 +1,10 @@
 (ns runbld.main
   (:gen-class)
   (:require [clojure.pprint :refer [pprint]]
+            [runbld.build :as build]
             [runbld.opts :as opts]
             [runbld.process :as proc]
+            [runbld.publish :as publish]
             [slingshot.slingshot :refer [try+]]))
 
 (defn really-die [code strmsg]
@@ -15,23 +17,39 @@
     ;; for tests when #'really-die is redefed
     msg*))
 
-(defn log [s]
-  (println s))
+(defn log [& s]
+  (apply println s))
+
+(defn wrap-env [proc]
+  (fn [opts]
+    (proc (assoc opts :env (into {} (System/getenv))))))
+
+(defn wrap-execute [proc]
+  (fn [opts]
+    (assoc opts :proc (proc (:scriptfile opts)))))
+
+(def run
+  (-> (wrap-execute #'proc/run)
+      publish/wrap-publish
+      build/wrap-build-meta
+      wrap-env))
 
 ;; -main :: IO ()
 (defn -main [& args]
   (try+
    (let [opts (opts/parse-args args)
          _ (log ">>>>>>>>>>>> SCRIPT EXECUTION BEGIN >>>>>>>>>>>>")
-         {:keys [duration-millis status]
-          :as res} (proc/run (opts :scriptfile))
+         res (run opts)
+         {:keys [duration-millis status] :as proc} (:proc res)
          _ (log "<<<<<<<<<<<< SCRIPT EXECUTION END   <<<<<<<<<<<<")]
+     (assert status "process did not return a status key")
      (log (format "DURATION: %sms" duration-millis))
      (log
       (format "WRAPPER: %s (%d)" (if (zero? status)
                                    "SUCCESS"
                                    "FAILURE") status))
-     res)
+     ;; for tests
+     proc)
 
    (catch [:error :runbld.opts/parse-error] {:keys [msg]}
      (die 2 msg))

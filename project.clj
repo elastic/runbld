@@ -11,8 +11,10 @@
   :global-vars {*warn-on-reflection* false}
   :min-lein-version "2.0.0"
   :exclusions [org.clojure/clojure]
-  :dependencies [[org.clojure/clojure "1.7.0"]
+  :dependencies [[clj-time "0.11.0"]
+                 [org.clojure/clojure "1.7.0"]
                  [org.clojure/tools.cli "0.3.3"]
+                 [org.elasticsearch/elasticsearch-clojure "0.99.0-SNAPSHOT"]
                  [org.yaml/snakeyaml "1.16"]
                  [slingshot "0.12.2"]]
   :profiles {:package {:plugins [[lein-bin "0.3.4"]]

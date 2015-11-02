@@ -1,6 +1,7 @@
 (ns runbld.test.main-test
   (:require [clojure.test :refer :all]
             [runbld.process :as proc]
+            [runbld.publish :as publish]
             [runbld.version :as version])
   (:require [runbld.main :as main] :reload-all))
 
@@ -12,9 +13,12 @@
                 ;; Don't really kill the JVM
                 main/really-die (fn [& args] :dontdie)
                 ;; Don't really execute an external process
-                proc/run (fn [script] {:cmd [script]
-                                       :duration-millis 1
-                                       :status 0})]
+                proc/run (fn [script]
+                           {:cmd [script]
+                            :duration-millis 1
+                            :status 0})
+                ;; Don't really publish things
+                publish/index (fn [_] {:in :fake-publish})]
     (testing "normal execution"
       (is (= 0 (:status (main/-main "/path/to/script.bash")))))
 

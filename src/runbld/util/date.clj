@@ -1,0 +1,25 @@
+(ns runbld.util.date
+  (:require [clj-time.core :as t]
+            [clj-time.format :as f]
+            [slingshot.slingshot :refer [throw+]]))
+
+(defn expand
+  ([fmt]
+   (expand fmt (t/now)))
+  ([fmt d]
+   (try
+     (let [formatter (f/formatter fmt)]
+       (f/unparse formatter d))
+     (catch IllegalArgumentException e
+       (throw+ {:error ::pattern
+                :msg (format
+                      (str "invalid joda formatter pattern [%s]\n"
+                           "see http://www.joda.org/joda-time/key_format.html")
+                      fmt)})))))
+
+(defn yyyymmdd-hhmmss
+  ([]
+   (yyyymmdd-hhmmss (t/now)))
+  ([d]
+   (let [formatter (f/formatter "yyyyMMddHHmmss")]
+     (f/unparse formatter d))))
