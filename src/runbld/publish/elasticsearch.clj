@@ -9,10 +9,25 @@
 
 (defn make-doc [opts]
   (merge
-   (dissoc (get opts :proc) :proc)
+   (dissoc (:proc opts) :proc)
+   (dissoc (:build opts) :id)
+   {:processors      (get-in opts [:facter :processorcount])
+    :timezone        (get-in opts [:facter :timezone])
+    :hostname        (get-in opts [:facter :hostname])
+    :architecture    (get-in opts [:facter :architecture])
+    :hardwaremodel   (get-in opts [:facter :hardwaremodel])
+    :operatingsystem (get-in opts [:facter :operatingsystem])
+    :ipaddress       (get-in opts [:facter :ipaddress])
+    :ipaddress6      (get-in opts [:facter :ipaddress6])
+    :kernelrelease   (get-in opts [:facter :kernelrelease])
+    :kernelversion   (get-in opts [:facter :kernelversion])
+    :uptime_days     (get-in opts [:facter :uptime_days])
+    :memorysize_mb   (get-in opts [:facter :memorysize_mb])
+    }
    {
     ;; don't use this for :_id so we can take advantage of flake
-    :id (get-in opts [:id])}))
+    :id (get-in opts [:build :id])}
+   ))
 
 (defn prepare-opts [opts]
   (assoc opts
@@ -22,5 +37,3 @@
 
 (defn index [opts]
   (doc/index (:es.conn opts) (:es opts)))
-
-

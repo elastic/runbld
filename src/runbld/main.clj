@@ -2,6 +2,7 @@
   (:gen-class)
   (:require [clojure.pprint :refer [pprint]]
             [runbld.build :as build]
+            [runbld.env :as env]
             [runbld.opts :as opts]
             [runbld.process :as proc]
             [runbld.publish :as publish]
@@ -20,10 +21,6 @@
 (defn log [& s]
   (apply println s))
 
-(defn wrap-env [proc]
-  (fn [opts]
-    (proc (assoc opts :env (into {} (System/getenv))))))
-
 (defn wrap-execute [proc]
   (fn [opts]
     (assoc opts :proc (proc (:scriptfile opts)))))
@@ -32,7 +29,7 @@
   (-> (wrap-execute #'proc/run)
       publish/wrap-publish
       build/wrap-build-meta
-      wrap-env))
+      env/wrap-env))
 
 ;; -main :: IO ()
 (defn -main [& args]
