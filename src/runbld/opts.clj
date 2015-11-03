@@ -71,7 +71,7 @@
                :msg (format "runbld %s\nusage: rundmc /path/to/script.bash"
                             (version/version))}))
 
-    (assoc options
-           :scriptfile (first arguments)
-           :es.conn (es/make (merge {:url (:es.url options)}
-                                    (:es.http-opts options))))))
+    {:opts (assoc options
+                  :scriptfile (first arguments))
+     :es.conn (es/make (merge {:url (:es.url options)}
+                              (:es.http-opts options)))}))

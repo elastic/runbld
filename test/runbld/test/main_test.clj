@@ -22,7 +22,7 @@
                 elasticsearch/index (fn [_] {:in :fake-publish})
                 email/send (fn [_] {:sent :email})]
     (testing "normal execution"
-      (is (= 0 (:status (main/-main "/path/to/script.bash")))))
+      (is (= 0 (-> (main/-main "/path/to/script.bash") :proc :status))))
 
     (testing "version"
       (is (.startsWith (main/-main "-v") (version/version))))
@@ -31,8 +31,9 @@
       (is (.startsWith (main/-main) "runbld ")))
 
     (testing "config file"
-      (is (= 0 (:status
-                (main/-main "-c" "test/runbld.yaml" "/path/to/script.bash"))))
+      (is (= 0 (-> (main/-main "-c" "test/runbld.yaml" "/path/to/script.bash")
+                   :proc
+                   :status)))
       (is (.startsWith (main/-main "-c" "/tmp/noexist"
                                    "/path/to/script.bash") "config file ")))
 

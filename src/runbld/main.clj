@@ -32,7 +32,7 @@
 
 (defn wrap-execute [proc]
   (fn [opts]
-    (assoc opts :proc (proc (:scriptfile opts)))))
+    (assoc opts :proc (proc (-> opts :opts :scriptfile)))))
 
 (def run
   (-> (wrap-execute #'proc/run)

@@ -31,7 +31,7 @@
 
 (defn prepare-opts [opts]
   (assoc opts
-         :es {:index (expand-index-name (:es.index.build opts))
+         :es {:index (expand-index-name (-> opts :opts :es.index.build))
               :type "b"
               :body (make-doc opts)}))
 
