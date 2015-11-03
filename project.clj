@@ -27,7 +27,7 @@
                                      #'runbld.opts/*dev*
                                      (constantly false))]}}
   :aliases {"package" ["with-profile" "package" "bin"]}
-  :aot [runbld.main]
+  :aot :all
   :main runbld.main
   :test-selectors {:default  #(not (:integration %))
                    :integration :integration
