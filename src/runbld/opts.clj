@@ -2,14 +2,15 @@
   (:import (org.yaml.snakeyaml Yaml))
   (:require [clojure.java.io :as io]
             [clojure.tools.cli :as cli]
-            [clojure.walk :refer [keywordize-keys]]
-            [runbld.util.data :refer [deep-merge-with deep-merge]]
+            [elasticsearch.connection.http :as es]
+            [runbld.util.data :refer [deep-merge-with deep-merge
+                                      keywordize-keys]]
             [runbld.version :as version]
             [slingshot.slingshot :refer [throw+]]))
 
 (def defaults
   {:es.url "http://localhost:9200"
-   :es.index.build "build-YYYY-mm"
+   :es.index.build "'build'-yyyy-MM"
    :es.index.config "runbld"})
 
 (defn load-config [filepath]
@@ -56,5 +57,7 @@
                :msg (format "runbld %s\nusage: rundmc /path/to/script.bash"
                             (version/version))}))
 
-    ;; for now, just attach the shell script from Jenkins
-    (assoc options :scriptfile (first arguments))))
+    (assoc options
+           :scriptfile (first arguments)
+           :es.conn (es/make (merge {:url (:es.url options)}
+                                    (:es.http-opts options))))))

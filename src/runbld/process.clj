@@ -1,4 +1,5 @@
-(ns runbld.process)
+(ns runbld.process
+  (:require [runbld.util.date :as date]))
 
 (defn run [scriptfile]
   (let [cmd ["bash" "-x" scriptfile]
@@ -21,7 +22,10 @@
     (flush)
     {:proc proc
      :cmd cmd
+     :cmd-source (slurp scriptfile)
      :start-millis start
+     :time-start (date/ms-to-iso start)
      :end-millis end
-     :duration-millis (- end start)
+     :time-end (date/ms-to-iso end)
+     :took (- end start)
      :status exit-code}))
