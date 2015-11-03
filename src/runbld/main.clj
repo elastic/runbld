@@ -40,10 +40,10 @@
    (let [opts (opts/parse-args args)
          _ (log ">>>>>>>>>>>> SCRIPT EXECUTION BEGIN >>>>>>>>>>>>")
          res (run opts)
-         {:keys [duration-millis status] :as proc} (:proc res)
+         {:keys [took status] :as proc} (:proc res)
          _ (log "<<<<<<<<<<<< SCRIPT EXECUTION END   <<<<<<<<<<<<")]
      (assert status "process did not return a status key")
-     (log (format "DURATION: %sms" duration-millis))
+     (log (format "DURATION: %sms" took))
      (log
       (format "WRAPPER: %s (%d)" (if (zero? status)
                                    "SUCCESS"
