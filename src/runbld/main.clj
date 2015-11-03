@@ -8,15 +8,24 @@
             [runbld.publish :as publish]
             [slingshot.slingshot :refer [try+]]))
 
-(defn really-die [code strmsg]
-  (println strmsg)
-  (System/exit code))
+(defn really-die
+  ([code]
+   (really-die nil))
+  ([code strmsg]
+   (when strmsg
+     (println strmsg))
+   (shutdown-agents)
+   (System/exit code)))
 
-(defn die [code msg]
-  (let [msg* (.trim (with-out-str (println msg)))]
-    (really-die code msg*)
-    ;; for tests when #'really-die is redefed
-    msg*))
+(defn die
+  ([code]
+   (die code nil))
+  ([code msg]
+   (let [msg* (if msg
+                (.trim (with-out-str (println msg))))]
+     (really-die code msg*)
+     ;; for tests when #'really-die is redefed
+     msg*)))
 
 (defn log [& s]
   (apply println s))
@@ -45,8 +54,10 @@
       (format "WRAPPER: %s (%d)" (if (zero? status)
                                    "SUCCESS"
                                    "FAILURE") status))
-     ;; for tests
-     proc)
+
+     (if runbld.opts/*dev*
+       res
+       (die 0)))
 
    (catch [:error :runbld.opts/parse-error] {:keys [msg]}
      (die 2 msg))

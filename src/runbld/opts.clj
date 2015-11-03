@@ -8,6 +8,8 @@
             [runbld.version :as version]
             [slingshot.slingshot :refer [throw+]]))
 
+(def ^:dynamic *dev* true)
+
 (def defaults
   {:es.url "http://localhost:9200"
    :es.index.build "'build'-yyyy-MM"
@@ -23,9 +25,21 @@
          (into {})
          keywordize-keys)))
 
+(defn system-config []
+  (io/file
+   (if (.startsWith (System/getProperty "os.name") "Windows")
+     "c:\\runbld.conf"
+     "/etc/runbld.conf")))
+
 (defn merge-opts-with-file [opts]
   (deep-merge-with deep-merge
                    defaults
+                   (if *dev*
+                     {}
+                     (let [sys (system-config)]
+                       (if (.isFile sys)
+                         (load-config (system-config))
+                         {})))
                    (if (:config opts)
                      (load-config (:config opts))
                      {})

@@ -18,11 +18,17 @@
                  [org.elasticsearch/elasticsearch-clojure "0.99.0-SNAPSHOT"]
                  [org.yaml/snakeyaml "1.16"]
                  [slingshot "0.12.2"]]
-  :profiles {:package {:plugins [[lein-bin "0.3.4"]]
+  :injections [(require 'clojure.pprint)]
+  :profiles {:dev {}
+             :package {:plugins [[lein-bin "0.3.4"]]
                        :bin {:bootclasspath true}
-                       :main runbld.main}}
+                       :injections [(require 'runbld.opts)
+                                    (alter-var-root
+                                     #'runbld.opts/*dev*
+                                     (constantly false))]}}
   :aliases {"package" ["with-profile" "package" "bin"]}
   :aot [runbld.main]
+  :main runbld.main
   :test-selectors {:default  #(not (:integration %))
                    :integration :integration
                    :all (constantly true)})

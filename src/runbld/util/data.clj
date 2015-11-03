@@ -1,6 +1,6 @@
 (ns runbld.util.data
   (:refer-clojure :exclude [map?])
-  (:require [clojure.walk :refer [postwalk]]))
+  (:require [clojure.walk]))
 
 (defn map? [x]
   (or (instance? clojure.lang.IPersistentMap x)
