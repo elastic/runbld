@@ -19,9 +19,9 @@
                  [slingshot "0.12.2"]]
   :profiles {:package {:plugins [[lein-bin "0.3.4"]]
                        :bin {:bootclasspath true}
-                       :aot [runbld.main]
                        :main runbld.main}}
   :aliases {"package" ["with-profile" "package" "bin"]}
+  :aot [runbld.main]
   :test-selectors {:default  #(not (:integration %))
                    :integration :integration
                    :all (constantly true)})
