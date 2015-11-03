@@ -1,7 +1,8 @@
 (ns runbld.test.main-test
   (:require [clojure.test :refer :all]
             [runbld.process :as proc]
-            [runbld.publish :as publish]
+            [runbld.publish.elasticsearch :as elasticsearch]
+            [runbld.publish.email :as email]
             [runbld.version :as version])
   (:require [runbld.main :as main] :reload-all))
 
@@ -18,7 +19,8 @@
                             :duration-millis 1
                             :status 0})
                 ;; Don't really publish things
-                publish/index (fn [_] {:in :fake-publish})]
+                elasticsearch/index (fn [_] {:in :fake-publish})
+                email/send (fn [_] {:sent :email})]
     (testing "normal execution"
       (is (= 0 (:status (main/-main "/path/to/script.bash")))))
 

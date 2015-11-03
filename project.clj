@@ -12,6 +12,7 @@
   :min-lein-version "2.0.0"
   :exclusions [org.clojure/clojure]
   :dependencies [[clj-time "0.11.0"]
+                 [com.draines/postal "1.11.3"]
                  [org.clojure/clojure "1.7.0"]
                  [org.clojure/tools.cli "0.3.3"]
                  [org.elasticsearch/elasticsearch-clojure "0.99.0-SNAPSHOT"]
