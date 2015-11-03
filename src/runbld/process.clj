@@ -22,6 +22,7 @@
     (flush)
     {:proc proc
      :cmd cmd
+     :cmd-source (slurp scriptfile)
      :start-millis start
      :time-start (date/ms-to-iso start)
      :end-millis end
