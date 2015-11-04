@@ -29,7 +29,7 @@ build step in your Jenkins job:
 ```
 #!/path/to/runbld
 echo now some bash goes here
-echo it really has to be bash, because of the way Jenkins CommandInterpreter works
+echo it does have to be bash for now
 exit 0
 ```
 
