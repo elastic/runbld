@@ -76,12 +76,12 @@
 
     (when (:version options)
       (throw+ {:help ::version
-               :msg (version/version)}))
+               :msg (version/string)}))
 
     (when (not (= 1 (count arguments)))
       (throw+ {:help ::usage
                :msg (format "runbld %s\nusage: rundmc /path/to/script.bash"
-                            (version/version))}))
+                            (version/string))}))
 
     {:errors (atom [])
      :opts (assoc options
