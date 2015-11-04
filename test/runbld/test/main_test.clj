@@ -1,8 +1,8 @@
 (ns runbld.test.main-test
   (:require [clojure.test :refer :all]
+            [runbld.env :as env]
             [runbld.process :as proc]
-            [runbld.publish.elasticsearch :as elasticsearch]
-            [runbld.publish.email :as email]
+            [runbld.publish :as publish]
             [runbld.version :as version])
   (:require [runbld.main :as main] :reload-all))
 
@@ -18,11 +18,13 @@
                            {:cmd [script]
                             :duration-millis 1
                             :status 0})
+                ;; facter is too slow
+                env/facter (fn [& args] {:some :fact})
                 ;; Don't really publish things
-                elasticsearch/index (fn [_] {:in :fake-publish})
-                email/send (fn [_] {:sent :email})]
+                publish/publish* (fn [& args] {:published :not-really})]
     (testing "normal execution"
-      (is (= 0 (-> (main/-main "/path/to/script.bash") :proc :status))))
+      (is (= 0 (-> (main/-main "-c" "test/runbld.yaml"
+                               "/path/to/script.bash") :proc :status))))
 
     (testing "version"
       (is (.startsWith (main/-main "-v") (version/version))))
@@ -30,10 +32,7 @@
     (testing "usage"
       (is (.startsWith (main/-main) "runbld ")))
 
-    (testing "config file"
-      (is (= 0 (-> (main/-main "-c" "test/runbld.yaml" "/path/to/script.bash")
-                   :proc
-                   :status)))
+    (testing "bad config file"
       (is (.startsWith (main/-main "-c" "/tmp/noexist"
                                    "/path/to/script.bash") "config file ")))
 
@@ -41,5 +40,8 @@
       (with-redefs [proc/run (fn [& args] (throw
                                            (Exception.
                                             "boy that was unexpected")))]
-        (is (.startsWith (main/-main "/path/to/script.bash")
+        (is (.startsWith (main/-main "-c" "test/runbld.yaml"
+                                     "/path/to/script.bash")
                          "#error {\n :cause boy that was "))))))
+
+

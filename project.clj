@@ -12,12 +12,13 @@
   :min-lein-version "2.0.0"
   :exclusions [org.clojure/clojure]
   :dependencies [[clj-time "0.11.0"]
+                 [circleci/clj-yaml "0.5.4"]
                  [com.draines/postal "1.11.3"]
                  [org.clojure/clojure "1.7.0"]
                  [org.clojure/tools.cli "0.3.3"]
                  [org.elasticsearch/elasticsearch-clojure "0.99.0-SNAPSHOT"]
-                 [org.yaml/snakeyaml "1.16"]
-                 [slingshot "0.12.2"]]
+                 [slingshot "0.12.2"]
+                 [stencil "0.5.0"]]
   :injections [(require 'clojure.pprint)]
   :profiles {:dev {}
              :package {:plugins [[lein-bin "0.3.4"]]

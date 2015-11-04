@@ -6,7 +6,7 @@
             [runbld.opts :as opts]
             [runbld.process :as proc]
             [runbld.publish :as publish]
-            [slingshot.slingshot :refer [try+]]))
+            [slingshot.slingshot :refer [try+ throw+]]))
 
 (defn really-die
   ([code]
@@ -36,7 +36,12 @@
 
 (def run
   (-> (wrap-execute #'proc/run)
+
+      ;; stuff after proc (reverse)
       publish/wrap-publish
+
+      ;; stuff before proc (reverse)
+      build/wrap-merge-profile
       build/wrap-build-meta
       env/wrap-env))
 
@@ -45,7 +50,7 @@
   (try+
    (let [opts (opts/parse-args args)
          _ (log ">>>>>>>>>>>> SCRIPT EXECUTION BEGIN >>>>>>>>>>>>")
-         res (run opts)
+         {:keys [errors] :as res} (run opts)
          {:keys [took status] :as proc} (:proc res)
          _ (log "<<<<<<<<<<<< SCRIPT EXECUTION END   <<<<<<<<<<<<")]
      (assert status "process did not return a status key")
@@ -54,10 +59,20 @@
       (format "WRAPPER: %s (%d)" (if (zero? status)
                                    "SUCCESS"
                                    "FAILURE") status))
-
+     (if (and errors (pos? (count @errors)))
+       (throw+ {:error ::errors
+                :errors errors
+                :msg (with-out-str
+                       (println "execution had errors")
+                       (doseq [err errors]
+                         (println "==========")
+                         (println err)))}))
      (if runbld.opts/*dev*
        res
        (die 0)))
+
+   (catch [:error :runbld.main/errors] {:keys [errors msg]}
+     (die 3 msg))
 
    (catch [:error :runbld.opts/parse-error] {:keys [msg]}
      (die 2 msg))

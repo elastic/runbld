@@ -1,10 +1,10 @@
 (ns runbld.opts
-  (:import (org.yaml.snakeyaml Yaml))
-  (:require [clojure.java.io :as io]
+  (:require [clj-yaml.core :as yaml]
+            [clojure.java.io :as io]
             [clojure.tools.cli :as cli]
             [elasticsearch.connection.http :as es]
-            [runbld.util.data :refer [deep-merge-with deep-merge
-                                      keywordize-keys]]
+            [runbld.util.data :refer [deep-merge-with deep-merge]]
+            [runbld.util.date :as date]
             [runbld.version :as version]
             [slingshot.slingshot :refer [throw+]]))
 
@@ -13,7 +13,21 @@
 (def defaults
   {:es.url "http://localhost:9200"
    :es.index.build "'build'-yyyy-MM"
-   :es.index.config "runbld"})
+   :es.index.config "runbld"
+
+   :email
+   {:host "localhost"
+    :port 587
+    :tls true}})
+
+(defn expand-date-pattern [s]
+  (if (string? s)
+    (if (.contains s "'")
+      (date/expand s)
+      s)
+    (throw+ {:error ::invalid-date
+             :msg "date pattern should be a string"
+             :arg s})))
 
 (defn load-config [filepath]
   (let [f (io/file filepath)]
@@ -21,9 +35,7 @@
       (throw+ {:error ::file-not-found
                :msg (format "config file %s not found"
                             filepath)}))
-    (->> (.load (Yaml.) (slurp f))
-         (into {})
-         keywordize-keys)))
+    (yaml/parse-string (slurp f))))
 
 (defn system-config []
   (io/file
@@ -71,7 +83,11 @@
                :msg (format "runbld %s\nusage: rundmc /path/to/script.bash"
                             (version/version))}))
 
-    {:opts (assoc options
-                  :scriptfile (first arguments))
+    {:errors (atom [])
+     :opts (assoc options
+                  ;; Invariant: Jenkins passes it in through arguments
+                  :scriptfile (first arguments)
+                  :es.index.build (expand-date-pattern
+                                   (options :es.index.build)))
      :es.conn (es/make (merge {:url (:es.url options)}
                               (:es.http-opts options)))}))

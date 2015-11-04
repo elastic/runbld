@@ -1,1 +1,18 @@
-from.the.config.file: this
+default-job-name: "elastic,dev,master"
+
+email:
+  host: smtp.example.com
+  port: 587
+  user: smtpuser
+  pass: pass!
+  from: build@example.com
+  to: user@example.com
+  template: test/email.mustache
+
+# will be merged with top-level sections
+profiles:
+  elastic-dev-master:
+    email:
+      to: test@example.com
+      template: test/dev.mustache
+

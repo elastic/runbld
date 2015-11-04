@@ -1,7 +1,7 @@
 (ns runbld.env
-  (:import (org.yaml.snakeyaml Yaml))
-  (:require [clojure.java.shell :as sh]
-            [runbld.util.data :refer [keywordize-keys]]
+  (:require [clj-yaml.core :as yaml]
+            [clojure.java.shell :as sh]
+            [runbld.opts :as opts]
             [slingshot.slingshot :refer [throw+]]))
 
 (defn facter-installed? []
@@ -9,12 +9,13 @@
     (zero? exit)))
 
 (defn facter []
-  (if (facter-installed?)
-    (->> (.load (Yaml.) (:out (sh/sh "facter" "--yaml")))
-         (into {})
-         keywordize-keys)
-    (throw+ {:warning ::no-facter
-             :msg "facter cannot be found in PATH"})))
+  ;; costly call, only do it in production
+  (if opts/*dev*
+    {:dev-profile true}
+    (if (facter-installed?)
+      (yaml/parse-string (:out (sh/sh "facter" "--yaml")))
+      (throw+ {:warning ::no-facter
+               :msg "facter cannot be found in PATH"}))))
 
 (defn wrap-env [proc]
   (fn [opts]
