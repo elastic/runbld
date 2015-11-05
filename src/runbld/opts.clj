@@ -60,6 +60,7 @@
 (def opts
   [["-v" "--version" "Print version"]
    ["-c" "--config FILE" "Config file"]
+   [nil "--default-job-name JOB_NAME" "Job name: org,project,branch"]
    [nil "--es.url URL" "Elasticsearch endpoint"]
    [nil "--es.index.build INDEX" "ES index for build results"]
    [nil "--es.index.config INDEX" "ES index for configuration"]])

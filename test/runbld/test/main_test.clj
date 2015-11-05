@@ -44,4 +44,10 @@
                                      "/path/to/script.bash")
                          "#error {\n :cause boy that was "))))))
 
-
+(deftest execution
+  (testing "real execution all the way through"
+    (with-redefs [main/log (fn [_] :noconsole)
+                  env/facter (fn [& args] {:some :fact})
+                  publish/publish* (fn [& args] {:published :not-really})]
+      (is (= 0 (-> (main/-main "--default-job-name" "foo,bar,baz"
+                               "test/success.bash") :proc :status))))))
