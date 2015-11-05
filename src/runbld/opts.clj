@@ -39,8 +39,8 @@
 (defn system-config []
   (io/file
    (if (.startsWith (System/getProperty "os.name") "Windows")
-     "c:\\runbld.conf"
-     "/etc/runbld.conf")))
+     "c:\\runbld\\runbld.conf"
+     "/etc/runbld/runbld.conf")))
 
 (defn merge-opts-with-file [opts]
   (deep-merge-with deep-merge
