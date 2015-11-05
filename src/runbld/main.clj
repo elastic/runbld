@@ -58,9 +58,9 @@
      (log (format "DURATION: %sms" took))
      (log
       (format "WRAPPED PROCESS: %s (%d)" (if (zero? status)
-                                   "SUCCESS"
-                                   "FAILURE") status))
-     (if (and errors (pos? (count @errors)))
+                                           "SUCCESS"
+                                           "FAILURE") status))
+     (when (and errors (pos? (count @errors)))
        (throw+ {:error ::errors
                 :errors errors
                 :msg (with-out-str
