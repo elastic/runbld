@@ -38,7 +38,8 @@
     :github-page (format "https://github.com/%s/%s/tree/%s"
                          (-> opts :build :org)
                          (-> opts :build :project)
-                         (-> opts :build :branch))}))
+                         (-> opts :build :branch))
+    :env (:env opts)}))
 
 (defn publish* [errors f opts ctx]
   (try
