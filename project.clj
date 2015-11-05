@@ -24,6 +24,7 @@
   :profiles {:dev {:env {:dev true}}
              :package {:plugins [[lein-bin "0.3.4"]]
                        :bin {:bootclasspath true}}}
+  :plugins [[lein-environ "1.0.1"]]
   :aliases {"package" ["with-profile" "package" "bin"]}
   :aot :all
   :main runbld.main
