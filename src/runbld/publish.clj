@@ -29,8 +29,8 @@
      :uptime_days])
    (dissoc (:process opts) :proc)
    (:build opts)
-   {:mail-from (-> opts :opts :email :from)
-    :rcpt-to (-> opts :opts :email :to)
+   {:mail-from (-> opts :email :from)
+    :rcpt-to (-> opts :email :to)
     :github-name (format "%s/%s#%s"
                          (-> opts :build :org)
                          (-> opts :build :project)

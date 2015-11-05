@@ -34,10 +34,8 @@
 (defn wrap-merge-profile [proc]
   (fn [opts]
     (let [profile-name (keyword (get-in opts [:build :profile-name]))
-          profile (or (get-in opts [:opts :profiles profile-name]) {})
-          opts* (assoc opts
-                       :opts (deep-merge-with deep-merge (:opts opts) profile))]
-      (proc opts*))))
+          profile (or (get-in opts [:profiles profile-name]) {})]
+      (proc (deep-merge-with deep-merge opts profile)))))
 
 (defn wrap-build-meta [proc]
   (fn [opts]
@@ -53,5 +51,5 @@
                           :workspace      (get-in opts [:env "WORKSPACE"])}
                          (inherited-build-info
                           (or (get-in opts [:env "JOB_NAME"])
-                              (get-in opts [:opts :build :job-name])))))]
+                              (get-in opts [:build :job-name])))))]
       (proc opts*))))

@@ -10,9 +10,10 @@
             [slingshot.slingshot :refer [throw+]]))
 
 (def defaults
-  {:es.url "http://localhost:9200"
-   :es.index.build "'build'-yyyy-MM"
-   :es.index.config "runbld"
+  {:es
+   {:url "http://localhost:9200"
+    :index "'build'-yyyy-MM"
+    :http-opts {:insecure? false}}
 
    :process
    {:program "bash"
@@ -96,13 +97,12 @@
                :msg (format "runbld %s\nusage: rundmc /path/to/script.bash"
                             (version/string))}))
 
-    {:errors (atom [])
-     :opts (assoc options
-                  :es.index.build (expand-date-pattern
-                                   (options :es.index.build)))
-     :process (merge
-               ;; Invariant: Jenkins passes it in through arguments
-               {:scriptfile (first arguments)}
-               (:process options))
-     :es.conn (es/make (merge {:url (:es.url options)}
-                              (:es.http-opts options)))}))
+    (merge options
+           {:errors (atom [])
+            :es {:index (expand-date-pattern (-> options :es :index))
+                 :conn (es/make (:es options))}
+
+            :process (merge
+                      ;; Invariant: Jenkins passes it in through arguments
+                      {:scriptfile (first arguments)}
+                      (:process options))})))
