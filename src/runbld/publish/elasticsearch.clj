@@ -3,8 +3,8 @@
             [runbld.util.date :as date]))
 
 (defn index [opts body]
-  (assert (not (nil? (-> opts :opts :es.index.build))))
-  (let [doc {:index (-> opts :opts :es.index.build)
+  (assert (not (nil? (-> opts :es :index))))
+  (let [doc {:index (-> opts :es :index)
              :type "b"
              :body body}]
-    (doc/index (:es.conn opts) doc)))
+    (doc/index (-> opts :es :conn) doc)))

@@ -9,6 +9,7 @@
                         (build/wrap-merge-profile
                          identity))
                        (opts/parse-args ["-c" "test/runbld.yaml"
+                                         "--job-name" "foo,bar,baz"
                                          "/path/to/script.bash"]))]
-    (is (= "test/dev.mustache"
-           (-> profiled-opts :opts :email :template)))))
+    (is (= "test/foo.mustache"
+           (-> profiled-opts :email :template)))))

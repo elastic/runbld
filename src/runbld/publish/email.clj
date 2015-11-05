@@ -12,12 +12,12 @@
     :body msg}))
 
 (defn send [opts ctx]
-  (send* (-> opts :opts :email)
+  (send* (opts :email)
          (ctx :mail-from)
          (ctx :rcpt-to)
          (format "%s %s"
                  (ctx :github-name)
                  (ctx :jenkins-number))
          (mustache/render-string
-          (slurp (-> opts :opts :email :template))
+          (slurp (-> opts :email :template))
           ctx)))
