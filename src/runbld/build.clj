@@ -34,26 +34,25 @@
 
 (defn wrap-merge-profile [proc]
   (fn [opts]
-    (let [profile (keyword (get-in opts [:build :profile-name]))]
-      (proc
-       (assoc opts
-              :opts (deep-merge-with
-                     deep-merge
-                     (:opts opts)
-                     (get-in opts [:opts :profiles profile])))))))
+    (let [profile-name (keyword (get-in opts [:build :profile-name]))
+          profile (or (get-in opts [:opts :profiles profile-name]) {})
+          opts* (assoc opts
+                       :opts (deep-merge-with deep-merge (:opts opts) profile))]
+      (proc opts*))))
 
 (defn wrap-build-meta [proc]
   (fn [opts]
-    (proc
-     (assoc opts
-            :build (merge
-                    {:id (make-id)
-                     :url (get-in opts [:env "BUILD_URL"])
-                     :jenkins-number (get-in opts [:env "BUILD_NUMBER"])
-                     :node-executor (get-in opts [:env "EXECUTOR_NUMBER"])
-                     :host (get-in opts [:env "NODE_NAME"])
-                     :labels (get-in opts [:env "NODE_LABELS"])
-                     :workspace (get-in opts [:env "WORKSPACE"])}
-                    (inherited-build-info
-                     (or (get-in opts [:env "JOB_NAME"])
-                         (get-in opts [:opts :default-job-name]))))))))
+    (let [opts* (assoc
+                 opts
+                 :build (merge
+                         {:id (make-id)
+                          :url (get-in opts [:env "BUILD_URL"])
+                          :jenkins-number (get-in opts [:env "BUILD_NUMBER"])
+                          :node-executor (get-in opts [:env "EXECUTOR_NUMBER"])
+                          :host (get-in opts [:env "NODE_NAME"])
+                          :labels (get-in opts [:env "NODE_LABELS"])
+                          :workspace (get-in opts [:env "WORKSPACE"])}
+                         (inherited-build-info
+                          (or (get-in opts [:env "JOB_NAME"])
+                              (get-in opts [:opts :default-job-name])))))]
+      (proc opts*))))
