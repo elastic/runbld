@@ -15,7 +15,7 @@
   (send* (-> opts :opts :email)
          (ctx :mail-from)
          (ctx :rcpt-to)
-         (format "%s %d"
+         (format "%s %s"
                  (ctx :github-name)
                  (ctx :jenkins-number))
          (mustache/render-string
