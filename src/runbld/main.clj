@@ -57,7 +57,7 @@
      (assert status "process did not return a status key")
      (log (format "DURATION: %sms" took))
      (log
-      (format "WRAPPER: %s (%d)" (if (zero? status)
+      (format "WRAPPED PROCESS: %s (%d)" (if (zero? status)
                                    "SUCCESS"
                                    "FAILURE") status))
      (if (and errors (pos? (count @errors)))
