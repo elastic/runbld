@@ -12,4 +12,6 @@
                                          "--job-name" "foo,bar,baz"
                                          "/path/to/script.bash"]))]
     (is (= "test/foo.mustache"
-           (-> profiled-opts :email :template)))))
+           (-> profiled-opts :email :template)))
+    (is (= "foo@example.com"
+           (-> profiled-opts :email :to)))))

@@ -55,10 +55,11 @@
 (deftest email
   (let [sent (atom [])]
     (with-redefs [email/send* (fn [conn from to subj body]
-                                (swap! sent conj body))
+                                (swap! sent conj [to body]))
                   env/facter (fn [& args] {:some :fact})]
       (let [opts (opts/parse-args ["-c" "test/runbld.yaml"
                                    "--job-name" "foo,bar,baz"
                                    "test/success.bash"])
             res (main/run opts)]
-        (is (= ["greetings foo-bar-baz!\n"] @sent))))))
+        (is (= [["foo@example.com"
+                  "greetings foo-bar-baz!\n"]] @sent))))))

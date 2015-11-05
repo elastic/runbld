@@ -12,6 +12,6 @@ email:
 profiles:
   foo-bar-baz:
     email:
-      to: test@example.com
+      to: foo@example.com
       template: test/foo.mustache
 
