@@ -68,7 +68,7 @@
                        (doseq [err @errors]
                          (println "==========")
                          (println err)))}))
-     (if (environ/env :production)
+     (if (environ/env :dev)
        res
        (die 0)))
 

@@ -45,7 +45,7 @@
 (defn merge-opts-with-file [opts]
   (deep-merge-with deep-merge
                    defaults
-                   (if (environ/env :production)
+                   (if (environ/env :dev)
                      {}
                      (let [sys (system-config)]
                        (if (.isFile sys)
