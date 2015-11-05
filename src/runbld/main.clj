@@ -64,7 +64,7 @@
                 :errors errors
                 :msg (with-out-str
                        (println "execution had errors")
-                       (doseq [err errors]
+                       (doseq [err @errors]
                          (println "==========")
                          (println err)))}))
      (if runbld.opts/*dev*
