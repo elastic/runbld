@@ -1,8 +1,8 @@
 (ns runbld.process
   (:require [runbld.util.date :as date]))
 
-(defn run [scriptfile]
-  (let [cmd ["bash" "-x" scriptfile]
+(defn exec [program args scriptfile]
+  (let [cmd [program args scriptfile]
         pb (doto (ProcessBuilder. cmd)
              ;; Want the wrapping to be mostly transparent, so we send
              ;; stderr and stdout to the enclosing Java
@@ -29,3 +29,14 @@
      :time-end (date/ms-to-iso end)
      :took (- end start)
      :status exit-code}))
+
+(defn run [opts]
+  (assoc opts
+         :process
+         (merge
+          (:process opts)
+          (exec
+           (-> opts :process :program)
+           (-> opts :process :args)
+           (-> opts :process :scriptfile)))))
+

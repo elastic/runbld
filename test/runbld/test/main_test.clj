@@ -14,18 +14,11 @@
                 ;; Don't really kill the JVM
                 main/really-die (fn [& args] :dontdie)
                 ;; Don't really execute an external process
-                proc/run (fn [script]
-                           {:cmd [script]
-                            :duration-millis 1
-                            :status 0})
+                proc/run (fn [& args] :bogus)
                 ;; facter is too slow
                 env/facter (fn [& args] {:some :fact})
                 ;; Don't really publish things
                 publish/publish* (fn [& args] {:published :not-really})]
-    (testing "normal execution"
-      (is (= 0 (-> (main/-main "-c" "test/runbld.yaml"
-                               "/path/to/script.bash") :proc :status))))
-
     (testing "version"
       (is (.startsWith (main/-main "-v") (version/version))))
 
@@ -49,5 +42,5 @@
     (with-redefs [main/log (fn [_] :noconsole)
                   env/facter (fn [& args] {:some :fact})
                   publish/publish* (fn [& args] {:published :not-really})]
-      (is (= 0 (-> (main/-main "--default-job-name" "foo,bar,baz"
-                               "test/success.bash") :proc :status))))))
+      (is (= 0 (-> (main/-main "--job-name" "foo,bar,baz"
+                               "test/success.bash") :process :status))))))

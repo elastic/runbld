@@ -31,12 +31,8 @@
 (defn log [& s]
   (apply println s))
 
-(defn wrap-execute [proc]
-  (fn [opts]
-    (assoc opts :proc (proc (-> opts :opts :scriptfile)))))
-
 (def run
-  (-> (wrap-execute #'proc/run)
+  (-> #'proc/run
 
       ;; stuff after proc (reverse)
       publish/wrap-publish
@@ -52,12 +48,12 @@
    (let [opts (opts/parse-args args)
          _ (log ">>>>>>>>>>>> SCRIPT EXECUTION BEGIN >>>>>>>>>>>>")
          {:keys [errors] :as res} (run opts)
-         {:keys [took status] :as proc} (:proc res)
+         {:keys [took status]} (:process res)
          _ (log "<<<<<<<<<<<< SCRIPT EXECUTION END   <<<<<<<<<<<<")]
-     (assert status "process did not return a status key")
      (log (format "DURATION: %sms" took))
      (log
-      (format "WRAPPED PROCESS: %s (%d)" (if (zero? status)
+      (format "WRAPPED PROCESS: %s (%d)" (if (and status
+                                                  (zero? status))
                                            "SUCCESS"
                                            "FAILURE") status))
      (when (and errors (pos? (count @errors)))

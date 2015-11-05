@@ -14,6 +14,10 @@
    :es.index.build "'build'-yyyy-MM"
    :es.index.config "runbld"
 
+   :process
+   {:program "bash"
+    :args "-x"}
+
    :email
    {:host "localhost"
     :port 587
@@ -51,23 +55,32 @@
                        (if (.isFile sys)
                          (load-config (system-config))
                          {})))
-                   (if (:config opts)
-                     (load-config (:config opts))
+                   (if (:config-file opts)
+                     (load-config (:config-file opts))
                      {})
                    opts))
+
+(defn normalize
+  "Normalize the tools.cli map to the local structure."
+  [cli-opts]
+  {:process (select-keys cli-opts [:program :args])
+   :build (select-keys cli-opts [:job-name])
+   :config-file (:config cli-opts)
+   :version (:version cli-opts)})
 
 (def opts
   [["-v" "--version" "Print version"]
    ["-c" "--config FILE" "Config file"]
-   [nil "--default-job-name JOB_NAME" "Job name: org,project,branch"]
-   [nil "--es.url URL" "Elasticsearch endpoint"]
-   [nil "--es.index.build INDEX" "ES index for build results"]
-   [nil "--es.index.config INDEX" "ES index for configuration"]])
+   [nil "--job-name JOBNAME" (str "Job name: org,project,branch, "
+                                  "also read from $JOB_NAME")]
+   [nil "--program PROGRAM" "Program that will run the scriptfile"]
+   [nil "--args ARGS" "Args to pass PROGRAM"]])
 
 (defn parse-args [args]
   (let [{:keys [options arguments summary errors]
-         :as parsed-opts} (cli/parse-opts args opts)
-        options (merge-opts-with-file options)]
+         :as parsed-opts} (cli/parse-opts args opts :no-defaults true)
+        options (merge-opts-with-file
+                 (normalize options))]
     (when (pos? (count errors))
       (throw+ {:error ::parse-error
                :msg (with-out-str
@@ -85,9 +98,11 @@
 
     {:errors (atom [])
      :opts (assoc options
-                  ;; Invariant: Jenkins passes it in through arguments
-                  :scriptfile (first arguments)
                   :es.index.build (expand-date-pattern
                                    (options :es.index.build)))
+     :process (merge
+               ;; Invariant: Jenkins passes it in through arguments
+               {:scriptfile (first arguments)}
+               (:process options))
      :es.conn (es/make (merge {:url (:es.url options)}
                               (:es.http-opts options)))}))
