@@ -28,6 +28,7 @@
     (testing "publish to ES"
       (let [opts (opts/parse-args ["-c" "test/runbld.yaml" "test/success.bash"])
             res (main/run opts)
+            conn (-> opts :es :conn)
             q {:query
                {:match
                 {:time-start (get-in res [:process :time-start])}}}
@@ -37,12 +38,12 @@
                  :type (:_type addr)
                  :id (:_id addr)}]
         (is (= 0 (get-in res [:process :status])))
-        (is (= 0 (-> (es/get (:es.conn opts) doc)
+        (is (= 0 (-> (es/get conn doc)
                      :_source
                      :status)))
-        (indices/refresh (:es.conn opts) (:index doc))
+        (indices/refresh conn (:index doc))
         (is (= 0 (-> (es/search
-                      (:es.conn opts)
+                      conn
                       (-> doc
                           (dissoc :id)
                           (assoc :body q)))
