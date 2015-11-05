@@ -27,7 +27,7 @@
      :processors
      :timezone
      :uptime_days])
-   (dissoc (:proc opts) :proc)
+   (dissoc (:process opts) :proc)
    (:build opts)
    {:mail-from (-> opts :opts :email :from)
     :rcpt-to (-> opts :opts :email :to)

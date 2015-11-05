@@ -1,4 +1,3 @@
-default-job-name: "elastic,dev,master"
 
 email:
   host: smtp.example.com
@@ -11,8 +10,8 @@ email:
 
 # will be merged with top-level sections
 profiles:
-  elastic-dev-master:
+  foo-bar-baz:
     email:
       to: test@example.com
-      template: test/dev.mustache
+      template: test/foo.mustache
 

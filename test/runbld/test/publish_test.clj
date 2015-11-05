@@ -26,18 +26,17 @@
   (with-redefs [publish/handlers (fn []
                                    [#'runbld.publish.elasticsearch/index])]
     (testing "publish to ES"
-      (let [opts (opts/parse-args ["-c" "test/runbld.yaml"
-                                   "test/success.bash"])
+      (let [opts (opts/parse-args ["-c" "test/runbld.yaml" "test/success.bash"])
             res (main/run opts)
             q {:query
                {:match
-                {:time-start (get-in res [:proc :time-start])}}}
+                {:time-start (get-in res [:process :time-start])}}}
             addr (-> (:publish res) :outputs first :output
                      (select-keys [:_index :_type :_id]))
             doc {:index (:_index addr)
                  :type (:_type addr)
                  :id (:_id addr)}]
-        (is (= 0 (get-in res [:proc :status])))
+        (is (= 0 (get-in res [:process :status])))
         (is (= 0 (-> (es/get (:es.conn opts) doc)
                      :_source
                      :status)))
@@ -58,6 +57,7 @@
                                 (swap! sent conj body))
                   env/facter (fn [& args] {:some :fact})]
       (let [opts (opts/parse-args ["-c" "test/runbld.yaml"
+                                   "--job-name" "foo,bar,baz"
                                    "test/success.bash"])
             res (main/run opts)]
-        (is (= @sent ["greetings elastic-dev-master!\n"]))))))
+        (is (= ["greetings foo-bar-baz!\n"] @sent))))))

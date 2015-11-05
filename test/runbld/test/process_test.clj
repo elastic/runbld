@@ -4,6 +4,10 @@
 
 (deftest process
   (testing "success"
-    (is (= 0 (:status (proc/run "test/success.bash")))))
-  (testing "success"
-    (is (= 1 (:status (proc/run "test/fail.bash"))))))
+    (let [res (proc/exec "bash" "-x" "test/success.bash")]
+      (is res)
+      (is (= 0 (:status res)))))
+  (testing "fail"
+    (let [res (proc/exec "bash" "-x" "test/fail.bash")]
+      (is res)
+      (is (= 1 (:status res))))))

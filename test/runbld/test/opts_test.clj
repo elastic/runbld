@@ -4,18 +4,10 @@
             [runbld.opts :as opts] :reload-all))
 
 (deftest config-file
-  (is (= {:es.index.build "FOO",
-          :scriptfile "/path/to/script.bash"}
-         (select-keys (:opts
-                       (opts/parse-args ["-c" "test/runbld.yaml"
-                                         "--es.index.build" "FOO"
-                                         "/path/to/script.bash"]))
-                      [:es.index.build
-                       :scriptfile]))))
-
-(deftest date-expansion
-  (is (= {:es.index.build (str "foo-" (t/year (t/now)))}
-         (select-keys (:opts
-                       (opts/parse-args ["--es.index.build" "'foo'-yyyy"
-                                         "/path/to/script.bash"]))
-                      [:es.index.build]))))
+  (is (= {:program "zsh"
+          :args "-x"
+          :scriptfile "/path/to/script.zsh"}
+         (:process
+          (opts/parse-args ["-c" "test/runbld.yaml"
+                            "--program" "zsh"
+                            "/path/to/script.zsh"])))))
