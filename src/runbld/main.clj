@@ -1,6 +1,7 @@
 (ns runbld.main
   (:gen-class)
   (:require [clojure.pprint :refer [pprint]]
+            [environ.core :as environ]
             [runbld.build :as build]
             [runbld.env :as env]
             [runbld.opts :as opts]
@@ -67,7 +68,7 @@
                        (doseq [err @errors]
                          (println "==========")
                          (println err)))}))
-     (if runbld.opts/*dev*
+     (if (environ/env :production)
        res
        (die 0)))
 

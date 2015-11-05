@@ -3,12 +3,11 @@
             [clojure.java.io :as io]
             [clojure.tools.cli :as cli]
             [elasticsearch.connection.http :as es]
+            [environ.core :as environ]
             [runbld.util.data :refer [deep-merge-with deep-merge]]
             [runbld.util.date :as date]
             [runbld.version :as version]
             [slingshot.slingshot :refer [throw+]]))
-
-(def ^:dynamic *dev* true)
 
 (def defaults
   {:es.url "http://localhost:9200"
@@ -46,7 +45,7 @@
 (defn merge-opts-with-file [opts]
   (deep-merge-with deep-merge
                    defaults
-                   (if *dev*
+                   (if (environ/env :production)
                      {}
                      (let [sys (system-config)]
                        (if (.isFile sys)

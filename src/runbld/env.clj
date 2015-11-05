@@ -1,6 +1,7 @@
 (ns runbld.env
   (:require [clj-yaml.core :as yaml]
             [clojure.java.shell :as sh]
+            [environ.core :as environ]
             [runbld.opts :as opts]
             [slingshot.slingshot :refer [throw+]]))
 
@@ -10,7 +11,7 @@
 
 (defn facter []
   ;; costly call, only do it in production
-  (if opts/*dev*
+  (if (environ/env :dev)
     {:dev-profile true}
     (if (facter-installed?)
       (yaml/parse-string (:out (sh/sh "facter" "--yaml")))

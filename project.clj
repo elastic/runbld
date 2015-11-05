@@ -14,19 +14,16 @@
   :dependencies [[clj-time "0.11.0"]
                  [circleci/clj-yaml "0.5.4"]
                  [com.draines/postal "1.11.3"]
+                 [environ "1.0.1"]
                  [org.clojure/clojure "1.7.0"]
                  [org.clojure/tools.cli "0.3.3"]
                  [org.elasticsearch/elasticsearch-clojure "0.99.0-SNAPSHOT"]
                  [slingshot "0.12.2"]
                  [stencil "0.5.0"]]
   :injections [(require 'clojure.pprint)]
-  :profiles {:dev {}
+  :profiles {:dev {:env {:dev true}}
              :package {:plugins [[lein-bin "0.3.4"]]
-                       :bin {:bootclasspath true}
-                       :injections [(require 'runbld.opts)
-                                    (alter-var-root
-                                     #'runbld.opts/*dev*
-                                     (constantly false))]}}
+                       :bin {:bootclasspath true}}}
   :aliases {"package" ["with-profile" "package" "bin"]}
   :aot :all
   :main runbld.main
