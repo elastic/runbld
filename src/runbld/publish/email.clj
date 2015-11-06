@@ -1,7 +1,14 @@
 (ns runbld.publish.email
   (:refer-clojure :exclude [send])
-  (:require [postal.core :as mail]
+  (:require [clojure.string :as str]
+            [postal.core :as mail]
             [stencil.core :as mustache]))
+
+(defn maybe-split-addr [s]
+  (if (and (string? s) (.contains s ","))
+    (->> (str/split s #",")
+         (map #(.trim %)))
+    s))
 
 (defn send* [conn from to subject msg]
   (mail/send-message

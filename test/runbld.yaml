@@ -6,12 +6,15 @@ email:
   pass: pass!
   from: build@example.com
   to: user@example.com
-  template: test/email.mustache
+  template: test/templates/default.mustache
 
 # will be merged with top-level sections
 profiles:
-  foo-bar-baz:
+  elastic-proj1-master:
     email:
       to: foo@example.com
-      template: test/foo.mustache
+      template: test/templates/proj1.mustache
+  elastic-proj2-master:
+    email:
+      to: foo@example.com, bar@example.com
 
