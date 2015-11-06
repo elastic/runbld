@@ -55,11 +55,22 @@
 (deftest email
   (let [sent (atom [])]
     (with-redefs [email/send* (fn [conn from to subj body]
-                                (swap! sent conj [to body]))
-                  env/facter (fn [& args] {:some :fact})]
+                                (swap! sent conj [to body]))]
+
       (let [opts (opts/parse-args ["-c" "test/runbld.yaml"
-                                   "--job-name" "foo,bar,baz"
+                                   "--job-name" "elastic,proj1,master"
                                    "test/success.bash"])
             res (main/run opts)]
+        (is (= 0 (count @(:errors res))))
         (is (= [["foo@example.com"
-                  "greetings foo-bar-baz!\n"]] @sent))))))
+                 "greetings elastic-proj1-master!\n"]] @sent)))
+
+      (swap! sent pop)
+
+      (let [opts (opts/parse-args ["-c" "test/runbld.yaml"
+                                   "--job-name" "elastic,proj2,master"
+                                   "test/success.bash"])
+            res (main/run opts)]
+        (is (= 0 (count @(:errors res))))
+        (is (= [[["foo@example.com" "bar@example.com"]
+                 "in template for elastic-proj2-master\n"]] @sent))))))
