@@ -17,7 +17,7 @@
                  [environ "1.0.1"]
                  [org.clojure/clojure "1.7.0"]
                  [org.clojure/tools.cli "0.3.3"]
-                 [org.elasticsearch/elasticsearch-clojure "0.99.0-SNAPSHOT"]
+                 [elastic/elasticsearch-clojure "0.99.0"]
                  [slingshot "0.12.2"]
                  [stencil "0.5.0"]]
   :injections [(require 'clojure.pprint)]
