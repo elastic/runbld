@@ -1,5 +1,7 @@
 # Run-B.L.D.
 
+[![Circle CI](https://circleci.com/gh/elastic/runbld/tree/master.svg?style=svg&circle-token=9f37d8182532f6539f497ca287a82a788e9007ef)](https://circleci.com/gh/elastic/runbld/tree/master)
+
 It wraps!
 
 ![Wrappers](https://rockhall.com/media/assets/inductees/default/run_dmc.jpg)
