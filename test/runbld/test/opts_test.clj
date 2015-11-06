@@ -5,7 +5,7 @@
 
 (deftest config-file
   (is (= {:program "zsh"
-          :args "-x"
+          :args ["-x"]
           :scriptfile "/path/to/script.zsh"}
          (:process
           (opts/parse-args ["-c" "test/runbld.yaml"
