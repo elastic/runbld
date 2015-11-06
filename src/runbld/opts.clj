@@ -17,7 +17,7 @@
 
    :process
    {:program "bash"
-    :args "-x"}
+    :args ["-x"]}
 
    :email
    {:host "localhost"

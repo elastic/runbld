@@ -2,7 +2,7 @@
   (:require [runbld.util.date :as date]))
 
 (defn exec [program args scriptfile]
-  (let [cmd [program args scriptfile]
+  (let [cmd (flatten [program args scriptfile])
         pb (doto (ProcessBuilder. cmd)
              ;; Want the wrapping to be mostly transparent, so we send
              ;; stderr and stdout to the enclosing Java
