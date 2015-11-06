@@ -2,6 +2,7 @@
   (:require [environ.core :as environ]
             [runbld.util.data :refer [deep-merge-with deep-merge]]
             [runbld.util.date :as date]
+            [runbld.vcs.git :as git]
             [slingshot.slingshot :refer [throw+]]))
 
 (defn make-rand-uuid []
@@ -30,6 +31,15 @@
       info
       (throw+ {:error ::invalid-job-name
                :msg "please set $JOB_NAME in the format 'org,repo,branch'"}))))
+
+(defn wrap-git-repo [proc]
+  (fn [opts]
+    (let [{:keys [remote org project]} (:build opts)
+          _ (git/clone-or-fetch
+             (get-in opts [:git :clone-home])
+             (get-in opts [:git :remote])
+             org project)])
+    (proc opts)))
 
 (defn wrap-merge-profile [proc]
   (fn [opts]

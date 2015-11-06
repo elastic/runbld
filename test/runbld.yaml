@@ -1,3 +1,8 @@
+build:
+  workspace: tmp/workspace
+
+git:
+  clone-home: tmp/git/cache
 
 email:
   host: smtp.example.com
@@ -14,6 +19,8 @@ profiles:
     email:
       to: foo@example.com
       template: test/templates/proj1.mustache
+    git:
+      remote: /tmp/git/proj1
   elastic-proj2-master:
     email:
       to: foo@example.com, bar@example.com
