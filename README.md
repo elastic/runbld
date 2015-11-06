@@ -4,7 +4,7 @@
 
 It wraps!
 
-![Wrappers](https://rockhall.com/media/assets/inductees/default/run_dmc.jpg)
+![Other Wrappers](https://rockhall.com/media/assets/inductees/default/run_dmc.jpg)
 
 When you need the power of Jenkins, but the sanity of change
 management.
