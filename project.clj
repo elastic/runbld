@@ -11,7 +11,8 @@
   :global-vars {*warn-on-reflection* false}
   :min-lein-version "2.0.0"
   :exclusions [org.clojure/clojure]
-  :dependencies [[clj-time "0.11.0"]
+  :dependencies [[clj-jgit "0.8.8"]
+                 [clj-time "0.11.0"]
                  [circleci/clj-yaml "0.5.4"]
                  [com.draines/postal "1.11.3"]
                  [environ "1.0.1"]

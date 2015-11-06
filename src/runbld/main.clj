@@ -38,6 +38,7 @@
       publish/wrap-publish
 
       ;; stuff before proc (reverse)
+      build/wrap-git-repo
       build/wrap-merge-profile
       build/wrap-build-meta
       env/wrap-env))
