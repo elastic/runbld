@@ -65,6 +65,8 @@
                                    "--job-name" "elastic,proj1,master"
                                    "test/success.bash"])
             res (main/run opts)]
+        (when (pos? (count @(:errors res)))
+          (clojure.pprint/pprint @(:errors res)))
         (is (= 0 (count @(:errors res))))
         (is (= [["foo@example.com"
                  "greetings elastic-proj1-master!\n"]] @sent)))
@@ -75,6 +77,8 @@
                                    "--job-name" "elastic,proj2,master"
                                    "test/success.bash"])
             res (main/run opts)]
+        (when (pos? (count @(:errors res)))
+          (clojure.pprint/pprint @(:errors res)))
         (is (= 0 (count @(:errors res))))
         (is (= [[["foo@example.com" "bar@example.com"]
                  "in template for elastic-proj2-master\n"]] @sent))))))
