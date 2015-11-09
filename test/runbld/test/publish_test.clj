@@ -20,7 +20,7 @@
   (with-redefs [elasticsearch/index (make-error-maker "es")
                 email/send (make-error-maker "email")]
     (let [opts (opts/parse-args ["-c" "test/runbld.yaml"
-                                   "--job-name" "elastic,proj1,master"
+                                 "--job-name" "elastic,proj1,master"
                                  "test/success.bash"])]
       (is (= 2 (count @(:errors (main/run opts))))))))
 
@@ -58,7 +58,9 @@
 
 (deftest email
   (let [sent (atom [])]
-    (with-redefs [email/send* (fn [conn from to subj body]
+    (with-redefs [publish/handlers (fn []
+                                     [#'runbld.publish.email/send])
+                  email/send* (fn [conn from to subj body]
                                 (swap! sent conj [to body]))]
 
       (let [opts (opts/parse-args ["-c" "test/runbld.yaml"
