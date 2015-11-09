@@ -35,12 +35,19 @@
 
 (defn wrap-git-repo [proc]
   (fn [opts]
-    (let [{:keys [org project workspace branch]} (:build opts)
-          {:keys [clone-home remote]} (:git opts)
-          commit (git/checkout-workspace
-                  clone-home remote
-                  workspace org project (format "origin/%s" branch))]
-      (proc (assoc opts :build (merge (:build opts) commit))))))
+    (if (nil? (get-in opts [:git :remote]))
+      (if (environ/env :dev)
+        (proc (assoc opts :build (merge (:build opts) {:commit "fake"})))
+        (throw+ {:error ::no-git-remote
+                 :msg (format "no remote set for %s"
+                              (with-out-str
+                                (pr (:build opts))))}))
+      (let [{:keys [org project workspace branch]} (:build opts)
+            {:keys [clone-home remote]} (:git opts)
+            commit (git/checkout-workspace
+                    clone-home remote
+                    workspace org project (format "origin/%s" branch))]
+        (proc (assoc opts :build (merge (:build opts) commit)))))))
 
 (defn wrap-merge-profile [proc]
   (fn [opts]

@@ -34,6 +34,7 @@
                                            (Exception.
                                             "boy that was unexpected")))]
         (is (.startsWith (main/-main "-c" "test/runbld.yaml"
+                                     "--job-name" "elastic,proj1,master"
                                      "/path/to/script.bash")
                          "#error {\n :cause boy that was "))))))
 

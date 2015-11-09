@@ -19,14 +19,18 @@
 (deftest handle-errors
   (with-redefs [elasticsearch/index (make-error-maker "es")
                 email/send (make-error-maker "email")]
-    (let [opts (opts/parse-args ["-c" "test/runbld.yaml" "test/success.bash"])]
+    (let [opts (opts/parse-args ["-c" "test/runbld.yaml"
+                                   "--job-name" "elastic,proj1,master"
+                                 "test/success.bash"])]
       (is (= 2 (count @(:errors (main/run opts))))))))
 
 (deftest ^:integration elasticsearch
   (with-redefs [publish/handlers (fn []
                                    [#'runbld.publish.elasticsearch/index])]
     (testing "publish to ES"
-      (let [opts (opts/parse-args ["-c" "test/runbld.yaml" "test/success.bash"])
+      (let [opts (opts/parse-args ["-c" "test/runbld.yaml"
+                                   "--job-name" "elastic,proj1,master"
+                                   "test/success.bash"])
             res (main/run opts)
             conn (-> opts :es :conn)
             q {:query
