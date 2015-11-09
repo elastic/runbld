@@ -1,5 +1,6 @@
 (ns runbld.build
-  (:require [environ.core :as environ]
+  (:require [clojure.java.io :as io]
+            [environ.core :as environ]
             [runbld.util.data :refer [deep-merge-with deep-merge]]
             [runbld.util.date :as date]
             [runbld.vcs.git :as git]
@@ -34,12 +35,12 @@
 
 (defn wrap-git-repo [proc]
   (fn [opts]
-    (let [{:keys [remote org project]} (:build opts)
-          _ (git/clone-or-fetch
-             (get-in opts [:git :clone-home])
-             (get-in opts [:git :remote])
-             org project)])
-    (proc opts)))
+    (let [{:keys [org project workspace branch]} (:build opts)
+          {:keys [clone-home remote]} (:git opts)
+          commit (git/checkout-workspace
+                  clone-home remote
+                  workspace org project (format "origin/%s" branch))]
+      (proc (assoc opts :build (merge (:build opts) commit))))))
 
 (defn wrap-merge-profile [proc]
   (fn [opts]
@@ -49,7 +50,10 @@
 
 (defn wrap-build-meta [proc]
   (fn [opts]
-    (let [opts* (assoc
+    (let [info (inherited-build-info
+                (or (get-in opts [:env "JOB_NAME"])
+                    (get-in opts [:build :job-name])))
+          opts* (assoc
                  opts
                  :build (merge
                          {:id (make-id)
@@ -58,8 +62,13 @@
                           :node-executor  (get-in opts [:env "EXECUTOR_NUMBER"])
                           :host           (get-in opts [:env "NODE_NAME"])
                           :labels         (get-in opts [:env "NODE_LABELS"])
-                          :workspace      (get-in opts [:env "WORKSPACE"])}
-                         (inherited-build-info
-                          (or (get-in opts [:env "JOB_NAME"])
-                              (get-in opts [:build :job-name])))))]
+                          :workspace      (or
+                                           (get-in opts [:env "WORKSPACE"])
+                                           ;; useful in tests, or the
+                                           ;; non-Jenkins future
+                                           (str
+                                            (io/file
+                                             (get-in opts [:build :workspace-home])
+                                             (:job-name info))))}
+                         info))]
       (proc opts*))))

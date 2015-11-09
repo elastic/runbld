@@ -9,6 +9,9 @@
 (defn rmdir-r [dir]
   (run "rm" "-r" dir))
 
+(defn rmdir-rf [dir]
+  (run "rm" "-rf" dir))
+
 (defn mkdir-p [dir]
   (run "mkdir" "-p" dir))
 

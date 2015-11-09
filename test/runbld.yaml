@@ -1,5 +1,5 @@
 build:
-  workspace: tmp/workspace
+  workspace-home: tmp/workspace
 
 git:
   clone-home: tmp/git/cache
