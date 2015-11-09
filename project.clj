@@ -31,6 +31,5 @@
   :aliases {"package" ["with-profile" "package" "bin"]}
   :aot :all
   :main runbld.main
-  :test-selectors {:default  #(not (:integration %))
-                   :integration :integration
-                   :all (constantly true)})
+  :test-selectors {:default (complement :integration)
+                   :integration :integration})
