@@ -15,6 +15,8 @@
                  [clj-time "0.11.0"]
                  [circleci/clj-yaml "0.5.4"]
                  [com.draines/postal "1.11.3"]
+                 [com.fzakaria/slf4j-timbre "0.2.1"]
+                 [com.taoensso/timbre "4.1.4"]
                  [environ "1.0.1"]
                  [org.clojure/clojure "1.7.0"]
                  [org.clojure/tools.cli "0.3.3"]
