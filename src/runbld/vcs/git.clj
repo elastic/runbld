@@ -39,9 +39,16 @@
      :author-name (and author (.getName author))
      :author-email (and author (.getEmailAddress author))}))
 
+(defn resolve-remote [^String loc]
+  (condp #(.startsWith %2 %1) loc
+    "https://" loc
+    "http://" loc
+    "git@" loc
+    (io/abspath loc)))
+
 (defn checkout-workspace [clone-home remote workspace org project branch]
-  (let [absremote (.getCanonicalPath (jio/file remote))
-        absworkspace (.getCanonicalPath (jio/file workspace))
+  (let [absremote (resolve-remote remote)
+        absworkspace (io/abspath-file workspace)
         clonecmd (io/run "git" "clone" absremote absworkspace)
         workspace-repo (git/load-repo absworkspace)
         workspace-ref (git/git-checkout workspace-repo branch false true)
