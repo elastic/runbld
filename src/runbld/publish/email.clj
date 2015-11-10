@@ -9,7 +9,9 @@
 (def Ctx
   {
    (s/required-key :commit) s/Str
+   (s/required-key :commit-desc) s/Str
    (s/required-key :commit-email) s/Str
+   (s/required-key :commit-msg) s/Str
    (s/required-key :commit-name) s/Str
    (s/required-key :commit-time)  s/Str
    (s/required-key :env) {s/Str s/Any}
