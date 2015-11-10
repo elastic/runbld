@@ -61,8 +61,7 @@
 (defn wrap-build-meta [proc]
   (fn [opts]
     (let [info (inherited-build-info
-                (or (get-in opts [:env "JOB_NAME"])
-                    (get-in opts [:build :job-name])))
+                (get-in opts [:build :job-name]))
           id (make-id)
           opts* (assoc
                  opts

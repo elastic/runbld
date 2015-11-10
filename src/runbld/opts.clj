@@ -10,7 +10,10 @@
             [slingshot.slingshot :refer [throw+]]))
 
 (def defaults
-  {:es
+  {:build
+   {:job-name (System/getenv "JOB_NAME")}
+
+   :es
    {:url "http://localhost:9200"
     :index "'build'-yyyy-MM"
     :http-opts {:insecure? false}}
