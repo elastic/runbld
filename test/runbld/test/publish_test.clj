@@ -5,12 +5,15 @@
             [runbld.env :as env]
             [runbld.main :as main]
             [runbld.opts :as opts]
-            [runbld.process :as proc])
+            [runbld.process :as proc]
+            [schema.test])
   (:require [runbld.vcs.git :as git]
             [runbld.publish :as publish]
             [runbld.publish.elasticsearch :as elasticsearch]
             [runbld.publish.email :as email]
             :reload-all))
+
+(use-fixtures :once schema.test/validate-schemas)
 
 (defn make-error-maker [name]
   (fn [& args]
@@ -75,7 +78,8 @@
                                                    :git :remote]))
             res (main/run opts)]
         (when (pos? (count @(:errors res)))
-          (clojure.pprint/pprint @(:errors res)))
+          (println "** errors1 **")
+          (clojure.pprint/pprint (first @(:errors res))))
         (is (= 0 (count @(:errors res))))
         (is (= [["foo@example.com"
                  "greetings elastic-proj1-master!\n"]] @sent)))
@@ -90,7 +94,8 @@
                                                    :git :remote]))
             res (main/run opts)]
         (when (pos? (count @(:errors res)))
-          (clojure.pprint/pprint @(:errors res)))
+          (println "** errors2 **")
+          (clojure.pprint/pprint (first @(:errors res))))
         (is (= 0 (count @(:errors res))))
         (is (= [[["foo@example.com" "bar@example.com"]
                  "in template for elastic-proj2-master\n"]] @sent))))))

@@ -1,6 +1,7 @@
 (ns runbld.publish
   (:require [runbld.publish.elasticsearch :as elasticsearch]
             [runbld.publish.email :as email]
+            [schema.core :as s]
             [slingshot.slingshot :refer [try+ throw+]]))
 
 (defn handlers []
@@ -43,8 +44,10 @@
     :env (:env opts)}))
 
 (defn publish* [errors f opts ctx]
-  (try
+  (try+
     (f opts ctx)
+    (catch [:type :schema.core/error] {:keys [error] :as e}
+      (throw+ {:error :validation :keys (keys e)}))
     (catch Throwable e
       (swap! errors conj e)
       :error)))
