@@ -36,8 +36,8 @@
     {:commit (.getName commit)
      :commit-time (and author (date/date-to-iso
                                (.getWhen author)))
-     :author-name (and author (.getName author))
-     :author-email (and author (.getEmailAddress author))}))
+     :commit-name (and author (.getName author))
+     :commit-email (and author (.getEmailAddress author))}))
 
 (defn resolve-remote [^String loc]
   (condp #(.startsWith %2 %1) loc
