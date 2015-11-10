@@ -8,43 +8,43 @@
 
 (def Ctx
   {
-   (s/required-key :commit) s/Str
-   (s/required-key :commit-desc) s/Str
-   (s/required-key :commit-email) s/Str
-   (s/required-key :commit-msg) s/Str
-   (s/required-key :commit-name) s/Str
-   (s/required-key :commit-time)  s/Str
-   (s/required-key :env) {s/Str s/Any}
-   (s/required-key :github-name) s/Str
-   (s/required-key :id) s/Str
-   (s/required-key :job-name) s/Str
-   (s/required-key :mail-from) s/Str
-   (s/required-key :org) s/Str
-   (s/required-key :project) s/Str
-   (s/required-key :rcpt-to) (s/cond-pre s/Str [s/Str])
-   (s/required-key :scriptfile) s/Str
-   (s/required-key :start-millis) s/Num
-   (s/required-key :time-end) s/Str
-   (s/required-key :time-start) s/Str
+   (s/required-key :commit           ) s/Str
+   (s/required-key :commit-desc      ) s/Str
+   (s/required-key :commit-email     ) s/Str
+   (s/required-key :commit-msg       ) s/Str
+   (s/required-key :commit-name      ) s/Str
+   (s/required-key :commit-time      ) s/Str
+   (s/required-key :env              ) {s/Str s/Any}
+   (s/required-key :github-name      ) s/Str
+   (s/required-key :id               ) s/Str
+   (s/required-key :job-name         ) s/Str
+   (s/required-key :mail-from        ) s/Str
+   (s/required-key :org              ) s/Str
+   (s/required-key :project          ) s/Str
+   (s/required-key :rcpt-to          ) (s/cond-pre s/Str [s/Str])
+   (s/required-key :scriptfile       ) s/Str
+   (s/required-key :start-millis     ) s/Num
+   (s/required-key :time-end         ) s/Str
+   (s/required-key :time-start       ) s/Str
 
-   (s/optional-key :args) [s/Str]
-   (s/optional-key :branch) s/Str
-   (s/optional-key :cmd) [s/Str]
-   (s/optional-key :cmd-source) s/Str
-   (s/optional-key :cwd) s/Str
-   (s/optional-key :end-millis) s/Num
-   (s/optional-key :github-page) s/Str
-   (s/optional-key :jenkins-executor) (s/maybe s/Str)
-   (s/optional-key :jenkins-labels) (s/maybe s/Str)
-   (s/optional-key :jenkins-node) (s/maybe s/Str)
-   (s/optional-key :jenkins-number) (s/maybe s/Str)
-   (s/optional-key :job-name-extra) s/Str
-   (s/optional-key :profile-name) s/Str
-   (s/optional-key :program) s/Str
-   (s/optional-key :status) s/Num
-   (s/optional-key :took) s/Num
-   (s/optional-key :url) (s/maybe s/Str)
-   (s/optional-key :workspace) s/Str
+   (s/optional-key :args             ) [s/Str]
+   (s/optional-key :branch           ) s/Str
+   (s/optional-key :cmd              ) [s/Str]
+   (s/optional-key :cmd-source       ) s/Str
+   (s/optional-key :cwd              ) s/Str
+   (s/optional-key :end-millis       ) s/Num
+   (s/optional-key :github-page      ) s/Str
+   (s/optional-key :jenkins-executor ) (s/maybe s/Str)
+   (s/optional-key :jenkins-labels   ) (s/maybe s/Str)
+   (s/optional-key :jenkins-node     ) (s/maybe s/Str)
+   (s/optional-key :jenkins-number   ) (s/maybe s/Str)
+   (s/optional-key :job-name-extra   ) s/Str
+   (s/optional-key :profile-name     ) s/Str
+   (s/optional-key :program          ) s/Str
+   (s/optional-key :status           ) s/Num
+   (s/optional-key :took             ) s/Num
+   (s/optional-key :url              ) (s/maybe s/Str)
+   (s/optional-key :workspace        ) s/Str
    })
 
 (defn maybe-split-addr [s]
