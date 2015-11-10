@@ -3,8 +3,11 @@
             [clojure.java.shell :as sh]))
 
 (defn run [& args]
-  (let [res (apply sh/sh (map str args))]
-    (assert (= 0 (:exit res)) (:err res))))
+  (let [cmd (map str args)
+        res (apply sh/sh cmd)]
+    (assert (= 0 (:exit res)) (format "%s: %s"
+                                      (pr-str cmd)
+                                      (:err res)))))
 
 (defn rmdir-r [dir]
   (run "rm" "-r" dir))
@@ -15,3 +18,8 @@
 (defn mkdir-p [dir]
   (run "mkdir" "-p" dir))
 
+(defn abspath [f]
+  (.getCanonicalPath (jio/as-file f)))
+
+(defn abspath-file [f]
+  (jio/file (abspath f)))

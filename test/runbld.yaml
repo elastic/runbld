@@ -20,7 +20,7 @@ profiles:
       to: foo@example.com
       template: test/templates/proj1.mustache
     git:
-      remote: /tmp/git/proj1
+      remote: tmp/repo/proj1
   elastic-proj2-master:
     email:
       to: foo@example.com, bar@example.com

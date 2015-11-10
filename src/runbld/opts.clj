@@ -17,7 +17,8 @@
 
    :process
    {:program "bash"
-    :args ["-x"]}
+    :args ["-x"]
+    :cwd (System/getProperty "user.dir")}
 
    :email
    {:host "localhost"

@@ -6,7 +6,8 @@
             [runbld.main :as main]
             [runbld.opts :as opts]
             [runbld.process :as proc])
-  (:require [runbld.publish :as publish]
+  (:require [runbld.vcs.git :as git]
+            [runbld.publish :as publish]
             [runbld.publish.elasticsearch :as elasticsearch]
             [runbld.publish.email :as email]
             :reload-all))
@@ -21,7 +22,10 @@
                 email/send (make-error-maker "email")]
     (let [opts (opts/parse-args ["-c" "test/runbld.yaml"
                                  "--job-name" "elastic,proj1,master"
-                                 "test/success.bash"])]
+                                 "test/success.bash"])
+          repo (git/init-test-repo (get-in opts [:profiles
+                                                 :elastic-proj1-master
+                                                 :git :remote]))]
       (is (= 2 (count @(:errors (main/run opts))))))))
 
 (deftest ^:integration elasticsearch
@@ -66,6 +70,9 @@
       (let [opts (opts/parse-args ["-c" "test/runbld.yaml"
                                    "--job-name" "elastic,proj1,master"
                                    "test/success.bash"])
+            repo (git/init-test-repo (get-in opts [:profiles
+                                                   :elastic-proj1-master
+                                                   :git :remote]))
             res (main/run opts)]
         (when (pos? (count @(:errors res)))
           (clojure.pprint/pprint @(:errors res)))

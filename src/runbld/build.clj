@@ -37,7 +37,7 @@
   (fn [opts]
     (if (nil? (get-in opts [:git :remote]))
       (if (environ/env :dev)
-        (proc (assoc opts :build (merge (:build opts) {:commit "fake"})))
+        (proc (update opts :build merge {:commit "fake"}))
         (throw+ {:error ::no-git-remote
                  :msg (format "no remote set for %s"
                               (with-out-str
@@ -47,7 +47,10 @@
             commit (git/checkout-workspace
                     clone-home remote
                     workspace org project (format "origin/%s" branch))]
-        (proc (assoc opts :build (merge (:build opts) commit)))))))
+        (proc
+         (-> opts
+             (update :build merge commit)
+             (update :process merge {:cwd workspace})))))))
 
 (defn wrap-merge-profile [proc]
   (fn [opts]
@@ -60,22 +63,22 @@
     (let [info (inherited-build-info
                 (or (get-in opts [:env "JOB_NAME"])
                     (get-in opts [:build :job-name])))
+          id (make-id)
           opts* (assoc
                  opts
                  :build (merge
-                         {:id (make-id)
+                         {:id id
                           :url            (get-in opts [:env "BUILD_URL"])
                           :jenkins-number (get-in opts [:env "BUILD_NUMBER"])
                           :node-executor  (get-in opts [:env "EXECUTOR_NUMBER"])
                           :host           (get-in opts [:env "NODE_NAME"])
                           :labels         (get-in opts [:env "NODE_LABELS"])
-                          :workspace      (or
-                                           (get-in opts [:env "WORKSPACE"])
-                                           ;; useful in tests, or the
-                                           ;; non-Jenkins future
-                                           (str
-                                            (io/file
-                                             (get-in opts [:build :workspace-home])
-                                             (:job-name info))))}
+                          :workspace
+                          (str
+                           (io/file
+                            (get-in opts [:build :workspace-home])
+                            (format "%s-%s"
+                                    id
+                                    (:profile-name info))))}
                          info))]
       (proc opts*))))
