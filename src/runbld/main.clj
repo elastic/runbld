@@ -7,6 +7,7 @@
             [runbld.opts :as opts]
             [runbld.process :as proc]
             [runbld.publish :as publish]
+            [schema.core :as s]
             [slingshot.slingshot :refer [try+ throw+]]))
 
 (defn really-die
@@ -48,7 +49,8 @@
   (try+
    (let [opts (opts/parse-args args)
          _ (log ">>>>>>>>>>>> SCRIPT EXECUTION BEGIN >>>>>>>>>>>>")
-         {:keys [errors] :as res} (run opts)
+         {:keys [errors] :as res} (s/with-fn-validation
+                                    (run opts))
          {:keys [took status]} (:process res)
          _ (log "<<<<<<<<<<<< SCRIPT EXECUTION END   <<<<<<<<<<<<")]
      (log (format "DURATION: %sms" took))
