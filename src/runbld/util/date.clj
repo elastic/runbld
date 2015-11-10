@@ -37,3 +37,7 @@
   ([judate]
    (str
     (c/from-date judate))))
+
+(defn long-to-iso [num]
+  (str
+   (c/from-long num)))
