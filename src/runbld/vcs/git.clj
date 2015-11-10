@@ -18,7 +18,7 @@
     (let [basename "this-is-a-test-repo.sh"
           f (jio/file dir basename)
           repo (git/git-init dir)]
-      (spit f "echo building... done")
+      (spit f "echo 'this would have been a test build --->here<---'\n")
       (git/git-add repo basename)
       (git/git-commit repo "Add build")
       repo)))
