@@ -6,7 +6,8 @@
 (deftest config-file
   (is (= {:program "zsh"
           :args ["-x"]
-          :scriptfile "/path/to/script.zsh"}
+          :scriptfile "/path/to/script.zsh"
+          :cwd (System/getProperty "user.dir")}
          (:process
           (opts/parse-args ["-c" "test/runbld.yaml"
                             "--program" "zsh"
