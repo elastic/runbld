@@ -9,6 +9,8 @@
 (def Ctx
   {
    (s/required-key :commit) s/Str
+   (s/required-key :commit-email) s/Str
+   (s/required-key :commit-name) s/Str
    (s/required-key :commit-time)  s/Str
    (s/required-key :env) {s/Str s/Any}
    (s/required-key :github-name) s/Str
@@ -24,8 +26,6 @@
    (s/required-key :time-start) s/Str
 
    (s/optional-key :args) [s/Str]
-   (s/optional-key :author-email) s/Str
-   (s/optional-key :author-name) s/Str
    (s/optional-key :branch) s/Str
    (s/optional-key :cmd) [s/Str]
    (s/optional-key :cmd-source) s/Str
