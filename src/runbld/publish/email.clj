@@ -47,11 +47,11 @@
            (s/optional-key :cwd) s/Str
            (s/optional-key :end-millis) s/Num
            (s/optional-key :github-page) s/Str
-           (s/optional-key :host) (s/maybe s/Str)
+           (s/optional-key :jenkins-executor) (s/maybe s/Str)
+           (s/optional-key :jenkins-labels) (s/maybe s/Str)
+           (s/optional-key :jenkins-node) (s/maybe s/Str)
            (s/optional-key :jenkins-number) (s/maybe s/Str)
            (s/optional-key :job-name-extra) s/Str
-           (s/optional-key :labels) (s/maybe s/Str)
-           (s/optional-key :node-executor) (s/maybe s/Str)
            (s/optional-key :profile-name) s/Str
            (s/optional-key :program) s/Str
            (s/optional-key :status) s/Num
