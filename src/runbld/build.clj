@@ -1,7 +1,9 @@
 (ns runbld.build
-  (:require [environ.core :as environ]
+  (:require [clojure.java.io :as io]
+            [environ.core :as environ]
             [runbld.util.data :refer [deep-merge-with deep-merge]]
             [runbld.util.date :as date]
+            [runbld.vcs.git :as git]
             [slingshot.slingshot :refer [throw+]]))
 
 (defn make-rand-uuid []
@@ -31,6 +33,25 @@
       (throw+ {:error ::invalid-job-name
                :msg "please set $JOB_NAME in the format 'org,repo,branch'"}))))
 
+(defn wrap-git-repo [proc]
+  (fn [opts]
+    (if (nil? (get-in opts [:git :remote]))
+      (if (environ/env :dev)
+        (proc (update opts :build merge {:commit "fake"}))
+        (throw+ {:error ::no-git-remote
+                 :msg (format "no remote set for %s"
+                              (with-out-str
+                                (pr (:build opts))))}))
+      (let [{:keys [org project workspace branch]} (:build opts)
+            {:keys [clone-home remote]} (:git opts)
+            commit (git/checkout-workspace
+                    clone-home remote
+                    workspace org project (format "origin/%s" branch))]
+        (proc
+         (-> opts
+             (update :build merge commit)
+             (update :process merge {:cwd workspace})))))))
+
 (defn wrap-merge-profile [proc]
   (fn [opts]
     (let [profile-name (keyword (get-in opts [:build :profile-name]))
@@ -39,17 +60,24 @@
 
 (defn wrap-build-meta [proc]
   (fn [opts]
-    (let [opts* (assoc
+    (let [info (inherited-build-info
+                (get-in opts [:build :job-name]))
+          id (make-id)
+          opts* (assoc
                  opts
                  :build (merge
-                         {:id (make-id)
+                         {:id id
                           :url            (get-in opts [:env "BUILD_URL"])
                           :jenkins-number (get-in opts [:env "BUILD_NUMBER"])
                           :node-executor  (get-in opts [:env "EXECUTOR_NUMBER"])
                           :host           (get-in opts [:env "NODE_NAME"])
                           :labels         (get-in opts [:env "NODE_LABELS"])
-                          :workspace      (get-in opts [:env "WORKSPACE"])}
-                         (inherited-build-info
-                          (or (get-in opts [:env "JOB_NAME"])
-                              (get-in opts [:build :job-name])))))]
+                          :workspace
+                          (str
+                           (io/file
+                            (get-in opts [:build :workspace-home])
+                            (format "%s-%s"
+                                    id
+                                    (:profile-name info))))}
+                         info))]
       (proc opts*))))

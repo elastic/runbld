@@ -32,3 +32,8 @@
    (f/unparse
     (f/formatters :date-time)
     (c/from-long ms))))
+
+(defn date-to-iso
+  ([judate]
+   (str
+    (c/from-date judate))))

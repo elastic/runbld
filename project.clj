@@ -11,9 +11,12 @@
   :global-vars {*warn-on-reflection* false}
   :min-lein-version "2.0.0"
   :exclusions [org.clojure/clojure]
-  :dependencies [[clj-time "0.11.0"]
+  :dependencies [[clj-jgit "0.8.8"]
+                 [clj-time "0.11.0"]
                  [circleci/clj-yaml "0.5.4"]
                  [com.draines/postal "1.11.3"]
+                 [com.fzakaria/slf4j-timbre "0.2.1"]
+                 [com.taoensso/timbre "4.1.4"]
                  [environ "1.0.1"]
                  [org.clojure/clojure "1.7.0"]
                  [org.clojure/tools.cli "0.3.3"]
@@ -23,11 +26,10 @@
   :injections [(require 'clojure.pprint)]
   :profiles {:dev {:env {:dev true}}
              :package {:plugins [[lein-bin "0.3.4"]]
-                       :bin {:bootclasspath true}}}
+                       :bin {:bootclasspath false}}}
   :plugins [[lein-environ "1.0.1"]]
   :aliases {"package" ["with-profile" "package" "bin"]}
   :aot :all
   :main runbld.main
-  :test-selectors {:default  #(not (:integration %))
-                   :integration :integration
-                   :all (constantly true)})
+  :test-selectors {:default (complement :integration)
+                   :integration :integration})

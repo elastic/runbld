@@ -1,8 +1,10 @@
 (ns runbld.test.main-test
   (:require [clojure.test :refer :all]
             [runbld.env :as env]
+            [runbld.opts :as opts]
             [runbld.process :as proc]
             [runbld.publish :as publish]
+            [runbld.vcs.git :as git]
             [runbld.version :as version])
   (:require [runbld.main :as main] :reload-all))
 
@@ -33,9 +35,15 @@
       (with-redefs [proc/run (fn [& args] (throw
                                            (Exception.
                                             "boy that was unexpected")))]
-        (is (.startsWith (main/-main "-c" "test/runbld.yaml"
-                                     "/path/to/script.bash")
-                         "#error {\n :cause boy that was "))))))
+        (let [args ["-c" "test/runbld.yaml"
+                    "--job-name" "elastic,proj1,master"
+                    "/path/to/script.bash"]
+              opts (opts/parse-args args)
+              repo (git/init-test-repo (get-in opts [:profiles
+                                                     :elastic-proj1-master
+                                                     :git :remote]))
+              res (apply main/-main args)]
+          (is (.startsWith res "#error {\n :cause boy that was ")))))))
 
 (deftest execution
   (testing "real execution all the way through"

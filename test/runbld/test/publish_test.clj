@@ -6,7 +6,8 @@
             [runbld.main :as main]
             [runbld.opts :as opts]
             [runbld.process :as proc])
-  (:require [runbld.publish :as publish]
+  (:require [runbld.vcs.git :as git]
+            [runbld.publish :as publish]
             [runbld.publish.elasticsearch :as elasticsearch]
             [runbld.publish.email :as email]
             :reload-all))
@@ -19,14 +20,21 @@
 (deftest handle-errors
   (with-redefs [elasticsearch/index (make-error-maker "es")
                 email/send (make-error-maker "email")]
-    (let [opts (opts/parse-args ["-c" "test/runbld.yaml" "test/success.bash"])]
+    (let [opts (opts/parse-args ["-c" "test/runbld.yaml"
+                                 "--job-name" "elastic,proj1,master"
+                                 "test/test.bash"])
+          repo (git/init-test-repo (get-in opts [:profiles
+                                                 :elastic-proj1-master
+                                                 :git :remote]))]
       (is (= 2 (count @(:errors (main/run opts))))))))
 
 (deftest ^:integration elasticsearch
   (with-redefs [publish/handlers (fn []
                                    [#'runbld.publish.elasticsearch/index])]
     (testing "publish to ES"
-      (let [opts (opts/parse-args ["-c" "test/runbld.yaml" "test/success.bash"])
+      (let [opts (opts/parse-args ["-c" "test/runbld.yaml"
+                                   "--job-name" "elastic,proj1,master"
+                                   "test/success.bash"])
             res (main/run opts)
             conn (-> opts :es :conn)
             q {:query
@@ -54,13 +62,20 @@
 
 (deftest email
   (let [sent (atom [])]
-    (with-redefs [email/send* (fn [conn from to subj body]
+    (with-redefs [publish/handlers (fn []
+                                     [#'runbld.publish.email/send])
+                  email/send* (fn [conn from to subj body]
                                 (swap! sent conj [to body]))]
 
       (let [opts (opts/parse-args ["-c" "test/runbld.yaml"
                                    "--job-name" "elastic,proj1,master"
-                                   "test/success.bash"])
+                                   "test/test.bash"])
+            repo (git/init-test-repo (get-in opts [:profiles
+                                                   :elastic-proj1-master
+                                                   :git :remote]))
             res (main/run opts)]
+        (when (pos? (count @(:errors res)))
+          (clojure.pprint/pprint @(:errors res)))
         (is (= 0 (count @(:errors res))))
         (is (= [["foo@example.com"
                  "greetings elastic-proj1-master!\n"]] @sent)))
@@ -69,8 +84,13 @@
 
       (let [opts (opts/parse-args ["-c" "test/runbld.yaml"
                                    "--job-name" "elastic,proj2,master"
-                                   "test/success.bash"])
+                                   "test/test.bash"])
+            repo (git/init-test-repo (get-in opts [:profiles
+                                                   :elastic-proj2-master
+                                                   :git :remote]))
             res (main/run opts)]
+        (when (pos? (count @(:errors res)))
+          (clojure.pprint/pprint @(:errors res)))
         (is (= 0 (count @(:errors res))))
         (is (= [[["foo@example.com" "bar@example.com"]
                  "in template for elastic-proj2-master\n"]] @sent))))))
