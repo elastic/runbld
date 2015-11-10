@@ -22,7 +22,7 @@
                 email/send (make-error-maker "email")]
     (let [opts (opts/parse-args ["-c" "test/runbld.yaml"
                                  "--job-name" "elastic,proj1,master"
-                                 "test/success.bash"])
+                                 "test/test.bash"])
           repo (git/init-test-repo (get-in opts [:profiles
                                                  :elastic-proj1-master
                                                  :git :remote]))]
@@ -69,7 +69,7 @@
 
       (let [opts (opts/parse-args ["-c" "test/runbld.yaml"
                                    "--job-name" "elastic,proj1,master"
-                                   "test/success.bash"])
+                                   "test/test.bash"])
             repo (git/init-test-repo (get-in opts [:profiles
                                                    :elastic-proj1-master
                                                    :git :remote]))
@@ -84,7 +84,10 @@
 
       (let [opts (opts/parse-args ["-c" "test/runbld.yaml"
                                    "--job-name" "elastic,proj2,master"
-                                   "test/success.bash"])
+                                   "test/test.bash"])
+            repo (git/init-test-repo (get-in opts [:profiles
+                                                   :elastic-proj2-master
+                                                   :git :remote]))
             res (main/run opts)]
         (when (pos? (count @(:errors res)))
           (clojure.pprint/pprint @(:errors res)))

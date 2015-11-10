@@ -24,4 +24,6 @@ profiles:
   elastic-proj2-master:
     email:
       to: foo@example.com, bar@example.com
+    git:
+      remote: tmp/repo/proj2
 
