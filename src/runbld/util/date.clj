@@ -2,6 +2,7 @@
   (:require [clj-time.coerce :as c]
             [clj-time.core :as t]
             [clj-time.format :as f]
+            [clojure.string :as str]
             [slingshot.slingshot :refer [throw+]]))
 
 (defn expand
@@ -41,3 +42,23 @@
 (defn long-to-iso [num]
   (str
    (c/from-long num)))
+
+;; Thanks Devin Humbert!
+;; https://www.cromulentbits.com/clojure-readable-time-duration/
+(defn human-duration
+  [secs]
+  (let [isecs (int secs)
+        days (quot isecs 86400)
+        days-r (rem isecs 86400)
+        hours (quot days-r 3600)
+        hours-r (rem days-r 3600)
+        minutes (quot hours-r 60)
+        seconds (rem hours-r 60)]
+    (str/join
+     " "
+     (filter #(not (str/blank? %))
+             (conj []
+                   (when (> days 0) (str days "d"))
+                   (when (> hours 0) (str hours "h"))
+                   (when (> minutes 0) (str minutes "m"))
+                   (when (> seconds 0) (str seconds "s")))))))

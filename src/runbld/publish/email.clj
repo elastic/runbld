@@ -3,6 +3,7 @@
   (:require [clojure.string :as str]
             [postal.core :as mail]
             [runbld.opts :refer [Opts]]
+            [runbld.util.date :as date]
             [schema.core :as s]
             [stencil.core :as mustache]))
 
@@ -88,10 +89,13 @@
 (s/defn send :- clojure.lang.IPersistentMap
   [opts :- Opts
    ctx* :- Ctx]
-  (let [ctx (-> ctx*
-                (update :cmd #(str/join " " %1))
-                (update :args #(str/join " " %1))
-                (update :rcpt-to #(str/join ", " %1)))]
+  (let [ctx (merge
+             (-> ctx*
+                 (update :cmd #(str/join " " %1))
+                 (update :args #(str/join " " %1))
+                 (update :rcpt-to #(str/join ", " %1)))
+             {:took-human (date/human-duration
+                           (/ (:took ctx*) 1000))})]
     (send* (opts :email)
            (-> opts :email :from)
            (split-addr (-> opts :email :to))
