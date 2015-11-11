@@ -121,7 +121,7 @@
 
     (when (not (= 1 (count arguments)))
       (throw+ {:help ::usage
-               :msg (format "runbld %s\nusage: rundmc /path/to/script.bash"
+               :msg (format "runbld %s\nusage: runbld /path/to/script.bash"
                             (version/string))}))
 
     (merge options
