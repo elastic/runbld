@@ -69,9 +69,10 @@
                          {:id id
                           :url            (get-in opts [:env "BUILD_URL"])
                           :jenkins-number (get-in opts [:env "BUILD_NUMBER"])
-                          :node-executor  (get-in opts [:env "EXECUTOR_NUMBER"])
-                          :host           (get-in opts [:env "NODE_NAME"])
-                          :labels         (get-in opts [:env "NODE_LABELS"])
+                          :jenkins-executor (get-in
+                                             opts [:env "EXECUTOR_NUMBER"])
+                          :jenkins-node   (get-in opts [:env "NODE_NAME"])
+                          :jenkins-labels (get-in opts [:env "NODE_LABELS"])
                           :workspace
                           (str
                            (io/file

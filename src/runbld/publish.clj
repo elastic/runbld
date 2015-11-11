@@ -1,6 +1,7 @@
 (ns runbld.publish
   (:require [runbld.publish.elasticsearch :as elasticsearch]
             [runbld.publish.email :as email]
+            [schema.core :as s]
             [slingshot.slingshot :refer [try+ throw+]]))
 
 (defn handlers []
@@ -24,14 +25,15 @@
      :kernelversion
      :memorysize_mb
      :operatingsystem
-     :processors
+     :processor0
+     :processorcount
+     :physicalprocessorcount
      :timezone
      :uptime_days])
    (dissoc (:process opts) :proc)
    (:build opts)
    {:mail-from (-> opts :email :from)
-    :rcpt-to (email/maybe-split-addr
-              (-> opts :email :to))
+    :rcpt-to (email/split-addr (-> opts :email :to))
     :github-name (format "%s/%s#%s"
                          (-> opts :build :org)
                          (-> opts :build :project)
@@ -43,11 +45,13 @@
     :env (:env opts)}))
 
 (defn publish* [errors f opts ctx]
-  (try
-    (f opts ctx)
-    (catch Throwable e
-      (swap! errors conj e)
-      :error)))
+  (try+
+   (f opts ctx)
+   (catch [:type :schema.core/error] {:keys [error] :as e}
+     (throw+ {:error :validation :keys (keys e)}))
+   (catch Throwable e
+     (swap! errors conj e)
+     :error)))
 
 (defn publish [opts]
   (let [ctx (make-context opts)

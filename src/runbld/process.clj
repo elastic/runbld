@@ -35,7 +35,8 @@
       :end-millis end
       :time-end (date/ms-to-iso end)
       :took (- end start)
-      :status exit-code})))
+      :exit-code exit-code
+      :status (if (pos? exit-code) "FAILURE" "SUCCESS")})))
 
 (defn run [opts]
   (assoc opts

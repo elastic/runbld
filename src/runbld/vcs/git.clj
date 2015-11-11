@@ -32,12 +32,16 @@
     (git/git-commit repo (format "Add %s!" basename))))
 
 (defn commit-map [commit]
-  (let [author (.getAuthorIdent commit)]
+  (let [author (.getAuthorIdent commit)
+        committer (.getCommitterIdent commit)]
     {:commit (.getName commit)
-     :commit-time (and author (date/date-to-iso
-                               (.getWhen author)))
-     :author-name (and author (.getName author))
-     :author-email (and author (.getEmailAddress author))}))
+     :commit-desc (.getShortMessage commit)
+     :commit-msg (.getFullMessage commit)
+     :commit-time (and committer
+                       (date/date-to-iso
+                        (.getWhen committer)))
+     :commit-name (and author (.getName author))
+     :commit-email (and author (.getEmailAddress author))}))
 
 (defn resolve-remote [^String loc]
   (condp #(.startsWith %2 %1) loc
