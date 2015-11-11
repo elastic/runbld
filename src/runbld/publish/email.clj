@@ -15,6 +15,7 @@
    (s/required-key :commit-name      ) s/Str
    (s/required-key :commit-time      ) s/Str
    (s/required-key :env              ) {s/Str s/Any}
+   (s/required-key :exit-code        ) s/Num
    (s/required-key :github-name      ) s/Str
    (s/required-key :id               ) s/Str
    (s/required-key :job-name         ) s/Str
@@ -24,6 +25,7 @@
    (s/required-key :rcpt-to          ) (s/cond-pre s/Str [s/Str])
    (s/required-key :scriptfile       ) s/Str
    (s/required-key :start-millis     ) s/Num
+   (s/required-key :status           ) s/Str
    (s/required-key :time-end         ) s/Str
    (s/required-key :time-start       ) s/Str
 
@@ -41,7 +43,6 @@
    (s/optional-key :job-name-extra   ) s/Str
    (s/optional-key :profile-name     ) s/Str
    (s/optional-key :program          ) s/Str
-   (s/optional-key :status           ) s/Num
    (s/optional-key :took             ) s/Num
    (s/optional-key :url              ) (s/maybe s/Str)
    (s/optional-key :workspace        ) s/Str
