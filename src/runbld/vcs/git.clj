@@ -53,7 +53,10 @@
 (defn checkout-workspace [clone-home remote workspace org project branch]
   (let [absremote (resolve-remote remote)
         absworkspace (io/abspath-file workspace)
-        clonecmd (io/run "git" "clone" absremote absworkspace)
+        clonecmd (io/run "git" "clone"
+                   "--depth" "2"
+                   "--branch" branch
+                   absremote absworkspace)
         workspace-repo (git/load-repo absworkspace)
         workspace-ref (git/git-checkout workspace-repo branch false true)
         HEAD (first (git/git-log workspace-repo))]
