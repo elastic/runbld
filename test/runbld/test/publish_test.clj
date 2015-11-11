@@ -48,10 +48,10 @@
             doc {:index (:_index addr)
                  :type (:_type addr)
                  :id (:_id addr)}]
-        (is (= 0 (get-in res [:process :status])))
+        (is (= 0 (get-in res [:process :exit-code])))
         (is (= 0 (-> (es/get conn doc)
                      :_source
-                     :status)))
+                     :exit-code)))
         (indices/refresh conn (:index doc))
         (is (= 0 (-> (es/search
                       conn
@@ -61,7 +61,7 @@
                      (get-in [:hits :hits])
                      first
                      :_source
-                     :status)))))))
+                     :exit-code)))))))
 
 (deftest email
   (let [sent (atom [])]

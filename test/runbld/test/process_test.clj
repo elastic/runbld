@@ -6,8 +6,8 @@
   (testing "success"
     (let [res (proc/exec "bash" "-x" "test/success.bash")]
       (is res)
-      (is (= 0 (:status res)))))
+      (is (= 0 (:exit-code res)))))
   (testing "fail"
     (let [res (proc/exec "bash" "-x" "test/fail.bash")]
       (is res)
-      (is (= 1 (:status res))))))
+      (is (= 1 (:exit-code res))))))

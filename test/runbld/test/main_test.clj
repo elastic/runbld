@@ -51,4 +51,4 @@
                   env/facter (fn [& args] {:some :fact})
                   publish/publish* (fn [& args] {:published :not-really})]
       (is (= 0 (-> (main/-main "--job-name" "foo,bar,baz"
-                               "test/success.bash") :process :status))))))
+                               "test/success.bash") :process :exit-code))))))
