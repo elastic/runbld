@@ -22,7 +22,7 @@
    (s/required-key :mail-from        ) s/Str
    (s/required-key :org              ) s/Str
    (s/required-key :project          ) s/Str
-   (s/required-key :rcpt-to          ) (s/cond-pre s/Str [s/Str])
+   (s/required-key :rcpt-to          ) [s/Str]
    (s/required-key :scriptfile       ) s/Str
    (s/required-key :start-millis     ) s/Num
    (s/required-key :status           ) s/Str
@@ -62,13 +62,22 @@
    (s/optional-key :workspace        ) s/Str
    })
 
-(defn maybe-split-addr [s]
-  (if (and (string? s) (.contains s ","))
-    (->> (str/split s #",")
-         (map #(.trim %)))
-    s))
+(defn split-addr [s]
+  (vec
+   (cond
+     (and
+      (string? s)
+      (.contains s ",")) (->> (str/split s #",")
+                              (map #(.trim %)))
+     (string? s) [s]
+     (sequential? s) s)))
 
-(defn send* [conn from to subject msg]
+(s/defn send* :- clojure.lang.IPersistentMap
+  [conn :- {s/Keyword s/Any}
+   from :- s/Str
+   to :- [s/Str]
+   subject :- s/Str
+   msg :- s/Str]
   (mail/send-message
    conn
    {:from from
@@ -78,13 +87,17 @@
 
 (s/defn send :- clojure.lang.IPersistentMap
   [opts :- Opts
-   ctx :- Ctx]
-  (send* (opts :email)
-         (ctx :mail-from)
-         (ctx :rcpt-to)
-         (format "%s %s"
-                 (ctx :github-name)
-                 (ctx :commit))
-         (mustache/render-string
-          (slurp (-> opts :email :template))
-          ctx)))
+   ctx* :- Ctx]
+  (let [ctx (-> ctx*
+                (update :cmd #(str/join " " %1))
+                (update :args #(str/join " " %1))
+                (update :rcpt-to #(str/join ", " %1)))]
+    (send* (opts :email)
+           (-> opts :email :from)
+           (split-addr (-> opts :email :to))
+           (format "%s %s"
+                   (ctx :github-name)
+                   (ctx :commit))
+           (mustache/render-string
+            (slurp (-> opts :email :template))
+            ctx))))

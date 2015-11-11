@@ -33,8 +33,7 @@
    (dissoc (:process opts) :proc)
    (:build opts)
    {:mail-from (-> opts :email :from)
-    :rcpt-to (email/maybe-split-addr
-              (-> opts :email :to))
+    :rcpt-to (email/split-addr (-> opts :email :to))
     :github-name (format "%s/%s#%s"
                          (-> opts :build :org)
                          (-> opts :build :project)
@@ -47,12 +46,12 @@
 
 (defn publish* [errors f opts ctx]
   (try+
-    (f opts ctx)
-    (catch [:type :schema.core/error] {:keys [error] :as e}
-      (throw+ {:error :validation :keys (keys e)}))
-    (catch Throwable e
-      (swap! errors conj e)
-      :error)))
+   (f opts ctx)
+   (catch [:type :schema.core/error] {:keys [error] :as e}
+     (throw+ {:error :validation :keys (keys e)}))
+   (catch Throwable e
+     (swap! errors conj e)
+     :error)))
 
 (defn publish [opts]
   (let [ctx (make-context opts)

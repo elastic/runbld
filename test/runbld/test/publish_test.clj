@@ -82,7 +82,7 @@
           (println "** errors1 **")
           (clojure.pprint/pprint (first @(:errors res))))
         (is (= 0 (count @(:errors res))))
-        (is (= [["foo@example.com"
+        (is (= [[["foo@example.com"]
                  "greetings elastic-proj1-master!\n"]] @sent)))
 
       (swap! sent pop)
