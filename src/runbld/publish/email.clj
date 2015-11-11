@@ -29,6 +29,7 @@
    (s/required-key :time-end         ) s/Str
    (s/required-key :time-start       ) s/Str
 
+   (s/optional-key :architecture     ) s/Str
    (s/optional-key :args             ) [s/Str]
    (s/optional-key :branch           ) s/Str
    (s/optional-key :cmd              ) [s/Str]
@@ -36,14 +37,27 @@
    (s/optional-key :cwd              ) s/Str
    (s/optional-key :end-millis       ) s/Num
    (s/optional-key :github-page      ) s/Str
+   (s/optional-key :hardwaremodel    ) s/Str
+   (s/optional-key :hostname         ) s/Str
+   (s/optional-key :ipaddress        ) s/Str
+   (s/optional-key :ipaddress6       ) s/Str
    (s/optional-key :jenkins-executor ) (s/maybe s/Str)
    (s/optional-key :jenkins-labels   ) (s/maybe s/Str)
    (s/optional-key :jenkins-node     ) (s/maybe s/Str)
    (s/optional-key :jenkins-number   ) (s/maybe s/Str)
    (s/optional-key :job-name-extra   ) s/Str
+   (s/optional-key :kernelrelease    ) s/Str
+   (s/optional-key :kernelversion    ) s/Str
+   (s/optional-key :memorysize_mb    ) s/Str
+   (s/optional-key :operatingsystem  ) s/Str
+   (s/optional-key :physicalprocessorcount ) s/Num
+   (s/optional-key :processor0       ) s/Str
+   (s/optional-key :processorcount   ) s/Num
    (s/optional-key :profile-name     ) s/Str
    (s/optional-key :program          ) s/Str
+   (s/optional-key :timezone         ) s/Str
    (s/optional-key :took             ) s/Num
+   (s/optional-key :uptime_days      ) s/Num
    (s/optional-key :url              ) (s/maybe s/Str)
    (s/optional-key :workspace        ) s/Str
    })
@@ -62,7 +76,7 @@
     :subject subject
     :body msg}))
 
-(s/defn send :- clojure.lang.IPersistentVector
+(s/defn send :- clojure.lang.IPersistentMap
   [opts :- Opts
    ctx :- Ctx]
   (send* (opts :email)
