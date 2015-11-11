@@ -68,7 +68,8 @@
     (with-redefs [publish/handlers (fn []
                                      [#'runbld.publish.email/send])
                   email/send* (fn [conn from to subj body]
-                                (swap! sent conj [to body]))]
+                                (swap! sent conj [to body])
+                                {:satisfy-schema true})]
 
       (let [opts (opts/parse-args ["-c" "test/runbld.yaml"
                                    "--job-name" "elastic,proj1,master"

@@ -25,7 +25,9 @@
      :kernelversion
      :memorysize_mb
      :operatingsystem
-     :processors
+     :processor0
+     :processorcount
+     :physicalprocessorcount
      :timezone
      :uptime_days])
    (dissoc (:process opts) :proc)

@@ -18,7 +18,7 @@
     (s/optional-key :user) s/Str
     (s/optional-key :pass) s/Str
     (s/required-key :from) s/Str
-    (s/required-key :to) s/Str
+    (s/required-key :to) (s/cond-pre s/Str [s/Str])
     (s/optional-key :template) (s/cond-pre s/Str java.io.File)}
    (s/required-key :env) {s/Str s/Str}
    (s/required-key :errors) clojure.lang.Atom
@@ -29,7 +29,7 @@
    (s/optional-key :facter) {s/Keyword s/Any}
    (s/optional-key :profiles) {s/Keyword s/Any}
    (s/optional-key :version) (s/maybe s/Bool)
-   (s/optional-key :config-file) s/Str
+   (s/optional-key :config-file) (s/maybe s/Str)
    })
 
 (def defaults
