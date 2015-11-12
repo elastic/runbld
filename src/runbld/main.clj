@@ -52,9 +52,12 @@
          _ (log ">>>>>>>>>>>> SCRIPT EXECUTION BEGIN >>>>>>>>>>>>")
          {:keys [errors] :as res} (s/with-fn-validation
                                     (run opts))
-         {:keys [took status exit-code]} (:process res)
+         {:keys [took status exit-code
+                 out-bytes err-bytes]} (:process res)
          _ (log "<<<<<<<<<<<< SCRIPT EXECUTION END   <<<<<<<<<<<<")]
      (log (format "DURATION: %sms" took))
+     (log (format "STDOUT: %d bytes" out-bytes))
+     (log (format "STDERR: %d bytes" err-bytes))
      (log
       (format "WRAPPED PROCESS: %s (%d)" status exit-code))
      (when (and errors (pos? (count @errors)))

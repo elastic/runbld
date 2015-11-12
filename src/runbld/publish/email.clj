@@ -22,6 +22,10 @@
    (s/required-key :exit-code        ) s/Num
    (s/required-key :id               ) s/Str
    (s/required-key :job-name         ) s/Str
+   (s/required-key :out-bytes        ) s/Num
+   (s/required-key :err-bytes        ) s/Num
+   (s/required-key :out-file         ) s/Str
+   (s/required-key :err-file         ) s/Str
    (s/required-key :mail-from        ) s/Str
    (s/required-key :org              ) s/Str
    (s/required-key :project          ) s/Str
