@@ -1,7 +1,35 @@
 <html>
-  <body>
-    <pre>
-      commit {{ commit }}
-      author: {{ commit-name }} &lt;{{ commit-email }}&gt;
-  </body>
+<body style="font-family:helvetica">
+<h1>{{ status }}</h1>
+<h2><code><a href="{{branch-url}}">{{ build-name }}</a><br/>
+<a href="{{commit-url}}">{{ commit }}</a></code></h2>
+<table>
+<tr><td>Duration</td><td>{{ took-human }} ({{ took }}ms)</td></tr>
+<tr><td>Started</td><td>{{ time-start }}</td></tr>
+<tr><td>Ended</td><td>{{ time-end }}</td></tr>
+<tr><td>Hostname</td><td><code>{{ hostname }} (up {{ uptime_days }} days)</code></td></tr>
+<tr><td>Operating System</td><td><code>{{ operatingsystem }} {{ operatingsystemrelease }}</code></td></tr>
+<tr><td>Architecture</td><td><code>{{ architecture }} ({{ processorcount }} core)</code></td></tr>
+</table>
+<p></p>
+<div style="background-color:#eec;padding:1px 15px">
+<pre>
+branch <a href="{{branch-url}}">{{ branch }}</a>
+commit <a href="{{commit-url}}">{{ commit }}</a>
+Author: {{ commit-name }} &lt;{{ commit-email }}&gt;
+Date: {{ commit-time }}
+
+{{ commit-desc }}
+</pre>
+</div>
+<p></p>
+<div style="background-color:#cee;padding:1px 15px">
+<pre>
+Exit: {{ exit-code }}
+{{ cmd }}
+
+{{ cmd-source }}
+</pre>
+</div>
+</body>
 </html>

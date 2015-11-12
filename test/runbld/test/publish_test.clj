@@ -69,8 +69,8 @@
   (let [sent (atom [])]
     (with-redefs [publish/handlers (fn []
                                      [#'runbld.publish.email/send])
-                  email/send* (fn [conn from to subj body]
-                                (swap! sent conj [to body])
+                  email/send* (fn [conn from to subj txt html]
+                                (swap! sent conj [to txt])
                                 {:satisfy-schema true})]
 
       (let [opts (opts/parse-args ["-c" "test/runbld.yaml"

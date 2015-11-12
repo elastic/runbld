@@ -25,6 +25,7 @@
      :kernelversion
      :memorysize_mb
      :operatingsystem
+     :operatingsystemrelease
      :processor0
      :processorcount
      :physicalprocessorcount
@@ -34,14 +35,6 @@
    (:build opts)
    {:mail-from (-> opts :email :from)
     :rcpt-to (email/split-addr (-> opts :email :to))
-    :github-name (format "%s/%s#%s"
-                         (-> opts :build :org)
-                         (-> opts :build :project)
-                         (-> opts :build :branch))
-    :github-page (format "https://github.com/%s/%s/tree/%s"
-                         (-> opts :build :org)
-                         (-> opts :build :project)
-                         (-> opts :build :branch))
     :env (:env opts)}))
 
 (defn publish* [errors f opts ctx]

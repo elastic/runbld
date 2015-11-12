@@ -12,14 +12,14 @@ email:
   pass: pass!
   from: build@example.com
   to: user@example.com
-  template: test/templates/default.mustache
+  template-txt: test/templates/default.mustache
 
 # will be merged with top-level sections
 profiles:
   elastic-proj1-master:
     email:
       to: foo@example.com
-      template: test/templates/proj1.mustache
+      template-txt: test/templates/proj1.mustache
     git:
       remote: tmp/repo/proj1
   elastic-proj2-master:

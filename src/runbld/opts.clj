@@ -19,7 +19,8 @@
     (s/optional-key :pass) s/Str
     (s/required-key :from) s/Str
     (s/required-key :to) (s/cond-pre s/Str [s/Str])
-    (s/optional-key :template) (s/cond-pre s/Str java.io.File)}
+    (s/optional-key :template-txt) (s/cond-pre s/Str java.io.File)
+    (s/optional-key :template-html) (s/cond-pre s/Str java.io.File)}
    (s/required-key :env) {s/Str s/Str}
    (s/required-key :errors) clojure.lang.Atom
    (s/required-key :es) {s/Keyword s/Any}

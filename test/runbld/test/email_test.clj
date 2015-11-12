@@ -2,11 +2,15 @@
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.test :refer :all]
-            [stencil.core :as mustache]))
+            [stencil.core :as mustache]
+            [stencil.loader]))
+
+(stencil.loader/set-cache
+ (clojure.core.cache/ttl-cache-factory {} :ttl 0))
 
 (deftest render
-  (let [ctx (edn/read-string
-             (slurp "test/context.edn"))]
-    (spit "/tmp/runbld-email.html"
-          (mustache/render-file
-           "templates/email.mustache.html" ctx))))
+  (spit "/tmp/runbld-email.html"
+        (mustache/render-file
+         "templates/email.mustache.html"
+         (edn/read-string
+          (slurp "test/context.edn")))))

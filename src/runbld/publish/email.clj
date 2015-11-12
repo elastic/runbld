@@ -9,15 +9,17 @@
 
 (def Ctx
   {
+   (s/required-key :branch-url       ) s/Str
+   (s/required-key :build-name       ) s/Str
    (s/required-key :commit           ) s/Str
    (s/required-key :commit-desc      ) s/Str
    (s/required-key :commit-email     ) s/Str
    (s/required-key :commit-msg       ) s/Str
    (s/required-key :commit-name      ) s/Str
    (s/required-key :commit-time      ) s/Str
+   (s/required-key :commit-url       ) s/Str
    (s/required-key :env              ) {s/Str s/Any}
    (s/required-key :exit-code        ) s/Num
-   (s/required-key :github-name      ) s/Str
    (s/required-key :id               ) s/Str
    (s/required-key :job-name         ) s/Str
    (s/required-key :mail-from        ) s/Str
@@ -29,6 +31,7 @@
    (s/required-key :status           ) s/Str
    (s/required-key :time-end         ) s/Str
    (s/required-key :time-start       ) s/Str
+   (s/required-key :took             ) s/Num
 
    (s/optional-key :architecture     ) s/Str
    (s/optional-key :args             ) [s/Str]
@@ -37,7 +40,6 @@
    (s/optional-key :cmd-source       ) s/Str
    (s/optional-key :cwd              ) s/Str
    (s/optional-key :end-millis       ) s/Num
-   (s/optional-key :github-page      ) s/Str
    (s/optional-key :hardwaremodel    ) s/Str
    (s/optional-key :hostname         ) s/Str
    (s/optional-key :ipaddress        ) s/Str
@@ -51,13 +53,13 @@
    (s/optional-key :kernelversion    ) s/Str
    (s/optional-key :memorysize_mb    ) s/Str
    (s/optional-key :operatingsystem  ) s/Str
+   (s/optional-key :operatingsystemrelease ) s/Str
    (s/optional-key :physicalprocessorcount ) s/Num
    (s/optional-key :processor0       ) s/Str
-   (s/optional-key :processorcount   ) s/Num
+   (s/optional-key :processorcount   ) (s/cond-pre s/Str s/Num)
    (s/optional-key :profile-name     ) s/Str
    (s/optional-key :program          ) s/Str
    (s/optional-key :timezone         ) s/Str
-   (s/optional-key :took             ) s/Num
    (s/optional-key :uptime_days      ) s/Num
    (s/optional-key :url              ) (s/maybe s/Str)
    (s/optional-key :workspace        ) s/Str
@@ -74,17 +76,26 @@
      (sequential? s) s)))
 
 (s/defn send* :- clojure.lang.IPersistentMap
-  [conn :- {s/Keyword s/Any}
-   from :- s/Str
-   to :- [s/Str]
+  [conn    :- {s/Keyword s/Any}
+   from    :- s/Str
+   to      :- [s/Str]
    subject :- s/Str
-   msg :- s/Str]
-  (mail/send-message
-   conn
-   {:from from
-    :to to
-    :subject subject
-    :body msg}))
+   plain   :- s/Str
+   html    :- (s/maybe s/Str)]
+  (let [body [:alternative
+              {:type "text/plain; charset=utf-8"
+               :content plain}]
+        body (if html
+               (conj body
+                     {:type "text/html; charset=utf-8"
+                      :content html})
+               body)]
+    (mail/send-message
+     conn
+     {:from from
+      :to to
+      :subject subject
+      :body body})))
 
 (s/defn send :- clojure.lang.IPersistentMap
   [opts :- Opts
@@ -104,9 +115,14 @@
     (send* (opts :email)
            (-> opts :email :from)
            (split-addr (-> opts :email :to))
-           (format "%s %s"
-                   (ctx :github-name)
+           (format "%s %s %s"
+                   (ctx :status)
+                   (ctx :build-name)
                    (ctx :commit))
            (mustache/render-string
-            (slurp (-> opts :email :template))
-            ctx))))
+            (slurp (-> opts :email :template-txt))
+            ctx)
+           (when (-> opts :email :template-html)
+             (mustache/render-string
+              (slurp (-> opts :email :template-html))
+              ctx)))))
