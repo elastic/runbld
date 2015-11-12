@@ -50,5 +50,8 @@
     (with-redefs [main/log (fn [_] :noconsole)
                   env/facter (fn [& args] {:some :fact})
                   publish/publish* (fn [& args] {:published :not-really})]
-      (is (= 0 (-> (main/-main "--job-name" "foo,bar,baz"
-                               "test/success.bash") :process :exit-code))))))
+      (let [args ["-c" "test/runbld.yaml"
+                  "--job-name" "foo,bar,master" "test/success.bash"]
+            opts (opts/parse-args args)
+            repo (git/init-test-repo (get-in opts [:git :remote]))]
+        (is (= 0 (-> (apply main/-main args) :process :exit-code)))))))

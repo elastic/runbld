@@ -52,6 +52,20 @@
              (update :build merge commit)
              (update :process merge {:cwd workspace})))))))
 
+(defn discover-remote [org project]
+  ;; future logic to try different providers?
+  (format "https://github.com/%s/%s" org project))
+
+(defn wrap-set-remote [proc]
+  (fn [opts]
+    (if (nil? (get-in opts [:git :remote]))
+      (if (environ/env :dev)
+        (proc (update opts :git merge {:remote "fake"}))
+        (let [{:keys [org project]} (:build opts)]
+          (proc (update opts :git merge
+                        {:remote (discover-remote org project)}))))
+      (proc opts))))
+
 (defn wrap-merge-profile [proc]
   (fn [opts]
     (let [profile-name (keyword (get-in opts [:build :profile-name]))
