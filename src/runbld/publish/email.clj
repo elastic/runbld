@@ -96,6 +96,11 @@
                  (update :rcpt-to #(str/join ", " %1)))
              {:took-human (date/human-duration
                            (/ (:took ctx*) 1000))})]
+    ;; If needing to regenerate for render tests
+    #_(spit "context.edn"
+          (with-out-str
+            (clojure.pprint/pprint
+             (into (sorted-map) ctx))))
     (send* (opts :email)
            (-> opts :email :from)
            (split-addr (-> opts :email :to))
