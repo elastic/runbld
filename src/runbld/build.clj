@@ -46,7 +46,7 @@
             {:keys [clone-home remote]} (:git opts)
             commit (git/checkout-workspace
                     clone-home remote
-                    workspace org project (format "origin/%s" branch))]
+                    workspace org project branch)]
         (proc
          (-> opts
              (update :build merge commit)
