@@ -50,7 +50,9 @@
    :email
    {:host "localhost"
     :port 587
-    :tls true}})
+    :tls true
+    :template-txt "templates/email.mustache.txt"
+    :template-html "templates/email.mustache.html"}})
 
 (defn expand-date-pattern [s]
   (if (string? s)
