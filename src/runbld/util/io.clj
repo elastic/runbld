@@ -32,30 +32,33 @@
                    ^java.io.PrintWriter logfile]
   (let [bs (atom 0)]
     (doseq [line (line-seq (jio/reader input))]
+      ;; write to the wrapper's inherited IO
       (binding [*out* viewer]
-        (println line))
+        (println line)
+        (flush))
+
+      ;; write to the logfile
       (.println logfile line)
+      (.flush logfile)
+
+      ;; update the stats
       (swap! bs + (count line)))
-    (.flush viewer)
-    (.flush logfile)
     @bs))
 
 (defn spit-process [out-is out-wtr
                     err-is err-wtr]
-  (let [outb (atom 0)
-        errb (atom 0)]
-    [(future (spit-stream *out* out-is out-wtr))
-     (future (spit-stream *err* err-is err-wtr))]))
+  [(future (spit-stream *out* out-is out-wtr))
+   (future (spit-stream *err* err-is err-wtr))])
 
 (comment
   (let [pb (doto (ProcessBuilder. ["bash" "run.bash"]))
         proc (.start pb)
         [b1 b2] (future
-             (spit-process
-              (.getInputStream proc)
-              (java.io.PrintWriter. "stdout.txt")
-              (.getErrorStream proc)
-              (java.io.PrintWriter. "stderr.txt")))
+                  (spit-process
+                   (.getInputStream proc)
+                   (java.io.PrintWriter. "stdout.txt")
+                   (.getErrorStream proc)
+                   (java.io.PrintWriter. "stderr.txt")))
         exit-code (.waitFor proc)]
     [exit-code @b1 @b2])
 
