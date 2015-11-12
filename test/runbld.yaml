@@ -3,6 +3,7 @@ build:
 
 git:
   clone-home: tmp/git/cache
+  remote: tmp/repo/default
 
 email:
   host: smtp.example.com
