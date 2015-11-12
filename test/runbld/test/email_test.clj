@@ -1,5 +1,6 @@
 (ns runbld.test.email-test
-  (:require [clojure.edn :as edn]
+  (:require [clojure.core.cache]
+            [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.test :refer :all]
             [stencil.core :as mustache]

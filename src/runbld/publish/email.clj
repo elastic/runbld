@@ -110,7 +110,9 @@
                  (update :args #(str/join " " %1))
                  (update :rcpt-to #(str/join ", " %1)))
              {:took-human (date/human-duration
-                           (/ (:took ctx*) 1000))})]
+                           (/ (:took ctx*) 1000))
+              :stdout (slurp (:out-file ctx*))
+              :stderr (slurp (:err-file ctx*))})]
     ;; If needing to regenerate for render tests
     #_(spit "context.edn"
           (with-out-str

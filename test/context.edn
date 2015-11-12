@@ -62,6 +62,8 @@
  "/var/folders/2n/4k8wl8bx2h9_2ys5cg4jbsp00000gn/T/hudson465451482901788099.sh",
  :start-millis 1447360731230,
  :status "FAILURE",
+ :stdout "this is the output"
+ :stderr "this is the errput"
  :time-end "2015-11-12T20:38:51.236Z",
  :time-start "2015-11-12T20:38:51.230Z",
  :timezone "CST",
