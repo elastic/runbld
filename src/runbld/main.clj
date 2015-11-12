@@ -40,6 +40,7 @@
 
       ;; stuff before proc (reverse)
       build/wrap-git-repo
+      build/wrap-set-remote
       build/wrap-merge-profile
       build/wrap-build-meta
       env/wrap-env))
