@@ -48,7 +48,7 @@
     "https://" loc
     "http://" loc
     "git@" loc
-    (io/abspath loc)))
+    (str "file://" (io/abspath loc))))
 
 (defn checkout-workspace [clone-home remote workspace org project branch]
   (let [absremote (resolve-remote remote)
