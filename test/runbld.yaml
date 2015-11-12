@@ -13,6 +13,7 @@ email:
   from: build@example.com
   to: user@example.com
   template-txt: test/templates/default.mustache
+  template-html: templates/email.mustache.html
 
 # will be merged with top-level sections
 profiles:

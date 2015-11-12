@@ -1,6 +1,7 @@
 (ns runbld.util.io
   (:require [clojure.java.io :as jio]
-            [clojure.java.shell :as sh]))
+            [clojure.java.shell :as sh]
+            [slingshot.slingshot :refer [throw+]]))
 
 (defn run [& args]
   (let [cmd (map str args)
@@ -26,6 +27,14 @@
 
 (defn file [& args]
   (apply jio/file args))
+
+(defn resolve-resource [path]
+  (if-let [tmpl (jio/resource path)]
+    tmpl
+    (if (.exists (file path))
+      path
+      (throw+ {:error ::resource-not-found
+               :msg (format "cannot find %s" path)}))))
 
 (defn spit-stream [^java.io.PrintWriter viewer
                    ^java.io.InputStream input

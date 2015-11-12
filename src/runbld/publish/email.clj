@@ -4,6 +4,7 @@
             [postal.core :as mail]
             [runbld.opts :refer [Opts]]
             [runbld.util.date :as date]
+            [runbld.util.io :as io]
             [schema.core :as s]
             [stencil.core :as mustache]))
 
@@ -126,9 +127,13 @@
                    (ctx :build-name)
                    (ctx :commit))
            (mustache/render-string
-            (slurp (-> opts :email :template-txt))
+            (slurp
+             (io/resolve-resource
+              (-> opts :email :template-txt)))
             ctx)
            (when (-> opts :email :template-html)
              (mustache/render-string
-              (slurp (-> opts :email :template-html))
+              (slurp
+               (io/resolve-resource
+                (-> opts :email :template-html)))
               ctx)))))
