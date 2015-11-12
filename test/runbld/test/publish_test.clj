@@ -38,30 +38,32 @@
       (let [opts (opts/parse-args ["-c" "test/runbld.yaml"
                                    "--job-name" "elastic,proj1,master"
                                    "test/success.bash"])
-            res (main/run opts)
-            conn (-> opts :es :conn)
-            q {:query
-               {:match
-                {:time-start (get-in res [:process :time-start])}}}
-            addr (-> (:publish res) :outputs first :output
-                     (select-keys [:_index :_type :_id]))
-            doc {:index (:_index addr)
-                 :type (:_type addr)
-                 :id (:_id addr)}]
-        (is (= 0 (get-in res [:process :exit-code])))
-        (is (= 0 (-> (es/get conn doc)
-                     :_source
-                     :exit-code)))
-        (indices/refresh conn (:index doc))
-        (is (= 0 (-> (es/search
-                      conn
-                      (-> doc
-                          (dissoc :id)
-                          (assoc :body q)))
-                     (get-in [:hits :hits])
-                     first
-                     :_source
-                     :exit-code)))))))
+            res (main/run opts)]
+        (if (pos? (count @(:errors res)))
+          (clojure.pprint/pprint (first @(:errors res)))
+          (let [conn (-> opts :es :conn)
+                q {:query
+                   {:match
+                    {:time-start (get-in res [:process :time-start])}}}
+                addr (-> (:publish res) :outputs first :output
+                         (select-keys [:_index :_type :_id]))
+                doc {:index (:_index addr)
+                     :type (:_type addr)
+                     :id (:_id addr)}]
+            (is (= 0 (get-in res [:process :exit-code])))
+            (is (= 0 (-> (es/get conn doc)
+                         :_source
+                         :exit-code)))
+            (indices/refresh conn (:index doc))
+            (is (= 0 (-> (es/search
+                          conn
+                          (-> doc
+                              (dissoc :id)
+                              (assoc :body q)))
+                         (get-in [:hits :hits])
+                         first
+                         :_source
+                         :exit-code)))))))))
 
 (deftest email
   (let [sent (atom [])]
