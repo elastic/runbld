@@ -1,17 +1,15 @@
 (ns runbld.test.email-test
-  (:require [clojure.core.cache]
-            [clojure.edn :as edn]
+  (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.test :refer :all]
-            [stencil.core :as mustache]
-            [stencil.loader]))
-
-(stencil.loader/set-cache
- (clojure.core.cache/ttl-cache-factory {} :ttl 0))
+            [stencil.core :as mustache]))
 
 (deftest render
-  (spit "/tmp/runbld-email.html"
-        (mustache/render-file
-         "templates/email.mustache.html"
-         (edn/read-string
-          (slurp "test/context.edn")))))
+  (let [f "tmp/runbld-email.html"]
+    (spit f
+          (mustache/render-string
+           (slurp
+            (io/resource "templates/email.mustache.html"))
+           (edn/read-string
+            (slurp "test/context.edn"))))
+    (is (= 2306 (count (slurp f))))))
