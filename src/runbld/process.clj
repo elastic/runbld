@@ -12,6 +12,10 @@
                                  (.getErrorStream proc) err)
           exit-code (.waitFor proc)
           end (System/currentTimeMillis)]
+      (assert (= @out-bytes (count (slurp outfile)))
+              "file truncated")
+      (assert (= @err-bytes (count (slurp errfile)))
+              "file truncated")
       {:start-millis start
        :time-start (date/ms-to-iso start)
        :end-millis end
