@@ -14,6 +14,7 @@ parser = (,) <$> argText "version" "The releaseable version"
 
 procOrDie :: Text -> [Text] -> IO ()
 procOrDie cmd args = do
+  echo $ format ("running: "%s%" "%s) cmd (T.intercalate " " args)
   ret <- proc cmd args empty
   case ret of
     ExitSuccess -> return ()
