@@ -116,7 +116,7 @@
               :stdout (slurp (:out-file ctx*))
               :stderr (slurp (:err-file ctx*))})]
     ;; If needing to regenerate for render tests
-    (spit "context.edn"
+    #_(spit "context.edn"
           (with-out-str
             (clojure.pprint/pprint
              (into (sorted-map) ctx))))
