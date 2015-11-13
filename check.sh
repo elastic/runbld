@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-if [[ ! -z "$(git status --porcelain)" ]]; then
-  echo uncommitted changes
+out="$(git status --porcelain)"
+if [[ ! -z "$out" ]]; then
+  echo uncommitted changes: "$out"
   exit 99
 fi
