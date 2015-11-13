@@ -51,9 +51,9 @@
          (-> opts
              (update :build merge commit
                      {:build-name (format "%s/%s#%s"
-                                            (-> opts :build :org)
-                                            (-> opts :build :project)
-                                            (-> opts :build :branch))
+                                          (-> opts :build :org)
+                                          (-> opts :build :project)
+                                          (-> opts :build :branch))
                       :commit-url (format "https://github.com/%s/%s/commit/%s"
                                           (-> opts :build :org)
                                           (-> opts :build :project)
@@ -61,7 +61,10 @@
                       :branch-url (format "https://github.com/%s/%s/tree/%s"
                                           (-> opts :build :org)
                                           (-> opts :build :project)
-                                          (-> opts :build :branch))})
+                                          (-> opts :build :branch))
+                      :project-url (format "https://github.com/%s/%s"
+                                           (-> opts :build :org)
+                                           (-> opts :build :project))})
              (update :process merge {:cwd workspace})))))))
 
 (defn discover-remote [org project]

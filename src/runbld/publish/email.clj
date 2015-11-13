@@ -30,6 +30,7 @@
    (s/required-key :mail-from        ) s/Str
    (s/required-key :org              ) s/Str
    (s/required-key :project          ) s/Str
+   (s/required-key :project-url      ) s/Str
    (s/required-key :rcpt-to          ) [s/Str]
    (s/required-key :scriptfile       ) s/Str
    (s/required-key :start-millis     ) s/Num
@@ -115,7 +116,7 @@
               :stdout (slurp (:out-file ctx*))
               :stderr (slurp (:err-file ctx*))})]
     ;; If needing to regenerate for render tests
-    #_(spit "context.edn"
+    (spit "context.edn"
           (with-out-str
             (clojure.pprint/pprint
              (into (sorted-map) ctx))))
