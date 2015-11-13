@@ -61,4 +61,4 @@
                    (when (> days 0) (str days "d"))
                    (when (> hours 0) (str hours "h"))
                    (when (> minutes 0) (str minutes "m"))
-                   (when (> seconds 0) (str seconds "s")))))))
+                   (str seconds "s"))))))

@@ -1,0 +1,21 @@
+{{ status }}
+{{ build-name }} {{branch-url}}
+{{ commit }} {{commit-url}}
+
+{{ took-human }}
+{{ time-start }}
+{{ time-end }}
+{{ cmd }}
+{{ exit-code }}
+{{ architecture }}
+{{ operatingsystem }}
+{{ hostname }}
+
+branch {{ branch }}
+commit {{ commit }}
+Author: {{ commit-name }} <{{ commit-email }}>
+Date: {{ commit-time }}
+
+{{ commit-desc }}
+
+{{ cmd-source }}

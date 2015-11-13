@@ -69,8 +69,9 @@
   (let [sent (atom [])]
     (with-redefs [publish/handlers (fn []
                                      [#'runbld.publish.email/send])
-                  email/send* (fn [conn from to subj body]
-                                (swap! sent conj [to body])
+                  email/send* (fn [conn from to subj txt html]
+                                (swap! sent conj [to txt
+                                                  (apply str (take 10 html))])
                                 {:satisfy-schema true})]
 
       (let [opts (opts/parse-args ["-c" "test/runbld.yaml"
@@ -85,7 +86,8 @@
           (clojure.pprint/pprint (first @(:errors res))))
         (is (= 0 (count @(:errors res))))
         (is (= [[["foo@example.com"]
-                 "greetings elastic-proj1-master!\n"]] @sent)))
+                 "greetings elastic-proj1-master!\n"
+                 "<html>\n<bo"]] @sent)))
 
       (swap! sent pop)
 
@@ -101,4 +103,5 @@
           (clojure.pprint/pprint (first @(:errors res))))
         (is (= 0 (count @(:errors res))))
         (is (= [[["foo@example.com" "bar@example.com"]
-                 "in template for elastic-proj2-master\n"]] @sent))))))
+                 "in template for elastic-proj2-master\n"
+                 "<html>\n<bo"]] @sent))))))

@@ -1,6 +1,7 @@
 (ns runbld.util.io
   (:require [clojure.java.io :as jio]
-            [clojure.java.shell :as sh]))
+            [clojure.java.shell :as sh]
+            [slingshot.slingshot :refer [throw+]]))
 
 (defn run [& args]
   (let [cmd (map str args)
@@ -23,3 +24,52 @@
 
 (defn abspath-file [f]
   (jio/file (abspath f)))
+
+(defn file [& args]
+  (apply jio/file args))
+
+(defn resolve-resource [path]
+  (if-let [tmpl (jio/resource path)]
+    tmpl
+    (if (.exists (file path))
+      path
+      (throw+ {:error ::resource-not-found
+               :msg (format "cannot find %s" path)}))))
+
+(defn spit-stream [^java.io.PrintWriter viewer
+                   ^java.io.InputStream input
+                   ^java.io.PrintWriter logfile]
+  (let [bs (atom 0)]
+    (doseq [line (line-seq (jio/reader input))]
+      ;; write to the wrapper's inherited IO
+      (binding [*out* viewer]
+        (println line)
+        (flush))
+
+      ;; write to the logfile
+      (.println logfile line)
+      (.flush logfile)
+
+      ;; update the stats
+      (swap! bs + (count line)))
+    @bs))
+
+(defn spit-process [out-is out-wtr
+                    err-is err-wtr]
+  [(future (spit-stream *out* out-is out-wtr))
+   (future (spit-stream *err* err-is err-wtr))])
+
+(comment
+  (let [pb (doto (ProcessBuilder. ["bash" "run.bash"]))
+        proc (.start pb)
+        [b1 b2] (future
+                  (spit-process
+                   (.getInputStream proc)
+                   (java.io.PrintWriter. "stdout.txt")
+                   (.getErrorStream proc)
+                   (java.io.PrintWriter. "stderr.txt")))
+        exit-code (.waitFor proc)]
+    [exit-code @b1 @b2])
+
+
+  )

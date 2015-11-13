@@ -16,7 +16,7 @@
                                 "--job-name" "elastic,proj1,master"
                                 "/path/to/script.bash"]))]
     (is (= "test/templates/proj1.mustache"
-           (-> opts :email :template)))
+           (-> opts :email :template-txt)))
     (is (= "foo@example.com"
            (-> opts :email :to)))))
 
