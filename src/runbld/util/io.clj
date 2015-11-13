@@ -47,8 +47,9 @@
         (flush))
 
       ;; write to the logfile
-      (.println logfile line)
-      (.flush logfile)
+      (binding [*out* logfile]
+        (println line)
+        (flush))
 
       ;; update the stats
       (swap! bs + (inc ;; for the newline
