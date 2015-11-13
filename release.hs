@@ -12,20 +12,27 @@ parser :: Parser (Text, Text)
 parser = (,) <$> argText "version" "The releaseable version"
              <*> argText "dest" "S3 bucket/keyprefix"
 
+procOrDie :: Text -> [Text] -> IO ()
+procOrDie cmd args = do
+  ret <- proc cmd args empty
+  case ret of
+    ExitSuccess -> return ()
+    ExitFailure err -> die (cmd <> " has failed: " <> (repr err))
+
 writeV :: Text -> Text -> IO ()
 writeV f v = writeFile (T.unpack f) $ (T.unpack v) ++ "\n"
 
-git :: Text -> [Text] -> IO ExitCode
-git cmd args = proc "git" (cmd:args) empty
+git :: Text -> [Text] -> IO ()
+git cmd args = procOrDie "git" (cmd:args)
 
-make :: Text -> IO ExitCode
-make target = proc "make" [target] empty
+make :: Text -> IO ()
+make target = procOrDie "make" [target]
 
-upload :: Text -> Text -> IO ExitCode
-upload ver loc = proc "s3cmd" [ "put", "-P"
+upload :: Text -> Text -> IO ()
+upload ver loc = procOrDie "s3cmd" [ "put", "-P"
                , (T.append "target/runbld-" ver)
                , (T.append "s3://" loc)
-               ] empty
+               ]
 
 main = do
   let vfile = T.pack "resources/version.txt"
