@@ -44,4 +44,4 @@ main = do
   make "package"
   git "tag" ["-am", version, version]
   upload version dest
-
+  git "push" ["--tags"]
