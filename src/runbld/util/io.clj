@@ -51,7 +51,8 @@
       (.flush logfile)
 
       ;; update the stats
-      (swap! bs + (count line)))
+      (swap! bs + (inc ;; for the newline
+                   (count (.getBytes line)))))
     @bs))
 
 (defn spit-process [out-is out-wtr
@@ -59,17 +60,3 @@
   [(future (spit-stream *out* out-is out-wtr))
    (future (spit-stream *err* err-is err-wtr))])
 
-(comment
-  (let [pb (doto (ProcessBuilder. ["bash" "run.bash"]))
-        proc (.start pb)
-        [b1 b2] (future
-                  (spit-process
-                   (.getInputStream proc)
-                   (java.io.PrintWriter. "stdout.txt")
-                   (.getErrorStream proc)
-                   (java.io.PrintWriter. "stderr.txt")))
-        exit-code (.waitFor proc)]
-    [exit-code @b1 @b2])
-
-
-  )
