@@ -31,7 +31,7 @@
      :physicalprocessorcount
      :timezone
      :uptime_days])
-   (dissoc (:process opts) :proc)
+   (:process opts)
    (:build opts)
    {:mail-from (-> opts :email :from)
     :rcpt-to (email/split-addr (-> opts :email :to))
