@@ -114,7 +114,8 @@
              {:took-human (date/human-duration
                            (/ (:took ctx*) 1000))
               :stdout (slurp (:out-file ctx*))
-              :stderr (slurp (:err-file ctx*))})]
+              :stderr (slurp (:err-file ctx*))
+              :commit-short (->> (:commit ctx*) (take 7) (apply str))})]
     ;; If needing to regenerate for render tests
     #_(spit "context.edn"
           (with-out-str
@@ -126,7 +127,7 @@
            (format "%s %s %s"
                    (ctx :status)
                    (ctx :build-name)
-                   (ctx :commit))
+                   (ctx :commit-short))
            (mustache/render-string
             (slurp
              (io/resolve-resource
