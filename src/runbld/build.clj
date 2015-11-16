@@ -58,7 +58,7 @@
                                           (-> opts :build :org)
                                           (-> opts :build :project)
                                           (:commit commit))
-                      :branch-url (format "https://github.com/%s/%s/tree/%s"
+                      :branch-url (format "https://github.com/%s/%s/commits/%s"
                                           (-> opts :build :org)
                                           (-> opts :build :project)
                                           (-> opts :build :branch))
