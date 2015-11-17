@@ -26,7 +26,7 @@
 (defn safe-div
   ([n m]
    (if (and m (pos? m))
-     (/ n m)
+     (float (/ n m))
      0)))
 
 (defn bigdec
