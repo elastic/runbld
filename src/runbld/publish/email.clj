@@ -135,7 +135,8 @@
              (io/resolve-resource
               (-> opts :email :template-txt)))
             ctx)
-           (when (-> opts :email :template-html)
+           (when (and (-> opts :email :template-html)
+                      (not (-> opts :email :text-only)))
              (mustache/render-string
               (slurp
                (io/resolve-resource
