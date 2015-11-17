@@ -25,6 +25,8 @@
    (s/required-key :job-name         ) s/Str
    (s/required-key :out-bytes        ) s/Num
    (s/required-key :err-bytes        ) s/Num
+   (s/required-key :out-accuracy     ) s/Num
+   (s/required-key :err-accuracy     ) s/Num
    (s/required-key :out-file         ) s/Str
    (s/required-key :err-file         ) s/Str
    (s/required-key :mail-from        ) s/Str

@@ -1,5 +1,6 @@
 (ns runbld.process
-  (:require [runbld.util.date :as date]
+  (:require [runbld.util.data :as data]
+            [runbld.util.date :as date]
             [runbld.util.io :as io]))
 
 (defn exec* [pb outfile errfile]
@@ -12,10 +13,6 @@
                                  (.getErrorStream proc) err)
           exit-code (.waitFor proc)
           end (System/currentTimeMillis)]
-      (assert (= @out-bytes (count (slurp outfile)))
-              "file truncated")
-      (assert (= @err-bytes (count (slurp errfile)))
-              "file truncated")
       {:start-millis start
        :time-start (date/ms-to-iso start)
        :end-millis end
@@ -24,7 +21,11 @@
        :exit-code exit-code
        :status (if (pos? exit-code) "FAILURE" "SUCCESS")
        :out-bytes @out-bytes
-       :err-bytes @err-bytes})))
+       :err-bytes @err-bytes
+       :out-accuracy (data/bigdec
+                      (data/safe-div (count (slurp outfile)) @out-bytes) 4)
+       :err-accuracy (data/bigdec
+                      (data/safe-div (count (slurp errfile)) @err-bytes) 4)})))
 
 (defn exec
   ([program args scriptfile]

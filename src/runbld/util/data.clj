@@ -1,4 +1,5 @@
 (ns runbld.util.data
+  (:refer-clojure :exclude [bigdec])
   (:require [clojure.walk]))
 
 ;; http://dev.clojure.org/jira/browse/CLJ-1468
@@ -22,3 +23,17 @@
        (apply f maps)))
    maps))
 
+(defn safe-div
+  ([n m]
+   (if (and m (pos? m))
+     (/ n m)
+     0)))
+
+(defn bigdec
+  "Set f to n places after the decimal."
+  ([f]
+   (clojure.core/bigdec f))
+  ([f n]
+   (when f
+     (-> (clojure.core/bigdec f)
+         (.setScale n BigDecimal/ROUND_HALF_UP)))))

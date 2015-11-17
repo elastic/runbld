@@ -17,6 +17,7 @@
     (let [res (binding [*out* out]
                 (proc/exec "bash" "-e" "test/output.bash" "tmp"))]
       (testing "master process stdout"
+        (is (= (bigdec 1) (:out-accuracy res)))
         (is (= (:out-bytes res) (count
                                  (slurp "tmp/.master.log"))))
         (is (= 10 (count
