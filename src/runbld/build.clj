@@ -64,7 +64,9 @@
                                           (-> opts :build :branch))
                       :project-url (format "https://github.com/%s/%s"
                                            (-> opts :build :org)
-                                           (-> opts :build :project))})
+                                           (-> opts :build :project))
+                      :console-url (format "%sconsole"
+                                           (get-in opts [:env "BUILD_URL"]))})
              (update :process merge {:cwd workspace})))))))
 
 (defn discover-remote [org project]
