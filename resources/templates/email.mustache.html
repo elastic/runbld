@@ -13,38 +13,29 @@
 </table>
 <p></p>
 <div style="background-color:#eec;padding:1px 15px">
-<pre>
-branch <a href="{{branch-url}}">{{ branch }}</a>
+<pre>branch <a href="{{branch-url}}">{{ branch }}</a>
 commit <a href="{{commit-url}}">{{ commit }}</a>
 Author: {{ commit-name }} &lt;{{ commit-email }}&gt;
 Date: {{ commit-time }}
 
-{{ commit-desc }}
-</pre>
+{{ commit-desc }}</pre>
 </div>
 
-<p></p>
+<h3>BUILD</h3>
+<p><code>Exited: {{ exit-code }}</code></p>
 <div style="background-color:#cee;padding:1px 15px">
-<pre>
-Exit: {{ exit-code }}
-{{ cmd }}
-
-{{ cmd-source }}
-</pre>
+<pre>{{ cmd-source }}</pre>
 </div>
 
-<p></p>
-<div style="background-color:#cee;padding:1px 15px">
-<pre>
-{{ stdout }}
-</pre>
-</div>
-
-<p></p>
+<h3>STDERR</h3>
 <div style="background-color:#ece;padding:1px 15px">
-<pre>
-{{ stderr }}
-</pre>
+<pre>{{ stderr }}</pre>
 </div>
+
+<h3>STDOUT</h3>
+<div style="background-color:#cee;padding:1px 15px">
+<pre>{{ console-url }}</pre>
+</div>
+
 </body>
 </html>
