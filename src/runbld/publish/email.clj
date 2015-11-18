@@ -19,6 +19,7 @@
    (s/required-key :commit-name      ) s/Str
    (s/required-key :commit-time      ) s/Str
    (s/required-key :commit-url       ) s/Str
+   (s/required-key :console-url      ) s/Str
    (s/required-key :env              ) {s/Str s/Any}
    (s/required-key :exit-code        ) s/Num
    (s/required-key :id               ) s/Str
@@ -135,7 +136,8 @@
              (io/resolve-resource
               (-> opts :email :template-txt)))
             ctx)
-           (when (-> opts :email :template-html)
+           (when (and (-> opts :email :template-html)
+                      (not (-> opts :email :text-only)))
              (mustache/render-string
               (slurp
                (io/resolve-resource

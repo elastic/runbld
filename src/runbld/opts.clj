@@ -20,7 +20,8 @@
     (s/required-key :from) s/Str
     (s/required-key :to) (s/cond-pre s/Str [s/Str])
     (s/optional-key :template-txt) (s/cond-pre s/Str java.io.File)
-    (s/optional-key :template-html) (s/cond-pre s/Str java.io.File)}
+    (s/optional-key :template-html) (s/cond-pre s/Str java.io.File)
+    (s/optional-key :text-only) s/Bool}
    (s/required-key :env) {s/Str s/Str}
    (s/required-key :errors) clojure.lang.Atom
    (s/required-key :es) {s/Keyword s/Any}
@@ -52,7 +53,8 @@
     :port 587
     :tls true
     :template-txt "templates/email.mustache.txt"
-    :template-html "templates/email.mustache.html"}})
+    :template-html "templates/email.mustache.html"
+    :text-only false}})
 
 (defn expand-date-pattern [s]
   (if (string? s)

@@ -1,21 +1,35 @@
 {{ status }}
-{{ build-name }} {{branch-url}}
-{{ commit }} {{commit-url}}
+========================================================================
 
-{{ took-human }}
-{{ time-start }}
-{{ time-end }}
-{{ cmd }}
-{{ exit-code }}
-{{ architecture }}
-{{ operatingsystem }}
-{{ hostname }}
+{{ org }}/{{ project }}
+{{ branch }} {{branch-url}}
 
-branch {{ branch }}
-commit {{ commit }}
+Duration {{ took-human }} ({{ took }}ms)
+Started {{ time-start }}
+Ended {{ time-end }}
+Hostname {{ hostname }} (up {{ uptime_days }} days)
+Operating System {{ operatingsystem }} {{ operatingsystemrelease }}
+Architecture {{ architecture }} ({{ processorcount }} core)
+
+========================================================================
+{{commit-url}}
 Author: {{ commit-name }} <{{ commit-email }}>
 Date: {{ commit-time }}
 
 {{ commit-desc }}
 
+
+BUILD (exit: {{ exit-code }})
+========================================================================
+
 {{ cmd-source }}
+
+STDERR
+========================================================================
+{{ stderr }}
+
+STDOUT
+========================================================================
+{{ console-url }}
+
+
