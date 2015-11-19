@@ -1,6 +1,7 @@
 (ns runbld.build
   (:require [clojure.java.io :as io]
             [environ.core :as environ]
+            [runbld.post.test :as test]
             [runbld.util.data :refer [deep-merge-with deep-merge]]
             [runbld.util.date :as date]
             [runbld.vcs.git :as git]
@@ -113,3 +114,10 @@
                                     (:profile-name info))))}
                          info))]
       (proc opts*))))
+
+(defn wrap-test-report [proc]
+  (fn [opts]
+    (let [res (proc opts)]
+      (assoc res :report
+             (test/capture-failures
+              (-> res :build :workspace))))))

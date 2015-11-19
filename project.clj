@@ -23,6 +23,7 @@
                  [com.fzakaria/slf4j-timbre "0.2.1"]
                  [com.taoensso/timbre "4.1.4"]
                  [elastic/elasticsearch-clojure "0.99.0"]
+                 [enlive "1.1.5"]
                  [environ "1.0.1"]
                  [org.clojure/clojure "1.7.0"]
                  [org.clojure/tools.cli "0.3.3"]

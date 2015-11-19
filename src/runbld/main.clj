@@ -37,6 +37,7 @@
 
       ;; stuff after proc (reverse)
       publish/wrap-publish
+      build/wrap-test-report
 
       ;; stuff before proc (reverse)
       build/wrap-git-repo
