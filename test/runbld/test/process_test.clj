@@ -4,17 +4,22 @@
 
 (deftest process
   (testing "success"
-    (let [res (proc/exec "bash" "-x" "test/success.bash" "tmp")]
-      (is res)
-      (is (= 0 (:exit-code res)))))
+    (binding [*out* (java.io.StringWriter.)
+              *err* (java.io.StringWriter.)]
+      (let [res (proc/exec "bash" "-x" "test/success.bash" "tmp")]
+        (is res)
+        (is (= 0 (:exit-code res))))))
   (testing "fail"
-    (let [res (proc/exec "bash" "-x" "test/fail.bash" "tmp")]
-      (is res)
-      (is (= 1 (:exit-code res))))))
+    (binding [*out* (java.io.StringWriter.)
+              *err* (java.io.StringWriter.)]
+      (let [res (proc/exec "bash" "-x" "test/fail.bash" "tmp")]
+        (is res)
+        (is (= 1 (:exit-code res)))))))
 
 (deftest output-io
   (with-open [out (java.io.PrintWriter. "tmp/.master.log")]
-    (let [res (binding [*out* out]
+    (let [res (binding [*out* out
+                        *err* (java.io.StringWriter.)]
                 (proc/exec "bash" "-e" "test/output.bash" "tmp"))]
       (testing "master process stdout"
         (is (= (bigdec 1) (:out-accuracy res)))

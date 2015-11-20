@@ -20,6 +20,11 @@
     (throw
      (Exception. (str name " error!")))))
 
+(defn run [opts]
+  (binding [*out* (java.io.StringWriter.)
+            *err* (java.io.StringWriter.)]
+    (main/run opts)))
+
 (deftest handle-errors
   (with-redefs [elasticsearch/index (make-error-maker "es")
                 email/send (make-error-maker "email")]
@@ -29,7 +34,7 @@
           repo (git/init-test-repo (get-in opts [:profiles
                                                  :elastic-proj1-master
                                                  :git :remote]))]
-      (is (= 2 (count @(:errors (main/run opts))))))))
+      (is (= 2 (count @(:errors (run opts))))))))
 
 (deftest ^:integration elasticsearch
   (with-redefs [publish/handlers (fn []
@@ -38,7 +43,7 @@
       (let [opts (opts/parse-args ["-c" "test/runbld.yaml"
                                    "--job-name" "elastic,proj1,master"
                                    "test/success.bash"])
-            res (main/run opts)]
+            res (run opts)]
         (if (pos? (count @(:errors res)))
           (clojure.pprint/pprint (first @(:errors res)))
           (let [conn (-> opts :es :conn)
@@ -80,7 +85,7 @@
             repo (git/init-test-repo (get-in opts [:profiles
                                                    :elastic-proj1-master
                                                    :git :remote]))
-            res (main/run opts)]
+            res (run opts)]
         (when (pos? (count @(:errors res)))
           (println "** errors1 **")
           (clojure.pprint/pprint (first @(:errors res))))
@@ -97,7 +102,7 @@
             repo (git/init-test-repo (get-in opts [:profiles
                                                    :elastic-proj2-master
                                                    :git :remote]))
-            res (main/run opts)]
+            res (run opts)]
         (when (pos? (count @(:errors res)))
           (println "** errors2 **")
           (clojure.pprint/pprint (first @(:errors res))))
