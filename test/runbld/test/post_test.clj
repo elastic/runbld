@@ -3,5 +3,5 @@
             [runbld.post.test :as t]))
 
 (deftest failures
-  (is (= 1 (count
+  (is (= 1 (:failures
             (t/capture-failures "test/test-reports")))))

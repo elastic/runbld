@@ -1,5 +1,6 @@
 (ns runbld.test.main-test
   (:require [clojure.test :refer :all]
+            [runbld.build :as build]
             [runbld.env :as env]
             [runbld.opts :as opts]
             [runbld.process :as proc]
@@ -50,8 +51,23 @@
     (with-redefs [main/log (fn [_] :noconsole)
                   env/facter (fn [& args] {:some :fact})
                   publish/publish* (fn [& args] {:published :not-really})]
-      (let [args ["-c" "test/runbld.yaml"
-                  "--job-name" "foo,bar,master" "test/success.bash"]
-            opts (opts/parse-args args)
-            repo (git/init-test-repo (get-in opts [:git :remote]))]
-        (is (= 0 (-> (apply main/-main args) :process :exit-code)))))))
+      (binding [*out* (java.io.StringWriter.)
+                *err* (java.io.StringWriter.)]
+        (let [args ["-c" "test/runbld.yaml"
+                    "--job-name" "foo,bar,master" "test/success.bash"]
+              opts (opts/parse-args args)
+              repo (git/init-test-repo (get-in opts [:git :remote]))]
+          (is (= 0 (-> (apply main/-main args) :process :exit-code)))))))
+
+  (testing "real build post-processing"
+    (binding [*out* (java.io.StringWriter.)
+              *err* (java.io.StringWriter.)]
+      (let [args ["--job-name" "example,foo,master" "test/build-foo.bash"]
+            opts (-> (opts/parse-args args)
+                     (assoc-in [:process :cwd] "test")
+                     (assoc-in [:build :workspace] "test/foo"))
+            f (build/wrap-test-report proc/run)
+            res (f opts)]
+        (is (= 1 (-> res :process :exit-code)))
+        (is (= (-> res :report :failures)
+               (-> res :report :testcases count)))))))
