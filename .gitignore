@@ -11,5 +11,6 @@ target/
 .hg/
 /tmp
 /resources/build.txt
-/*.log
+.stderr.log
+.stdout.log
 /envg*
