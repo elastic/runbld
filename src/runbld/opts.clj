@@ -21,13 +21,15 @@
     (s/required-key :to) (s/cond-pre s/Str [s/Str])
     (s/optional-key :template-txt) (s/cond-pre s/Str java.io.File)
     (s/optional-key :template-html) (s/cond-pre s/Str java.io.File)
-    (s/optional-key :text-only) s/Bool}
+    (s/optional-key :text-only) s/Bool
+    (s/optional-key :max-failure-notify) s/Num}
    (s/required-key :env) {s/Str s/Str}
    (s/required-key :errors) clojure.lang.Atom
    (s/required-key :es) {s/Keyword s/Any}
    (s/required-key :git) {s/Keyword s/Any}
    (s/required-key :process) {s/Keyword s/Any}
    (s/required-key :build) {s/Keyword s/Any}
+   (s/required-key :report) {s/Keyword s/Any}
    (s/optional-key :facter) {s/Keyword s/Any}
    (s/optional-key :profiles) {s/Keyword s/Any}
    (s/optional-key :version) (s/maybe s/Bool)
@@ -54,7 +56,8 @@
     :tls true
     :template-txt "templates/email.mustache.txt"
     :template-html "templates/email.mustache.html"
-    :text-only false}})
+    :text-only false
+    :max-failure-notify 10}})
 
 (defn expand-date-pattern [s]
   (if (string? s)

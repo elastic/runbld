@@ -35,7 +35,14 @@
    (:build opts)
    {:mail-from (-> opts :email :from)
     :rcpt-to (email/split-addr (-> opts :email :to))
-    :env (:env opts)}))
+    :env (:env opts)
+    :report
+    (update
+     (:report opts)
+     :testcases (fn [cases]
+                  (take (-> opts :email :max-failure-notify)
+                        (for [case cases]
+                          (select-keys case [:classname :name])))))}))
 
 (defn publish* [errors f opts ctx]
   (try+

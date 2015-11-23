@@ -21,8 +21,17 @@ Date: {{ commit-time }}
 
 BUILD (exit: {{ exit-code }})
 ========================================================================
-
+```
 {{ cmd-source }}
+```
+
+SUMMARY
+({{ report.tests }} tests, {{ report.errors }} errors, {{ report.failures }} failures, {{ report.skipped }} skipped)
+========================================================================
+{{#report.testcases}}
+{{summary}}
+{{/report.testcases}}
+
 
 STDERR
 ========================================================================

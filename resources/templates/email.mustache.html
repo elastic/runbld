@@ -27,6 +27,14 @@ Date: {{ commit-time }}
 <pre>{{ cmd-source }}</pre>
 </div>
 
+<h3>SUMMARY</h3>
+<p>({{ report.tests }} tests, {{ report.errors }} errors, {{ report.failures }} failures, {{ report.skipped }} skipped)</p>
+<ul>
+{{#report.testcases}}
+<li>{{summary}}</li>
+{{/report.testcases}}
+</ul>
+
 <h3>STDERR</h3>
 <div style="background-color:#ece;padding:1px 15px">
 <pre>{{ stderr }}</pre>

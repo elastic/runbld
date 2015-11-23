@@ -35,9 +35,9 @@
 (def run
   (-> #'proc/run
 
-      ;; stuff after proc (reverse)
-      publish/wrap-publish
+      ;; stuff after proc
       build/wrap-test-report
+      publish/wrap-publish
 
       ;; stuff before proc (reverse)
       build/wrap-git-repo

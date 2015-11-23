@@ -35,6 +35,11 @@
    (s/required-key :project          ) s/Str
    (s/required-key :project-url      ) s/Str
    (s/required-key :rcpt-to          ) [s/Str]
+   (s/required-key :report           ) {(s/required-key :errors) s/Num
+                                        (s/required-key :failures) s/Num
+                                        (s/required-key :skipped) s/Num
+                                        (s/required-key :tests) s/Num
+                                        (s/required-key :testcases) [{s/Keyword s/Any}]}
    (s/required-key :scriptfile       ) s/Str
    (s/required-key :start-millis     ) s/Num
    (s/required-key :status           ) s/Str

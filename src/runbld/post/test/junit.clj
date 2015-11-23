@@ -1,5 +1,6 @@
 (ns runbld.post.test.junit
   (:require [clojure.java.io :as io]
+            [clojure.string :as str]
             [net.cgrand.enlive-html :as x]))
 
 (defn testcase-meta [xml]
@@ -22,7 +23,13 @@
    {:error-type (:tag xml)
     :class class
     :test test
-    :stacktrace (content-text (:content xml))}
+    :stacktrace (content-text (:content xml))
+    :summary (format "%s %s %s"
+                     (.toUpperCase (name (:tag xml)))
+                     (-> class
+                         (str/split #"\.")
+                         last)
+                     test)}
    (:attrs xml)))
 
 (defn failed-testcase [xml]
