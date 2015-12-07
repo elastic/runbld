@@ -7,6 +7,8 @@
             [runbld.opts :as opts]
             [runbld.process :as proc]
             [runbld.publish :as publish]
+            [runbld.store :as store]
+            [runbld.host :as host]
             [schema.core :as s]
             [slingshot.slingshot :refer [try+ throw+]]))
 
@@ -37,6 +39,7 @@
 
       ;; stuff after proc
       build/wrap-test-report
+      store/wrap-save
       publish/wrap-publish
 
       ;; stuff before proc (reverse)
@@ -44,7 +47,8 @@
       build/wrap-set-remote
       build/wrap-merge-profile
       build/wrap-build-meta
-      env/wrap-env))
+      env/wrap-env
+      host/wrap-host))
 
 ;; -main :: IO ()
 (defn -main [& args]

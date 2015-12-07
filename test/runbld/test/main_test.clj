@@ -18,8 +18,6 @@
                 main/really-die (fn [& args] :dontdie)
                 ;; Don't really execute an external process
                 proc/run (fn [& args] :bogus)
-                ;; facter is too slow
-                env/facter (fn [& args] {:some :fact})
                 ;; Don't really publish things
                 publish/publish* (fn [& args] {:published :not-really})]
     (testing "version"
@@ -44,12 +42,12 @@
                                                      :elastic-proj1-master
                                                      :git :remote]))
               res (apply main/-main args)]
+          
           (is (.startsWith res "#error {\n :cause boy that was ")))))))
 
 (deftest execution
   (testing "real execution all the way through"
     (with-redefs [main/log (fn [_] :noconsole)
-                  env/facter (fn [& args] {:some :fact})
                   publish/publish* (fn [& args] {:published :not-really})]
       (binding [*out* (java.io.StringWriter.)
                 *err* (java.io.StringWriter.)]
