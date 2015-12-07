@@ -1,6 +1,5 @@
 (ns runbld.schema
-  (:require [schema.core :as s]
-   ))
+  (:require [schema.core :as s]))
 
 (s/defrecord EmailOpts
     [
@@ -18,30 +17,56 @@
      ])
 
 #_(s/defrecord Opts
+      [
+
+       ]
+    {(s/required-key :email)
+     {(s/required-key :host) s/Str
+      (s/required-key :port) (s/cond-pre s/Num s/Str)
+      (s/optional-key :tls) s/Bool
+      (s/optional-key :user) s/Str
+      (s/optional-key :pass) s/Str
+      (s/required-key :from) s/Str
+      (s/required-key :to) (s/cond-pre s/Str [s/Str])
+      (s/optional-key :template-txt) (s/cond-pre s/Str java.io.File)
+      (s/optional-key :template-html) (s/cond-pre s/Str java.io.File)
+      (s/optional-key :text-only) s/Bool
+      (s/optional-key :max-failure-notify) s/Num}
+     (s/required-key :env) {s/Str s/Str}
+     (s/required-key :errors) clojure.lang.Atom
+     (s/required-key :es) {s/Keyword s/Any}
+     (s/required-key :git) {s/Keyword s/Any}
+     (s/required-key :process) {s/Keyword s/Any}
+     (s/required-key :build) {s/Keyword s/Any}
+     (s/required-key :report) {s/Keyword s/Any}
+     (s/optional-key :facter) {s/Keyword s/Any}
+     (s/optional-key :profiles) {s/Keyword s/Any}
+     (s/optional-key :version) (s/maybe s/Bool)
+     (s/optional-key :config-file) (s/maybe s/Str)
+     })
+
+(s/defrecord OptsProcess
     [
-     
-     ]
-  {(s/required-key :email)
-   {(s/required-key :host) s/Str
-    (s/required-key :port) (s/cond-pre s/Num s/Str)
-    (s/optional-key :tls) s/Bool
-    (s/optional-key :user) s/Str
-    (s/optional-key :pass) s/Str
-    (s/required-key :from) s/Str
-    (s/required-key :to) (s/cond-pre s/Str [s/Str])
-    (s/optional-key :template-txt) (s/cond-pre s/Str java.io.File)
-    (s/optional-key :template-html) (s/cond-pre s/Str java.io.File)
-    (s/optional-key :text-only) s/Bool
-    (s/optional-key :max-failure-notify) s/Num}
-   (s/required-key :env) {s/Str s/Str}
-   (s/required-key :errors) clojure.lang.Atom
-   (s/required-key :es) {s/Keyword s/Any}
-   (s/required-key :git) {s/Keyword s/Any}
-   (s/required-key :process) {s/Keyword s/Any}
-   (s/required-key :build) {s/Keyword s/Any}
-   (s/required-key :report) {s/Keyword s/Any}
-   (s/optional-key :facter) {s/Keyword s/Any}
-   (s/optional-key :profiles) {s/Keyword s/Any}
-   (s/optional-key :version) (s/maybe s/Bool)
-   (s/optional-key :config-file) (s/maybe s/Str)
-   })
+     program :- s/Str
+     args    :- [s/Str]
+     cwd     :- s/Str
+     ])
+
+(s/defrecord ProcessResult
+    [
+     cmd          :- [s/Str]
+     cmd-source   :- s/Str
+     err-accuracy :- s/Num
+     err-bytes    :- s/Num
+     err-file     :- s/Str
+     exit-code    :- s/Num
+     millis-end   :- s/Num
+     millis-start :- s/Num
+     out-accuracy :- s/Num
+     out-bytes    :- s/Num
+     out-file     :- s/Str
+     status       :- s/Str
+     time-end     :- s/Str
+     time-start   :- s/Str
+     took         :- s/Num
+     ])

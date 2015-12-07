@@ -1,4 +1,6 @@
 (ns runbld.opts
+  (:require [runbld.schema :refer :all]
+            [schema.core :as s])
   (:require [clj-yaml.core :as yaml]
             [clojure.java.io :as io]
             [clojure.tools.cli :as cli]
@@ -8,7 +10,8 @@
             [runbld.util.date :as date]
             [runbld.version :as version]
             [schema.core :as s]
-            [slingshot.slingshot :refer [throw+]]))
+            [slingshot.slingshot :refer [throw+]])
+  (:import (runbld.schema OptsProcess)))
 
 (def Opts
   {(s/required-key :email)
@@ -27,7 +30,7 @@
    (s/required-key :errors) clojure.lang.Atom
    (s/required-key :es) {s/Keyword s/Any}
    (s/required-key :git) {s/Keyword s/Any}
-   (s/required-key :process) {s/Keyword s/Any}
+   (s/required-key :process) OptsProcess
    (s/required-key :build) {s/Keyword s/Any}
    (s/required-key :report) {s/Keyword s/Any}
    (s/optional-key :facter) {s/Keyword s/Any}

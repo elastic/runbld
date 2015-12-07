@@ -1,20 +1,27 @@
 (ns runbld.test.process-test
-  (:require [clojure.test :refer :all])
+  (:require [clojure.test :refer :all]
+            [schema.test])
   (:require [runbld.process :as proc] :reload-all))
+
+(use-fixtures :once schema.test/validate-schemas)
 
 (deftest process
   (testing "success"
-    (binding [*out* (java.io.StringWriter.)
-              *err* (java.io.StringWriter.)]
-      (let [res (proc/exec "bash" "-x" "test/success.bash" "tmp")]
-        (is res)
-        (is (= 0 (:exit-code res))))))
+    (let [err (java.io.StringWriter.)]
+      (binding [*out* (java.io.StringWriter.)
+                *err* err]
+        (let [res (proc/exec "bash" "-x" "test/success.bash" "tmp")]
+          (is res)
+          (is (= 0 (:exit-code res)))
+          (is (= "+ exit 0\n" (str err)))))))
   (testing "fail"
-    (binding [*out* (java.io.StringWriter.)
-              *err* (java.io.StringWriter.)]
-      (let [res (proc/exec "bash" "-x" "test/fail.bash" "tmp")]
-        (is res)
-        (is (= 1 (:exit-code res)))))))
+    (let [err (java.io.StringWriter.)]
+      (binding [*out* (java.io.StringWriter.)
+                *err* err]
+        (let [res (proc/exec "bash" "-x" "test/fail.bash" "tmp")]
+          (is res)
+          (is (= 1 (:exit-code res)))
+          (is (= "+ exit 1\n" (str err))))))))
 
 (deftest output-io
   (with-open [out (java.io.PrintWriter. "tmp/.master.log")]
