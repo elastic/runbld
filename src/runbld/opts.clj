@@ -11,56 +11,34 @@
             [runbld.version :as version]
             [schema.core :as s]
             [slingshot.slingshot :refer [throw+]])
-  (:import (runbld.schema OptsProcess)))
-
-(def Opts
-  {(s/required-key :email)
-   {(s/required-key :host) s/Str
-    (s/required-key :port) (s/cond-pre s/Num s/Str)
-    (s/optional-key :tls) s/Bool
-    (s/optional-key :user) s/Str
-    (s/optional-key :pass) s/Str
-    (s/required-key :from) s/Str
-    (s/required-key :to) (s/cond-pre s/Str [s/Str])
-    (s/optional-key :template-txt) (s/cond-pre s/Str java.io.File)
-    (s/optional-key :template-html) (s/cond-pre s/Str java.io.File)
-    (s/optional-key :text-only) s/Bool
-    (s/optional-key :max-failure-notify) s/Num}
-   (s/required-key :env) {s/Str s/Str}
-   (s/required-key :errors) clojure.lang.Atom
-   (s/required-key :es) {s/Keyword s/Any}
-   (s/required-key :git) {s/Keyword s/Any}
-   (s/required-key :process) OptsProcess
-   (s/required-key :build) {s/Keyword s/Any}
-   (s/required-key :report) {s/Keyword s/Any}
-   (s/optional-key :facter) {s/Keyword s/Any}
-   (s/optional-key :profiles) {s/Keyword s/Any}
-   (s/optional-key :version) (s/maybe s/Bool)
-   (s/optional-key :config-file) (s/maybe s/Str)
-   })
+  (:import (runbld.schema Opts)))
 
 (def defaults
-  {:build
-   {:job-name (System/getenv "JOB_NAME")}
+  (map->Opts
+   {:es
+    {:url "http://localhost:9200"
+     :index "'build'-yyyy-MM"
+     :http-opts {:insecure? false}}
 
-   :es
-   {:url "http://localhost:9200"
-    :index "'build'-yyyy-MM"
-    :http-opts {:insecure? false}}
+    :s3
+    {:bucket "test.example.com"
+     :prefix "/"
+     :access-key "key"
+     :secret-key "secret"}
 
-   :process
-   {:program "bash"
-    :args ["-x"]
-    :cwd (System/getProperty "user.dir")}
+    :process
+    {:program "bash"
+     :args ["-x"]
+     :cwd (System/getProperty "user.dir")}
 
-   :email
-   {:host "localhost"
-    :port 587
-    :tls true
-    :template-txt "templates/email.mustache.txt"
-    :template-html "templates/email.mustache.html"
-    :text-only false
-    :max-failure-notify 10}})
+    :email
+    {:host "localhost"
+     :port 587
+     :tls true
+     :template-txt "templates/email.mustache.txt"
+     :template-html "templates/email.mustache.html"
+     :text-only false
+     :max-failure-notify 10}}))
 
 (defn expand-date-pattern [s]
   (if (string? s)
@@ -71,6 +49,19 @@
              :msg "date pattern should be a string"
              :arg s})))
 
+(s/defn merge-profiles :- java.util.Map
+  [job-name :- s/Str
+   profiles :- [java.util.Map]]
+  (if profiles
+    (apply deep-merge-with deep-merge
+           (for [ms profiles]
+             (let [[k v] (first ms)
+                   pat ((comp re-pattern name) k)]
+               (if (re-find pat job-name)
+                 v
+                 {}))))
+    {}))
+
 (defn load-config [filepath]
   (let [f (io/file filepath)]
     (when (not (.isFile f))
@@ -79,23 +70,33 @@
                             filepath)}))
     (yaml/parse-string (slurp f))))
 
+(s/defn load-config-with-profiles :- java.util.Map
+  [job-name :- s/Str
+   filepath :- s/Str]
+  (let [conf (load-config filepath)
+        res (deep-merge-with deep-merge
+                             (dissoc conf :profiles)
+                             (merge-profiles job-name (:profiles conf)))]
+    res))
+
 (defn system-config []
   (io/file
    (if (.startsWith (System/getProperty "os.name") "Windows")
      "c:\\runbld\\runbld.conf"
      "/etc/runbld/runbld.conf")))
 
-(defn merge-opts-with-file [opts]
+(s/defn assemble-all-opts :- java.util.Map
+  [{:keys [job-name] :as opts}]
   (deep-merge-with deep-merge
                    defaults
                    (if (environ/env :dev)
                      {}
                      (let [sys (system-config)]
                        (if (.isFile sys)
-                         (load-config (system-config))
+                         (load-config-with-profiles job-name (system-config))
                          {})))
-                   (if (:config-file opts)
-                     (load-config (:config-file opts))
+                   (if (:configfile opts)
+                     (load-config-with-profiles job-name (:configfile opts))
                      {})
                    opts))
 
@@ -103,23 +104,26 @@
   "Normalize the tools.cli map to the local structure."
   [cli-opts]
   {:process (select-keys cli-opts [:program :args])
-   :build (select-keys cli-opts [:job-name])
-   :config-file (:config cli-opts)
+   :job-name (:job-name cli-opts)
+   :configfile (:config cli-opts)
    :version (:version cli-opts)})
 
 (def opts
   [["-v" "--version" "Print version"]
    ["-c" "--config FILE" "Config file"]
-   [nil "--job-name JOBNAME" (str "Job name: org,project,branch, "
-                                  "also read from $JOB_NAME")]
-   [nil "--program PROGRAM" "Program that will run the scriptfile"]
-   [nil "--args ARGS" "Args to pass PROGRAM"]])
+   ["-j" "--job-name JOBNAME" (str "Job name: org,project,branch,etc "
+                                   "also read from $JOB_NAME")
+    :default (environ/env :job-name)]
+   ["-p" "--program PROGRAM" "Program that will run the scriptfile"]
+   ["-a" "--args ARGS" "Args to pass PROGRAM"]])
 
-(defn parse-args [args]
+(s/defn parse-args :- Opts
+  [args :- [s/Str]]
   (let [{:keys [options arguments summary errors]
-         :as parsed-opts} (cli/parse-opts args opts :no-defaults true)
-        options (merge-opts-with-file
+         :as parsed-opts} (cli/parse-opts args opts)
+        options (assemble-all-opts
                  (normalize options))]
+
     (when (pos? (count errors))
       (throw+ {:error ::parse-error
                :msg (with-out-str
@@ -136,9 +140,11 @@
                             (version/string))}))
 
     (merge options
-           {:errors (atom [])
-            :es {:index (expand-date-pattern (-> options :es :index))
-                 :conn (es/make (:es options))}
+           {:es (let [idx (expand-date-pattern
+                           (-> options :es :index))
+                      es-opts (assoc (:es options) :index idx)]
+                  {:index idx
+                   :conn (es/make es-opts)})
 
             :process (merge
                       ;; Invariant: Jenkins passes it in through arguments
