@@ -1,11 +1,15 @@
 (ns runbld.vcs.git
+  (:require [runbld.schema :refer :all]
+            [schema.core :as s])
   (:require [clj-jgit.porcelain :as git]
             [clojure.java.io :as jio]
             [clojure.java.shell :as sh]
             [environ.core :as environ]
             [runbld.util.date :as date]
             [runbld.util.io :as io]
-            [slingshot.slingshot :refer [throw+]]))
+            [runbld.vcs :as vcs :refer [VcsRepo]]
+            [slingshot.slingshot :refer [throw+]])
+  (:import (runbld.vcs VcsLog)))
 
 (defn repo? [dir]
   (when dir
@@ -23,6 +27,16 @@
       (git/git-commit repo "Add build")
       repo)))
 
+(defmacro with-tmp-repo [bindings & body]
+  `(let ~bindings
+     (try
+       (when (.exists (jio/file ~(bindings 0)))
+         (throw (Exception. (format "%s already exists" ~(bindings 0)))))
+       (init-test-repo ~(bindings 1))
+       ~@body
+       (finally
+         (io/rmdir-rf ~(bindings 0))))))
+
 (defn add-test-commit [dir]
   (let [repo (git/load-repo dir)
         basename (str (java.util.UUID/randomUUID) ".txt")
@@ -34,14 +48,20 @@
 (defn commit-map [commit]
   (let [author (.getAuthorIdent commit)
         committer (.getCommitterIdent commit)]
-    {:commit (.getName commit)
-     :commit-desc (.getShortMessage commit)
-     :commit-msg (.getFullMessage commit)
+    {:commit-id (.getName commit)
+     :message-short (.getShortMessage commit)
+     :message-full (.getFullMessage commit)
      :commit-time (and committer
                        (date/date-to-iso
                         (.getWhen committer)))
-     :commit-name (and author (.getName author))
-     :commit-email (and author (.getEmailAddress author))}))
+     :commit-name (and committer (.getName committer))
+     :commit-email (and committer (.getEmailAddress committer))
+     :author-time (and author
+                       (date/date-to-iso
+                        (.getWhen author)))
+     :author-name (and author (.getName author))
+     :author-email (and author (.getEmailAddress author))
+     }))
 
 (defn resolve-remote [^String loc]
   (condp #(.startsWith %2 %1) loc
@@ -61,3 +81,20 @@
         workspace-ref (git/git-checkout workspace-repo branch false true)
         HEAD (first (git/git-log workspace-repo))]
     (commit-map HEAD)))
+
+(defn head-commit
+  [dir]
+  (let [HEAD (first
+              (git/git-log
+               (git/load-repo dir)))]
+    (commit-map HEAD)))
+
+(s/defn log-latest :- VcsLog
+  ([this]
+   (vcs/map->VcsLog (head-commit (.dir this)))))
+
+(s/defrecord GitRepo [dir :- s/Str])
+
+(extend GitRepo
+  VcsRepo
+  {:log-latest log-latest})

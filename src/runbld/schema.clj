@@ -91,14 +91,9 @@
      took         :- s/Num
      ])
 
-(s/defrecord VcsRepo
-    [
-     type :- s/Keyword
-     ])
-
 (s/defrecord StoredBuild
     [
      id :- s/Str
      system :- BuildSystem
-     repo :- VcsRepo
+;;     repo :- VcsRepo
      ])
