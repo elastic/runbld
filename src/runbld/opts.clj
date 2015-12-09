@@ -26,11 +26,6 @@
      :access-key "key"
      :secret-key "secret"}
 
-    :process
-    {:program "bash"
-     :args ["-x"]
-     :cwd (System/getProperty "user.dir")}
-
     :email
     {:host "localhost"
      :port 587
@@ -103,7 +98,7 @@
 (defn normalize
   "Normalize the tools.cli map to the local structure."
   [cli-opts]
-  {:process (select-keys cli-opts [:program :args])
+  {:process (select-keys cli-opts [:program :args :cwd])
    :job-name (:job-name cli-opts)
    :configfile (:config cli-opts)
    :version (:version cli-opts)})
@@ -111,11 +106,15 @@
 (def opts
   [["-v" "--version" "Print version"]
    ["-c" "--config FILE" "Config file"]
+   ["-d" "--cwd DIR" "Set CWD for the process"
+    :default (System/getProperty "user.dir")]
    ["-j" "--job-name JOBNAME" (str "Job name: org,project,branch,etc "
                                    "also read from $JOB_NAME")
     :default (environ/env :job-name)]
-   ["-p" "--program PROGRAM" "Program that will run the scriptfile"]
-   ["-a" "--args ARGS" "Args to pass PROGRAM"]])
+   ["-p" "--program PROGRAM" "Program that will run the scriptfile"
+    :default "bash"]
+   ["-a" "--args ARGS" "Args to pass PROGRAM"
+    :default ["-x"]]])
 
 (s/defn parse-args :- Opts
   [args :- [s/Str]]

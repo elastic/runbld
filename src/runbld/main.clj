@@ -8,7 +8,8 @@
             [runbld.process :as proc]
             [runbld.publish :as publish]
             [runbld.store :as store]
-            [runbld.host :as host]
+            [runbld.system :as system]
+            [runbld.vcs :as vcs]
             [schema.core :as s]
             [slingshot.slingshot :refer [try+ throw+]]))
 
@@ -36,61 +37,50 @@
 
 (def run
   (-> #'proc/run
-
-      ;; stuff after proc
-      build/wrap-test-report
-      store/wrap-save
-      publish/wrap-publish
-
-      ;; stuff before proc (reverse)
-      build/wrap-git-repo
-      build/wrap-set-remote
-      build/wrap-merge-profile
+      vcs/wrap-vcs-info
       build/wrap-build-meta
       env/wrap-env
-      host/wrap-host))
+      system/wrap-system))
 
 ;; -main :: IO ()
 (defn -main [& args]
-  (try+
-   (let [opts (opts/parse-args args)
-         _ (log ">>>>>>>>>>>> SCRIPT EXECUTION BEGIN >>>>>>>>>>>>")
-         {:keys [errors] :as res} (s/with-fn-validation
-                                    (run opts))
-         {:keys [took status exit-code
-                 out-bytes err-bytes]} (:process res)
-         _ (log "<<<<<<<<<<<< SCRIPT EXECUTION END   <<<<<<<<<<<<")]
-     (log (format "DURATION: %sms" took))
-     (log (format "STDOUT: %d bytes" out-bytes))
-     (log (format "STDERR: %d bytes" err-bytes))
-     (log
-      (format "WRAPPED PROCESS: %s (%d)" status exit-code))
-     (when (and errors (pos? (count @errors)))
-       (throw+ {:error ::errors
-                :errors errors
-                :msg (with-out-str
-                       (println "execution had errors")
-                       (doseq [err @errors]
-                         (println "==========")
-                         (println err)))}))
-     (if (environ/env :dev)
-       res
-       (die 0)))
+  (s/with-fn-validation
+    (try+
+     (let [opts (opts/parse-args args)
+           _ (log ">>>>>>>>>>>> SCRIPT EXECUTION BEGIN >>>>>>>>>>>>")
+           res (run opts)
 
-   (catch [:error :runbld.main/errors] {:keys [errors msg]}
-     (die 3 msg))
+           ;; _ build/wrap-test-report
+           ;; _ store/wrap-save
 
-   (catch [:error :runbld.opts/parse-error] {:keys [msg]}
-     (die 2 msg))
+           {:keys [took status exit-code
+                   out-bytes err-bytes]} (:process res)
 
-   (catch [:error :runbld.opts/file-not-found] {:keys [msg]}
-     (die 2 msg))
+           _ (log "<<<<<<<<<<<< SCRIPT EXECUTION END   <<<<<<<<<<<<")]
+       (log (format "DURATION: %sms" took))
+       (log (format "STDOUT: %d bytes" out-bytes))
+       (log (format "STDERR: %d bytes" err-bytes))
+       (log
+        (format "WRAPPED PROCESS: %s (%d)" status exit-code))
 
-   (catch [:help :runbld.opts/version] {:keys [msg]}
-     (die 0 msg))
+       (if (environ/env :dev)
+         res
+         (die 0)))
 
-   (catch [:help :runbld.opts/usage] {:keys [msg]}
-     (die 0 msg))
+     (catch [:error :runbld.main/errors] {:keys [errors msg]}
+       (die 3 msg))
 
-   (catch Exception e
-     (die 1 e))))
+     (catch [:error :runbld.opts/parse-error] {:keys [msg]}
+       (die 2 msg))
+
+     (catch [:error :runbld.opts/file-not-found] {:keys [msg]}
+       (die 2 msg))
+
+     (catch [:help :runbld.opts/version] {:keys [msg]}
+       (die 0 msg))
+
+     (catch [:help :runbld.opts/usage] {:keys [msg]}
+       (die 0 msg))
+
+     (catch Exception e
+       (die 1 e)))))

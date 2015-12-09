@@ -1,34 +1,17 @@
-(ns runbld.host
+(ns runbld.system
+  (:require [runbld.schema :refer :all]
+            [schema.core :as s])
   (:require [clj-yaml.core :as yaml]
             [clojure.java.shell :as sh]
             [environ.core :as environ]
             [runbld.opts :as opts]
             [schema.core :as s]
-            [slingshot.slingshot :refer [throw+]]))
-
-(s/defrecord Host
-    [
-     arch           :- s/Str
-     cpu-type       :- s/Str
-     cpus           :- s/Num
-     cpus-physical  :- s/Num
-     hostname       :- s/Str
-     ipv4           :- s/Str
-     ipv6           :- s/Str
-     kernel-release :- s/Str
-     kernel-version :- s/Str
-     model          :- s/Str
-     os             :- s/Str
-     os-version     :- s/Str
-     ram-mb         :- s/Num
-     timezone       :- s/Str
-     uptime-secs    :- s/Int
-     virtual        :- s/Bool
-     ])
+            [slingshot.slingshot :refer [throw+]])
+  (:import (runbld.schema BuildSystem)))
 
 (defn facter-installed? []
   (let [{:keys [exit]} (sh/sh "which" "facter")]
-`    (zero? exit)))
+    `    (zero? exit)))
 
 (defn facter []
   ;; costly call, only do it in production
@@ -41,11 +24,10 @@
       (throw+ {:warning ::no-facter
                :msg "facter cannot be found in PATH"}))))
 
-(s/defn inspect-host :- Host
+(s/defn inspect-system :- BuildSystem
   ([facter-fn :- clojure.lang.IFn]
    (let [facts (facter-fn)]
-     (clojure.pprint/pprint facts)
-     (map->Host
+     (map->BuildSystem
       {
        :arch           (:architecture            facts)
        :cpu-type       (:processor0              facts)
@@ -67,6 +49,6 @@
        :virtual        (:is_virtual              facts)
        }))))
 
-(defn wrap-host [proc]
+(defn wrap-system [proc]
   (fn [opts]
-    (proc (assoc opts :sys (inspect-host facter)))))
+    (proc (assoc opts :sys (inspect-system facter)))))
