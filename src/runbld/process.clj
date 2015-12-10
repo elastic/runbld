@@ -26,10 +26,10 @@
        :time-end (date/ms-to-iso end)
        :time-start (date/ms-to-iso start)
        :took (- end start)
-       :out-accuracy (data/bigdec
-                      (data/safe-div (count (slurp outfile)) @out-bytes) 4)
-       :err-accuracy (data/bigdec
-                      (data/safe-div (count (slurp errfile)) @err-bytes) 4)})))
+       :out-accuracy (data/scaled-percent
+                      (count (slurp outfile)) @out-bytes)
+       :err-accuracy (data/scaled-percent
+                      (count (slurp errfile)) @err-bytes)})))
 
 (s/defn exec :- ProcessResult
   ([program args scriptfile]
