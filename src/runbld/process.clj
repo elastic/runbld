@@ -26,10 +26,7 @@
        :time-end (date/ms-to-iso end)
        :time-start (date/ms-to-iso start)
        :took (- end start)
-       :out-accuracy (data/scaled-percent
-                      (count (slurp outfile)) @out-bytes)
-       :err-accuracy (data/scaled-percent
-                      (count (slurp errfile)) @err-bytes)})))
+       })))
 
 (s/defn exec :- ProcessResult
   ([program args scriptfile]
@@ -42,7 +39,10 @@
          cmd (flatten [program args scriptfile*])
          pb (doto (ProcessBuilder. cmd)
               (.directory dir))
-         res (exec* pb stdoutfile stderrfile)]
+         {:keys [out-bytes
+                 err-bytes] :as res} (exec* pb stdoutfile stderrfile)
+         out-file-bytes (count (slurp stdoutfile))
+         err-file-bytes (count (slurp stderrfile))]
      (flush)
      (map->ProcessResult
       (merge
@@ -50,15 +50,16 @@
        {:cmd cmd
         :cmd-source (slurp scriptfile)
         :out-file (str stdoutfile)
-        :err-file (str stderrfile)})))))
+        :err-file (str stderrfile)
+        :out-file-bytes out-file-bytes
+        :err-file-bytes err-file-bytes
+        :out-accuracy (data/scaled-percent out-file-bytes out-bytes)
+        :err-accuracy (data/scaled-percent err-file-bytes err-bytes)
+        })))))
 
 (defn run [opts]
-  (assoc opts
-         :process
-         (merge
-          (:process opts)
-          (exec
-           (-> opts :process :program)
-           (-> opts :process :args)
-           (-> opts :process :scriptfile)
-           (-> opts :process :cwd)))))
+  (exec
+   (-> opts :process :program)
+   (-> opts :process :args)
+   (-> opts :process :scriptfile)
+   (-> opts :process :cwd)))

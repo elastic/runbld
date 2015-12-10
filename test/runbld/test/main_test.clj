@@ -48,14 +48,14 @@
 (deftest execution
   (testing "real execution all the way through"
     (with-redefs [main/log (fn [_] :noconsole)]
-      (binding [
-                *out* (java.io.StringWriter.)
-                *err* (java.io.StringWriter.)
-                ]
-        (git/with-tmp-repo [d "tmp/git/main-test-2"]
-          (let [args ["-c" "test/runbld.yaml"
-                      "-j" "elastic+foo+master"
-                      "-d" d
-                      "test/success.bash"]
-                opts (opts/parse-args args)]
-            (is (= 0 (-> (apply main/-main args) :process :exit-code)))))))))
+      (git/with-tmp-repo [d "tmp/git/main-test-2"]
+        (let [args ["-c" "test/runbld.yaml"
+                    "-j" "elastic+foo+master"
+                    "-d" d
+                    "test/success.bash"]
+              opts (opts/parse-args args)]
+          (is (= 0
+                 (:exit-code
+                  (binding [*out* (java.io.StringWriter.)
+                            *err* (java.io.StringWriter.)]
+                    (apply main/-main args))))))))))

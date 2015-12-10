@@ -74,21 +74,23 @@
 
 (s/defrecord ProcessResult
     [
-     cmd          :- [s/Str]
-     cmd-source   :- s/Str
-     err-accuracy :- s/Num
-     err-bytes    :- s/Num
-     err-file     :- s/Str
-     exit-code    :- s/Num
-     millis-end   :- s/Num
-     millis-start :- s/Num
-     out-accuracy :- s/Num
-     out-bytes    :- s/Num
-     out-file     :- s/Str
-     status       :- s/Str
-     time-end     :- s/Str
-     time-start   :- s/Str
-     took         :- s/Num
+     cmd            :- [s/Str]
+     cmd-source     :- s/Str
+     err-accuracy   :- s/Int
+     err-bytes      :- s/Num
+     err-file       :- s/Str
+     err-file-bytes :- s/Int
+     exit-code      :- s/Num
+     millis-end     :- s/Num
+     millis-start   :- s/Num
+     out-accuracy   :- s/Int
+     out-bytes      :- s/Num
+     out-file       :- s/Str
+     out-file-bytes :- s/Int
+     status         :- s/Str
+     time-end       :- s/Str
+     time-start     :- s/Str
+     took           :- s/Num
      ])
 
 (s/defrecord StoredBuild
