@@ -5,7 +5,6 @@
             [runbld.env :as env]
             [runbld.opts :as opts]
             [runbld.process :as proc]
-            [runbld.publish :as publish]
             [runbld.vcs.git :as git]
             [runbld.version :as version])
   (:require [runbld.main :as main] :reload-all))
@@ -29,27 +28,30 @@
 
     (testing "bad config file"
       (is (.startsWith (main/-main "-c" "/tmp/noexist"
-                                   "/path/to/script.bash") "config file ")))
+                                   "-j" "elastic+foo+master"
+                                   "/path/to/script.bash") "config file ")))))
 
-    (testing "unexpected exception"
-      (with-redefs [proc/run (fn [& args] (throw
-                                           (Exception.
-                                            "boy that was unexpected")))]
-        (git/with-tmp-repo [d "tmp/git/main-test-1"]
-          (let [args ["-c" "test/runbld.yaml"
-                      "-j" "elastic+proj1+master"
-                      "-d" d
-                      "/path/to/script.bash"]
-                opts (opts/parse-args args)
-                res (apply main/-main args)]
-            (is (= String (type res)))
-            (is (.startsWith res "#error {\n :cause boy that was "))))))))
+(deftest unexpected
+  (with-redefs [main/log (fn [_] :noconsole)
+                main/really-die (fn [& args] :dontdie)
+                proc/run (fn [& args] (throw
+                                       (Exception.
+                                        "boy that was unexpected")))]
+    (git/with-tmp-repo [d "tmp/git/main-test-1"]
+      (let [args ["-c" "test/config/main.yml"
+                  "-j" "elastic+foo+master"
+                  "-d" d
+                  "/path/to/script.bash"]
+            opts (opts/parse-args args)
+            res (apply main/-main args)]
+        (is (= String (type res)))
+        (is (.startsWith res "#error {\n :cause boy that was "))))))
 
 (deftest execution
   (testing "real execution all the way through"
     (with-redefs [main/log (fn [_] :noconsole)]
       (git/with-tmp-repo [d "tmp/git/main-test-2"]
-        (let [args ["-c" "test/runbld.yaml"
+        (let [args ["-c" "test/config/main.yml"
                     "-j" "elastic+foo+master"
                     "-d" d
                     "test/success.bash"]

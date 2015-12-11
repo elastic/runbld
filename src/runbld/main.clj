@@ -6,7 +6,6 @@
             [runbld.env :as env]
             [runbld.opts :as opts]
             [runbld.process :as proc]
-            [runbld.publish :as publish]
             [runbld.store :as store]
             [runbld.system :as system]
             [runbld.vcs.repo :as repo]

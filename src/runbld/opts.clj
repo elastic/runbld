@@ -44,7 +44,7 @@
 
 (s/defn merge-profiles :- java.util.Map
   [job-name :- s/Str
-   profiles :- [java.util.Map]]
+   profiles :- [{s/Keyword s/Any}]]
   (if profiles
     (apply deep-merge-with deep-merge
            (for [ms profiles]
@@ -79,7 +79,8 @@
      "/etc/runbld/runbld.conf")))
 
 (s/defn assemble-all-opts :- java.util.Map
-  [{:keys [job-name] :as opts}]
+  [{:keys [job-name] :as opts} :- {(s/required-key :job-name) s/Str
+                                   s/Keyword s/Any}]
   (deep-merge-with deep-merge
                    defaults
                    (if (environ/env :dev)
@@ -117,9 +118,7 @@
 (s/defn parse-args :- Opts
   [args :- [s/Str]]
   (let [{:keys [options arguments summary errors]
-         :as parsed-opts} (cli/parse-opts args opts)
-        options (assemble-all-opts
-                 (normalize options))]
+         :as parsed-opts} (cli/parse-opts args opts)]
 
     (when (pos? (count errors))
       (throw+ {:error ::parse-error
@@ -136,14 +135,20 @@
                :msg (format "runbld %s\nusage: runbld /path/to/script.bash"
                             (version/string))}))
 
-    (merge options
-           {:es (let [idx (expand-date-pattern
-                           (-> options :es :index))
-                      es-opts (assoc (:es options) :index idx)]
-                  {:index idx
-                   :conn (es/make es-opts)})
+    (when (not (:job-name options))
+      (throw+ {:help ::usage
+               :msg "must set -j or $JOB_NAME"}))
 
-            :process (merge
-                      ;; Invariant: Jenkins passes it in through arguments
-                      {:scriptfile (first arguments)}
-                      (:process options))})))
+    (let [options (assemble-all-opts
+                   (normalize options))]
+      (merge options
+             {:es (let [idx (expand-date-pattern
+                             (-> options :es :index))
+                        es-opts (assoc (:es options) :index idx)]
+                    {:index idx
+                     :conn (es/make es-opts)})
+
+              :process (merge
+                        ;; Invariant: Jenkins passes it in through arguments
+                        {:scriptfile (first arguments)}
+                        (:process options))}))))
