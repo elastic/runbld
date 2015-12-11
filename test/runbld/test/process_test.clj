@@ -1,7 +1,8 @@
 (ns runbld.test.process-test
   (:require [clojure.test :refer :all]
             [schema.test])
-  (:require [runbld.process :as proc] :reload-all))
+  (:require [runbld.process :as proc]
+            [runbld.util.data :as data] :reload-all))
 
 (use-fixtures :once schema.test/validate-schemas)
 
@@ -29,7 +30,9 @@
                         *err* (java.io.StringWriter.)]
                 (proc/exec "bash" "-e" "test/output.bash" "tmp"))]
       (testing "master process stdout"
-        (is (= (bigdec 1) (:out-accuracy res)))
+        (is (= (bigdec 100)
+               (data/unscaled-percent
+                (:out-accuracy res))))
         (is (= (:out-bytes res) (count
                                  (slurp "tmp/.master.log"))))
         (is (= 10 (count
