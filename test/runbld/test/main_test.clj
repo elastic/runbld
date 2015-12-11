@@ -2,9 +2,11 @@
   (:require [schema.test])
   (:require [clojure.test :refer :all]
             [runbld.build :as build]
+            [runbld.email :as email]
             [runbld.env :as env]
             [runbld.opts :as opts]
             [runbld.process :as proc]
+            [runbld.store :as store]
             [runbld.vcs.git :as git]
             [runbld.version :as version])
   (:require [runbld.main :as main] :reload-all))
@@ -49,15 +51,18 @@
 
 (deftest execution
   (testing "real execution all the way through"
-    (with-redefs [main/log (fn [_] :noconsole)]
+    (with-redefs [main/log (fn [_] :noconsole)
+                  email/send* (fn [& args] :EMAIL)]
       (git/with-tmp-repo [d "tmp/git/main-test-2"]
         (let [args ["-c" "test/config/main.yml"
                     "-j" "elastic+foo+master"
                     "-d" d
                     "test/success.bash"]
-              opts (opts/parse-args args)]
-          (is (= 0
-                 (:exit-code
-                  (binding [*out* (java.io.StringWriter.)
+              opts (opts/parse-args args)
+              res (binding [*out* (java.io.StringWriter.)
                             *err* (java.io.StringWriter.)]
-                    (apply main/-main args))))))))))
+                    (apply main/-main args))]
+          (is (= 0 (:exit-code res)))
+          (is (= 0 (-> (store/get (-> opts :es :conn) (:store-result res))
+                       :process
+                       :exit-code))))))))

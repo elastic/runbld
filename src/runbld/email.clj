@@ -4,81 +4,11 @@
             [schema.core :as s])
   (:require [clojure.string :as str]
             [postal.core :as mail]
+            [runbld.store :as store]
             [runbld.util.date :as date]
             [runbld.util.io :as io]
             [schema.core :as s]
             [stencil.core :as mustache]))
-
-(def Ctx
-  {
-   (s/required-key :branch-url       ) s/Str
-   (s/required-key :build-name       ) s/Str
-   (s/required-key :commit           ) s/Str
-   (s/required-key :commit-desc      ) s/Str
-   (s/required-key :commit-email     ) s/Str
-   (s/required-key :commit-msg       ) s/Str
-   (s/required-key :commit-name      ) s/Str
-   (s/required-key :commit-time      ) s/Str
-   (s/required-key :commit-url       ) s/Str
-   (s/required-key :console-url      ) s/Str
-   (s/required-key :env              ) {s/Str s/Any}
-   (s/required-key :exit-code        ) s/Num
-   (s/required-key :id               ) s/Str
-   (s/required-key :job-name         ) s/Str
-   (s/required-key :out-bytes        ) s/Num
-   (s/required-key :err-bytes        ) s/Num
-   (s/required-key :out-accuracy     ) s/Num
-   (s/required-key :err-accuracy     ) s/Num
-   (s/required-key :out-file         ) s/Str
-   (s/required-key :err-file         ) s/Str
-   (s/required-key :mail-from        ) s/Str
-   (s/required-key :org              ) s/Str
-   (s/required-key :project          ) s/Str
-   (s/required-key :project-url      ) s/Str
-   (s/required-key :rcpt-to          ) [s/Str]
-   (s/required-key :report           ) {(s/required-key :errors) s/Num
-                                        (s/required-key :failures) s/Num
-                                        (s/required-key :skipped) s/Num
-                                        (s/required-key :tests) s/Num
-                                        (s/required-key :testcases) [{s/Keyword s/Any}]}
-   (s/required-key :scriptfile       ) s/Str
-   (s/required-key :start-millis     ) s/Num
-   (s/required-key :status           ) s/Str
-   (s/required-key :time-end         ) s/Str
-   (s/required-key :time-start       ) s/Str
-   (s/required-key :took             ) s/Num
-
-   (s/optional-key :architecture     ) s/Str
-   (s/optional-key :args             ) [s/Str]
-   (s/optional-key :branch           ) s/Str
-   (s/optional-key :cmd              ) [s/Str]
-   (s/optional-key :cmd-source       ) s/Str
-   (s/optional-key :cwd              ) s/Str
-   (s/optional-key :end-millis       ) s/Num
-   (s/optional-key :hardwaremodel    ) s/Str
-   (s/optional-key :hostname         ) s/Str
-   (s/optional-key :ipaddress        ) s/Str
-   (s/optional-key :ipaddress6       ) s/Str
-   (s/optional-key :jenkins-executor ) (s/maybe s/Str)
-   (s/optional-key :jenkins-labels   ) (s/maybe s/Str)
-   (s/optional-key :jenkins-node     ) (s/maybe s/Str)
-   (s/optional-key :jenkins-number   ) (s/maybe s/Str)
-   (s/optional-key :job-name-extra   ) s/Str
-   (s/optional-key :kernelrelease    ) s/Str
-   (s/optional-key :kernelversion    ) s/Str
-   (s/optional-key :memorysize_mb    ) s/Str
-   (s/optional-key :operatingsystem  ) s/Str
-   (s/optional-key :operatingsystemrelease ) s/Str
-   (s/optional-key :physicalprocessorcount ) s/Num
-   (s/optional-key :processor0       ) s/Str
-   (s/optional-key :processorcount   ) (s/cond-pre s/Str s/Num)
-   (s/optional-key :profile-name     ) s/Str
-   (s/optional-key :program          ) s/Str
-   (s/optional-key :timezone         ) s/Str
-   (s/optional-key :uptime_days      ) s/Num
-   (s/optional-key :url              ) (s/maybe s/Str)
-   (s/optional-key :workspace        ) s/Str
-   })
 
 (defn split-addr [s]
   (vec
@@ -114,7 +44,7 @@
 
 (s/defn send :- clojure.lang.IPersistentMap
   [opts :- Opts
-   ctx* :- Ctx]
+   ctx* :- EmailCtx]
   (let [ctx (merge
              (-> ctx*
                  (update :cmd #(str/join " " %1))
@@ -149,3 +79,7 @@
                (io/resolve-resource
                 (-> opts :email :template-html)))
               ctx)))))
+
+(defn maybe-send! [opts {:keys [index type id] :as addr}]
+  (let [build-doc (store/get (-> opts :es :conn) addr)]
+    (clojure.pprint/pprint build-doc)))

@@ -1,13 +1,14 @@
 (ns runbld.store
+  (:refer-clojure :exclude [get])
   (:require [runbld.schema :refer :all]
             [schema.core :as s])
   (:require [elasticsearch.document :as doc]
             [runbld.util.date :as date]
             [runbld.vcs :refer [VcsRepo]]
-            [schema.core :as s])
-  (:import (elasticsearch.connection Connection)))
+            [schema.core :as s]))
 
-(defn create-doc [opts result]
+(s/defn create-doc :- StoredBuild
+  [opts result]
   (merge
    (select-keys opts [:id :system :vcs :sys :jenkins])
    {:process result}))
@@ -17,10 +18,13 @@
     result :- ProcessResult]
    (let [d (create-doc opts result)
          conn (-> opts :es :conn)
-         idx (-> opts :es :index)]
-     (doc/index conn {:index idx
-                      :type "b"
-                      :id (:id opts)
-                      :body d}))))
+         idx (-> opts :es :index)
+         es-addr {:index idx
+                  :type "b"
+                  :id (:id opts)}]
+     (doc/index conn (merge es-addr {:body d}))
+     es-addr)))
 
-
+(s/defn get :- StoredBuild
+  ([conn addr]
+   (:_source (doc/get conn addr))))

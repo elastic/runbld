@@ -3,6 +3,7 @@
   (:require [clojure.pprint :refer [pprint]]
             [environ.core :as environ]
             [runbld.build :as build]
+            [runbld.email :as email]
             [runbld.env :as env]
             [runbld.opts :as opts]
             [runbld.process :as proc]
@@ -48,21 +49,31 @@
      (let [opts-init (opts/parse-args args)
            _ (log ">>>>>>>>>>>> SCRIPT EXECUTION BEGIN >>>>>>>>>>>>")
            {:keys [opts result]} (run opts-init)
-
-           storedoc (store/save! opts result)
-
+           _ (log "<<<<<<<<<<<< SCRIPT EXECUTION END   <<<<<<<<<<<<")
            {:keys [took status exit-code
                    out-bytes err-bytes]} (:process result)
+           _ (log (format "DURATION: %sms" took))
+           _ (log (format "STDOUT: %d bytes" out-bytes))
+           _ (log (format "STDERR: %d bytes" err-bytes))
+           _ (log (format "WRAPPED PROCESS: %s (%d)" status exit-code))
 
-           _ (log "<<<<<<<<<<<< SCRIPT EXECUTION END   <<<<<<<<<<<<")]
-       (log (format "DURATION: %sms" took))
-       (log (format "STDOUT: %d bytes" out-bytes))
-       (log (format "STDERR: %d bytes" err-bytes))
-       (log
-        (format "WRAPPED PROCESS: %s (%d)" status exit-code))
+           storedoc (store/save! opts result)
+           _ (log (format "SAVED: https://%s:%s/%s/%s/%s"
+                          (-> opts :es :conn :host)
+                          (-> opts :es :conn :port)
+                          (-> storedoc :index)
+                          (-> storedoc :type)
+                          (-> storedoc :id)))
+
+           emaildoc (email/maybe-send! opts storedoc)
+           _ (log (format "MAILED: %s" (-> emaildoc :rcpt)))
+
+           ]
 
        (if (environ/env :dev)
-         result
+         (assoc result
+                :store-result storedoc
+                :email-result emaildoc)
          (die 0)))
 
      (catch [:error :runbld.main/errors] {:keys [errors msg]}
