@@ -1,5 +1,7 @@
-(ns runbld.publish.email
+(ns runbld.email
   (:refer-clojure :exclude [send])
+  (:require [runbld.schema :refer :all]
+            [schema.core :as s])
   (:require [clojure.string :as str]
             [postal.core :as mail]
             [runbld.opts :refer [Opts]]
