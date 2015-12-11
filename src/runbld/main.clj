@@ -9,7 +9,7 @@
             [runbld.publish :as publish]
             [runbld.store :as store]
             [runbld.system :as system]
-            [runbld.vcs :as vcs]
+            [runbld.vcs.repo :as repo]
             [schema.core :as s]
             [slingshot.slingshot :refer [try+ throw+]]))
 
@@ -37,7 +37,7 @@
 
 (def run
   (-> #'proc/run
-      vcs/wrap-vcs-info
+      repo/wrap-vcs-info
       build/wrap-build-meta
       env/wrap-env
       system/wrap-system))
@@ -46,15 +46,14 @@
 (defn -main [& args]
   (s/with-fn-validation
     (try+
-     (let [opts (opts/parse-args args)
+     (let [opts-init (opts/parse-args args)
            _ (log ">>>>>>>>>>>> SCRIPT EXECUTION BEGIN >>>>>>>>>>>>")
-           res (run opts)
+           {:keys [opts result]} (run opts-init)
 
-           ;; _ build/wrap-test-report
-           ;; _ store/wrap-save
+           storedoc (store/save! opts result)
 
            {:keys [took status exit-code
-                   out-bytes err-bytes]} (:process res)
+                   out-bytes err-bytes]} (:process result)
 
            _ (log "<<<<<<<<<<<< SCRIPT EXECUTION END   <<<<<<<<<<<<")]
        (log (format "DURATION: %sms" took))
@@ -64,7 +63,7 @@
         (format "WRAPPED PROCESS: %s (%d)" status exit-code))
 
        (if (environ/env :dev)
-         res
+         result
          (die 0)))
 
      (catch [:error :runbld.main/errors] {:keys [errors msg]}

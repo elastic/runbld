@@ -8,8 +8,7 @@
             [runbld.util.date :as date]
             [runbld.util.io :as io]
             [runbld.vcs :as vcs :refer [VcsRepo]]
-            [slingshot.slingshot :refer [throw+]])
-  (:import (runbld.vcs VcsLog)))
+            [slingshot.slingshot :refer [throw+]]))
 
 (defn repo? [dir]
   (when dir
@@ -91,7 +90,7 @@
 
 (s/defn log-latest :- VcsLog
   ([this]
-   (vcs/map->VcsLog (head-commit (.dir this)))))
+   (head-commit (.dir this))))
 
 (s/defrecord GitRepo [dir :- s/Str])
 

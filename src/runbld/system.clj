@@ -6,8 +6,7 @@
             [environ.core :as environ]
             [runbld.opts :as opts]
             [schema.core :as s]
-            [slingshot.slingshot :refer [throw+]])
-  (:import (runbld.schema BuildSystem)))
+            [slingshot.slingshot :refer [throw+]]))
 
 (defn facter-installed? []
   (let [{:keys [exit]} (sh/sh "which" "facter")]
@@ -27,28 +26,26 @@
 (s/defn inspect-system :- BuildSystem
   ([facter-fn :- clojure.lang.IFn]
    (let [facts (facter-fn)]
-     (map->BuildSystem
-      {
-       :arch           (:architecture            facts)
-       :cpu-type       (:processor0              facts)
-       :cpus           (:processorcount          facts)
-       :cpus-physical  (:physicalprocessorcount  facts)
-       :hostname       (:hostname                facts)
-       :ipv4           (:ipaddress               facts)
-       :ipv6           (:ipaddress6              facts)
-       :kernel-release (:kernelrelease           facts)
-       :kernel-version (:kernelversion           facts)
-       :model          (:hardwaremodel           facts)
-       :os             (:operatingsystem         facts)
-       :os-version     (:operatingsystemrelease  facts)
-       :ram-mb         (int
-                        (Float/parseFloat
-                         (:memorysize_mb facts)))
-       :timezone       (:timezone                facts)
-       :uptime-secs    (:uptime_seconds          facts)
-       :virtual        (:is_virtual              facts)
-       }))))
+     {:arch           (:architecture            facts)
+      :cpu-type       (:processor0              facts)
+      :cpus           (:processorcount          facts)
+      :cpus-physical  (:physicalprocessorcount  facts)
+      :hostname       (:hostname                facts)
+      :ipv4           (:ipaddress               facts)
+      :ipv6           (:ipaddress6              facts)
+      :kernel-release (:kernelrelease           facts)
+      :kernel-version (:kernelversion           facts)
+      :model          (:hardwaremodel           facts)
+      :os             (:operatingsystem         facts)
+      :os-version     (:operatingsystemrelease  facts)
+      :ram-mb         (int
+                       (Float/parseFloat
+                        (:memorysize_mb facts)))
+      :timezone       (:timezone                facts)
+      :uptime-secs    (:uptime_seconds          facts)
+      :virtual        (:is_virtual              facts)})))
 
-(defn wrap-system [proc]
+(s/defn wrap-system :- Opts2
+  [proc :- clojure.lang.IFn]
   (fn [opts]
     (proc (assoc opts :sys (inspect-system facter)))))

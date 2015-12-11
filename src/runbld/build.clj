@@ -1,4 +1,6 @@
 (ns runbld.build
+  (:require [runbld.schema :refer :all]
+            [schema.core :as s])
   (:require [clojure.java.io :as io]
             [environ.core :as environ]
             [runbld.post.test :as test]
@@ -33,11 +35,14 @@
        :branch branch
        :job-name-extra job-name-extra})))
 
-(defn wrap-build-meta [proc]
+(s/defn wrap-build-meta :- Opts4
+  [proc :- clojure.lang.IFn]
   (fn [opts]
     (proc
      (assoc opts
             :id (make-id)
+            :build (merge (:build opts)
+                          (split-job-name (:job-name opts)))
             :jenkins {:url      (get-in opts [:env "BUILD_URL"])
                       :number   (get-in opts [:env "BUILD_NUMBER"])
                       :executor (get-in opts [:env "EXECUTOR_NUMBER"])

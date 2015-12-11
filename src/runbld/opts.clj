@@ -10,30 +10,28 @@
             [runbld.util.date :as date]
             [runbld.version :as version]
             [schema.core :as s]
-            [slingshot.slingshot :refer [throw+]])
-  (:import (runbld.schema Opts)))
+            [slingshot.slingshot :refer [throw+]]))
 
 (def defaults
-  (map->Opts
-   {:es
-    {:url "http://localhost:9200"
-     :index "'build'-yyyy-MM"
-     :http-opts {:insecure? false}}
+  {:es
+   {:url "http://localhost:9200"
+    :index "'build'-yyyy-MM"
+    :http-opts {:insecure? false}}
 
-    :s3
-    {:bucket "test.example.com"
-     :prefix "/"
-     :access-key "key"
-     :secret-key "secret"}
+   :s3
+   {:bucket "test.example.com"
+    :prefix "/"
+    :access-key "key"
+    :secret-key "secret"}
 
-    :email
-    {:host "localhost"
-     :port 587
-     :tls true
-     :template-txt "templates/email.mustache.txt"
-     :template-html "templates/email.mustache.html"
-     :text-only false
-     :max-failure-notify 10}}))
+   :email
+   {:host "localhost"
+    :port 587
+    :tls true
+    :template-txt "templates/email.mustache.txt"
+    :template-html "templates/email.mustache.html"
+    :text-only false
+    :max-failure-notify 10}})
 
 (defn expand-date-pattern [s]
   (if (string? s)

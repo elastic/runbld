@@ -3,8 +3,7 @@
             [schema.core :as s])
   (:require [runbld.util.data :as data]
             [runbld.util.date :as date]
-            [runbld.util.io :as io])
-  (:import (runbld.schema ProcessResult)))
+            [runbld.util.io :as io]))
 
 (defn exec* [pb outfile errfile]
   (with-open [out (java.io.PrintWriter. outfile)
@@ -44,22 +43,24 @@
          out-file-bytes (count (slurp stdoutfile))
          err-file-bytes (count (slurp stderrfile))]
      (flush)
-     (map->ProcessResult
-      (merge
-       res
-       {:cmd cmd
-        :cmd-source (slurp scriptfile)
-        :out-file (str stdoutfile)
-        :err-file (str stderrfile)
-        :out-file-bytes out-file-bytes
-        :err-file-bytes err-file-bytes
-        :out-accuracy (data/scaled-percent out-file-bytes out-bytes)
-        :err-accuracy (data/scaled-percent err-file-bytes err-bytes)
-        })))))
+     (merge
+      res
+      {:cmd cmd
+       :cmd-source (slurp scriptfile)
+       :out-file (str stdoutfile)
+       :err-file (str stderrfile)
+       :out-file-bytes out-file-bytes
+       :err-file-bytes err-file-bytes
+       :out-accuracy (data/scaled-percent out-file-bytes out-bytes)
+       :err-accuracy (data/scaled-percent err-file-bytes err-bytes)
+       }))))
 
-(defn run [opts]
-  (exec
-   (-> opts :process :program)
-   (-> opts :process :args)
-   (-> opts :process :scriptfile)
-   (-> opts :process :cwd)))
+(s/defn run :- {(s/required-key :opts) OptsFinal
+                (s/required-key :result) ProcessResult}
+  [opts :- OptsFinal]
+  {:opts opts
+   :result (exec
+            (-> opts :process :program)
+            (-> opts :process :args)
+            (-> opts :process :scriptfile)
+            (-> opts :process :cwd))})
