@@ -25,7 +25,11 @@
 
 (s/defn inspect-system :- BuildSystem
   ([facter-fn :- clojure.lang.IFn]
-   (let [facts (facter-fn)]
+   (let [facts (facter-fn)
+         ram-mb (Float/parseFloat (:memorysize_mb facts))
+         ram-gb (.setScale
+                 (bigdec (/ ram-mb 1024)) 2
+                 java.math.BigDecimal/ROUND_HALF_UP)]
      {:arch           (:architecture            facts)
       :cpu-type       (:processor0              facts)
       :cpus           (:processorcount          facts)
@@ -38,9 +42,8 @@
       :model          (:hardwaremodel           facts)
       :os             (:operatingsystem         facts)
       :os-version     (:operatingsystemrelease  facts)
-      :ram-mb         (int
-                       (Float/parseFloat
-                        (:memorysize_mb facts)))
+      :ram-mb         ram-mb
+      :ram-gb         ram-gb
       :timezone       (:timezone                facts)
       :uptime-secs    (:uptime_seconds          facts)
       :virtual        (:is_virtual              facts)})))

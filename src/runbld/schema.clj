@@ -55,6 +55,7 @@
    (s/required-key :os             ) s/Str
    (s/required-key :os-version     ) s/Str
    (s/required-key :ram-mb         ) s/Num
+   (s/required-key :ram-gb         ) s/Num
    (s/required-key :timezone       ) s/Str
    (s/required-key :uptime-secs    ) s/Int
    (s/required-key :virtual        ) s/Bool})
