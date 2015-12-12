@@ -3,6 +3,10 @@ package com.example;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.io.BufferedReader;
 
 /**
  * Unit test for simple App.
@@ -28,12 +32,19 @@ public class AppTest
         return new TestSuite( AppTest.class );
     }
 
-    /**
-     * Rigourous Test :-)
-     */
-    public void testApp()
+    public void testBad()
     {
-        blah!
         assertTrue( false );
+    }
+
+    public void testError() throws java.io.IOException
+    {
+        BufferedReader rdr = Files.newBufferedReader(Paths.get("/some/bad/file"));
+        assertTrue(rdr.read() == 1);
+    }
+
+    public void testGood()
+    {
+        assertTrue( true );
     }
 }

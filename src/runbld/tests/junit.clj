@@ -1,4 +1,6 @@
-(ns runbld.post.test.junit
+(ns runbld.tests.junit
+  (:require [runbld.schema :refer :all]
+            [schema.core :as s])
   (:require [clojure.java.io :as io]
             [clojure.string :as str]
             [net.cgrand.enlive-html :as x]))
@@ -18,19 +20,22 @@
 (defn content-text [xml]
   (apply str (map x/text xml)))
 
-(defn collect-errors-and-failures [class test xml]
-  (merge
-   {:error-type (:tag xml)
-    :class class
-    :test test
-    :stacktrace (content-text (:content xml))
-    :summary (format "%s %s %s"
-                     (.toUpperCase (name (:tag xml)))
-                     (-> class
-                         (str/split #"\.")
-                         last)
-                     test)}
-   (:attrs xml)))
+(s/defn collect-errors-and-failures
+  ([class :- s/Str
+    test :- s/Str
+    xml :- XML]
+   (merge
+    {:error-type (:tag xml)
+     :class class
+     :test test
+     :stacktrace (content-text (:content xml))
+     :summary (format "%s %s %s"
+                      (.toUpperCase (name (:tag xml)))
+                      (-> class
+                          (str/split #"\.")
+                          last)
+                      test)}
+    (:attrs xml))))
 
 (defn failed-testcase [xml]
   (let [{:keys [classname name]} (:attrs xml)]
@@ -51,7 +56,8 @@
              :testcases
              (failed-testcases xml)))))
 
-(defn combine-failure-reports [total testsuite]
+(s/defn combine-failure-reports :- TestSummary
+  [total testsuite]
   (try
     (-> total
         (update :errors + (:errors testsuite))

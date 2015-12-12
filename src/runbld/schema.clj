@@ -211,3 +211,24 @@
      (s/optional-key :url              ) (s/maybe s/Str)
      (s/optional-key :workspace        ) s/Str
      })
+
+(def XML
+  {(s/required-key :tag     ) s/Keyword
+   (s/required-key :attrs   ) {s/Keyword s/Str}
+   (s/required-key :content ) [s/Any]})
+
+(def TestCase
+  {(s/required-key :error-type ) s/Keyword
+   (s/required-key :class      ) s/Str
+   (s/required-key :test       ) s/Str
+   (s/required-key :stacktrace ) s/Str
+   (s/required-key :summary    ) s/Str
+   (s/required-key :type       ) s/Str
+   (s/optional-key :message    ) s/Str})
+
+(def TestSummary
+  {(s/required-key :errors    ) s/Num
+   (s/required-key :failures  ) s/Num
+   (s/required-key :tests     ) s/Num
+   (s/required-key :skipped   ) s/Num
+   (s/required-key :testcases ) [TestCase]})
