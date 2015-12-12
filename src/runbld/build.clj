@@ -29,7 +29,8 @@
           (re-find
            (re-pattern
             (format
-             "^([^,]+)%s([^,]+)%s([^,]+)%s?([^,]*)?$" delim delim delim)) s)]
+             "^([^,]+)\\%s([^,]+)\\%s([^,]+)\\%s?([^,]*)?$"
+             delim delim delim)) s)]
       {:org org
        :project project
        :branch branch
