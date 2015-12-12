@@ -34,7 +34,8 @@
       {:org org
        :project project
        :branch branch
-       :job-name-extra job-name-extra})))
+       :job-name-extra job-name-extra
+       :org-project-branch (format "%s/%s#%s" org project branch)})))
 
 (s/defn wrap-build-meta :- Opts4
   [proc :- clojure.lang.IFn]

@@ -10,7 +10,7 @@
 (s/defn create-doc :- StoredBuild
   [opts result]
   (merge
-   (select-keys opts [:id :system :vcs :sys :jenkins])
+   (select-keys opts [:id :system :vcs :sys :jenkins :build])
    {:process result}))
 
 (s/defn ^:always-validate save! :- {s/Keyword s/Any}

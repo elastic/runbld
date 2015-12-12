@@ -42,44 +42,49 @@
       :subject subject
       :body body})))
 
-(s/defn send :- clojure.lang.IPersistentMap
-  [opts :- Opts
-   ctx* :- EmailCtx]
-  (let [ctx (merge
-             (-> ctx*
-                 (update :cmd #(str/join " " %1))
-                 (update :args #(str/join " " %1))
-                 (update :rcpt-to #(str/join ", " %1)))
-             {:took-human (date/human-duration
-                           (/ (:took ctx*) 1000))
-              :stdout (slurp (:out-file ctx*))
-              :stderr (slurp (:err-file ctx*))
-              :commit-short (->> (:commit ctx*) (take 7) (apply str))})]
-    ;; If needing to regenerate for render tests
-    #_(spit "context.edn"
+(s/defn send :- {s/Any s/Any}
+  [opts :- OptsFinal
+   ctx :- EmailCtx]
+  ;; If needing to regenerate for render tests
+  #_(spit "context.edn"
           (with-out-str
             (clojure.pprint/pprint
              (into (sorted-map) ctx))))
-    (send* (opts :email)
-           (-> opts :email :from)
-           (split-addr (-> opts :email :to))
-           (format "%s %s %s"
-                   (ctx :status)
-                   (ctx :build-name)
-                   (ctx :commit-short))
+  (send* (opts :email)
+         (-> opts :email :from)
+         (split-addr (-> opts :email :to))
+         (-> ctx :email :subject)
+         (mustache/render-string
+          (slurp
+           (io/resolve-resource
+            (-> opts :email :template-txt)))
+          ctx)
+         (when (and (-> opts :email :template-html)
+                    (not (-> opts :email :text-only)))
            (mustache/render-string
             (slurp
              (io/resolve-resource
-              (-> opts :email :template-txt)))
-            ctx)
-           (when (and (-> opts :email :template-html)
-                      (not (-> opts :email :text-only)))
-             (mustache/render-string
-              (slurp
-               (io/resolve-resource
-                (-> opts :email :template-html)))
-              ctx)))))
+              (-> opts :email :template-html)))
+            ctx))))
+
+(s/defn make-context :- EmailCtx
+  ([opts build]
+   (let [commit-short (->> (-> build :vcs :commit-id)
+                           (take 7) (apply str))]
+     (-> build
+         (update-in [:process :cmd] #(str/join " " %))
+         (update-in [:process :args] #(str/join " " %))
+         (update-in [:email :to] #(str/join ", " %))
+         (assoc-in [:process :took-human]
+                   (date/human-duration
+                    (/ (-> build :process :took) 1000)))
+         (assoc-in [:vcs :commit-id-short] commit-short)
+         (assoc-in [:email :subject]
+                   (format "%s %s %s"
+                           (-> build :process :status)
+                           (-> build :build :org-project-branch)
+                           commit-short))))))
 
 (defn maybe-send! [opts {:keys [index type id] :as addr}]
   (let [build-doc (store/get (-> opts :es :conn) addr)]
-    (clojure.pprint/pprint build-doc)))
+    (send opts (make-context opts build-doc))))

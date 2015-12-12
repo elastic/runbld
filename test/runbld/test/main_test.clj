@@ -51,18 +51,21 @@
 
 (deftest execution
   (testing "real execution all the way through"
-    (with-redefs [main/log (fn [_] :noconsole)
-                  email/send* (fn [& args] :EMAIL)]
-      (git/with-tmp-repo [d "tmp/git/main-test-2"]
-        (let [args ["-c" "test/config/main.yml"
-                    "-j" "elastic+foo+master"
-                    "-d" d
-                    "test/success.bash"]
-              opts (opts/parse-args args)
-              res (binding [*out* (java.io.StringWriter.)
-                            *err* (java.io.StringWriter.)]
-                    (apply main/-main args))]
-          (is (= 0 (:exit-code res)))
-          (is (= 0 (-> (store/get (-> opts :es :conn) (:store-result res))
-                       :process
-                       :exit-code))))))))
+    (let [email (atom [])]
+      (with-redefs [main/log (fn [_] :noconsole)
+                    email/send* (fn [& args]
+                                  (swap! email concat args)
+                                  ;; to satisfy schema
+                                  {})]
+        (git/with-tmp-repo [d "tmp/git/main-test-2"]
+          (let [args ["-c" "test/config/main.yml"
+                      "-j" "elastic+foo+master"
+                      "-d" d
+                      "test/success.bash"]
+                opts (opts/parse-args args)
+                res (apply main/-main args)]
+            (is (= 0 (:exit-code res)))
+            (is (= 0 (-> (store/get (-> opts :es :conn) (:store-result res))
+                         :process
+                         :exit-code)))
+            (is (.startsWith (let [[_ _ _ subj _ _] @email] subj) "SUCC"))))))))
