@@ -3,7 +3,6 @@
             [schema.core :as s])
   (:require [clojure.java.io :as io]
             [environ.core :as environ]
-            [runbld.post.test :as test]
             [runbld.util.data :refer [deep-merge-with deep-merge]]
             [runbld.util.date :as date]
             [runbld.vcs.git :as git]
@@ -51,9 +50,4 @@
                       :node     (get-in opts [:env "NODE_NAME"])
                       :labels   (get-in opts [:env "NODE_LABELS"])}))))
 
-(defn wrap-test-report [proc]
-  (fn [opts]
-    (let [res (proc opts)]
-      (assoc res :report
-             (test/capture-failures
-              (-> res :process :cwd))))))
+

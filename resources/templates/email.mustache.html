@@ -1,40 +1,52 @@
 <html>
 <body style="font-family:helvetica;font-size:1.1em">
-<h1>{{ status }}</h1>
-<h2><code><a href="{{project-url}}">{{ org }}/{{ project }}</a><br/>
-<a href="{{branch-url}}">{{ branch }}</a></code></h2>
+<h1>{{ process.status }}</h1>
+<h2><code><a href="{{project-url}}">{{ build.org }}/{{ build.project }}</a><br/>
+<a href="{{branch-url}}">{{ build.branch }}</a></code></h2>
 <table>
-<tr><td>Duration</td><td>{{ took-human }} ({{ took }}ms)</td></tr>
-<tr><td>Started</td><td>{{ time-start }}</td></tr>
-<tr><td>Ended</td><td>{{ time-end }}</td></tr>
-<tr><td>Hostname</td><td><code>{{ hostname }} (up {{ uptime_days }} days)</code></td></tr>
-<tr><td>Operating System</td><td><code>{{ operatingsystem }} {{ operatingsystemrelease }}</code></td></tr>
-<tr><td>Architecture</td><td><code>{{ architecture }} ({{ processorcount }} core)</code></td></tr>
+<tr><td>Duration</td><td>{{ process.took-human }} ({{ process.took }}ms)</td></tr>
+<tr><td>Started</td><td>{{ process.time-start }}</td></tr>
+<tr><td>Ended</td><td>{{ process.time-end }}</td></tr>
+<tr><td>Host</td><td><code>{{ sys.hostname }}
+      ({{ sys.cpus }}-cpu,
+      {{ sys.ram-gb }}GB,
+      {{ sys.os }} {{ sys.os-version }},
+      {{ sys.arch }},
+      up {{ sys.uptime }}</code></td></tr>
 </table>
 <p></p>
 <div style="background-color:#eec;padding:1px 15px">
-<pre>branch <a href="{{branch-url}}">{{ branch }}</a>
-commit <a href="{{commit-url}}">{{ commit }}</a>
-Author: {{ commit-name }} &lt;{{ commit-email }}&gt;
-Date: {{ commit-time }}
+<pre>branch <a href="{{branch-url}}">{{ build.branch }}</a>
+commit <a href="{{commit-url}}">{{ vcs.commit-id }}</a>
+Author: {{ vcs.author-name }} &lt;{{ vcs.author-email }}&gt;
+Date: {{ vcs.commit-time }}
 
-{{ commit-desc }}</pre>
+{{ vcs.message-short }}</pre>
 </div>
 
 <h3>BUILD</h3>
-<p><code>Exited: {{ exit-code }}</code></p>
+<p><code>Exited: {{ process.exit-code }}</code></p>
 <div style="background-color:#cee;padding:1px 15px">
-<pre>{{ cmd-source }}</pre>
+<pre>{{ process.cmd-source }}</pre>
 </div>
 
+{{#test}}
 <h3>SUMMARY</h3>
-<p>({{ report.tests }} tests, {{ report.errors }} errors, {{ report.failures }} failures, {{ report.skipped }} skipped)</p>
-<ul>
-{{#report.testcases}}
-<li>{{summary}}</li>
-{{/report.testcases}}
-</ul>
+<table>
+<tr><td>Tests RUN</td><td>{{ test.tests }}</td></tr>
+<tr><td>Tests FAILED</td><td>{{ test.failures }}</td></tr>
+<tr><td>Tests with ERRORs</td><td>{{ test.errors }}</td></tr>
+<tr><td>Tests SKIPPED</td><td>{{ test.skipped }}</td></tr>
+</table>
 
+<ul>
+{{#test.failed-testcases}}
+<li>{{summary}}</li>
+{{/test.failed-testcases}}
+</ul>
+{{/test}}
+
+<!--
 <h3>STDERR</h3>
 <div style="background-color:#ece;padding:1px 15px">
 <pre>{{ stderr }}</pre>
@@ -44,6 +56,6 @@ Date: {{ commit-time }}
 <div style="background-color:#cee;padding:1px 15px">
 <pre>{{ console-url }}</pre>
 </div>
-
+-->
 </body>
 </html>

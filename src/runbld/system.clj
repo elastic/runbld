@@ -45,7 +45,9 @@
       :ram-mb         ram-mb
       :ram-gb         ram-gb
       :timezone       (:timezone                facts)
+      :uptime-days    (:uptime_days             facts)
       :uptime-secs    (:uptime_seconds          facts)
+      :uptime         (:uptime                  facts)
       :virtual        (:is_virtual              facts)})))
 
 (s/defn wrap-system :- Opts2

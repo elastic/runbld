@@ -5,8 +5,8 @@
 
 (use-fixtures :once schema.test/validate-schemas)
 
-(deftest basic
-  (let [res (tests/capture-failures "test/foo-app")]
+(deftest some-errors
+  (let [res (tests/capture-failures "test/repo/some-errors")]
     (is (= {:errors 1
             :failures 1
             :tests 3
@@ -14,13 +14,13 @@
            (select-keys res [:errors :failures :tests :skipped])))
     (is (= ["java.nio.file.NoSuchFileException"
             "junit.framework.AssertionFailedError"]
-           (map :type (:testcases res))))))
+           (map :type (:failed-testcases res))))))
 
-(deftest no-failures
-  (let [res (tests/capture-failures "src")]
+(deftest no-errors
+  (let [res (tests/capture-failures "test/repo/no-errors")]
     (is (= {:errors 0
             :failures 0
-            :tests 0
+            :tests 1
             :skipped 0}
            (select-keys res [:errors :failures :tests :skipped])))
-    (is (= [] (map :type (:testcases res))))))
+    (is (= [] (map :type (:failed-testcases res))))))

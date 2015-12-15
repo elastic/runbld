@@ -22,9 +22,11 @@
    (s/required-key :scriptfile) s/Str})
 
 (def OptsElasticsearch
-  {(s/required-key :index    ) s/Str
-   (s/required-key :conn     ) Connection
-   (s/optional-key :http-opts) {s/Keyword s/Any}})
+  {(s/required-key :build-index   ) s/Str
+   (s/required-key :failure-index ) s/Str
+   (s/required-key :conn          ) Connection
+   (s/optional-key :http-opts     ) {s/Keyword s/Any}
+   (s/optional-key :url           ) s/Str})
 
 (def OptsS3
   {(s/required-key :access-key) s/Str
@@ -57,6 +59,8 @@
    (s/required-key :ram-mb         ) s/Num
    (s/required-key :ram-gb         ) s/Num
    (s/required-key :timezone       ) s/Str
+   (s/required-key :uptime         ) s/Str
+   (s/required-key :uptime-days    ) s/Num
    (s/required-key :uptime-secs    ) s/Int
    (s/required-key :virtual        ) s/Bool})
 
@@ -110,6 +114,23 @@
    (s/required-key :time-start     ) s/Str
    (s/required-key :took           ) s/Num})
 
+(def StoreProcessResult
+  {(s/required-key :cmd            ) [s/Str]
+   (s/required-key :cmd-source     ) s/Str
+   (s/required-key :err-accuracy   ) s/Int
+   (s/required-key :err-bytes      ) s/Num
+   (s/required-key :err-file-bytes ) s/Int
+   (s/required-key :exit-code      ) s/Num
+   (s/required-key :millis-end     ) s/Num
+   (s/required-key :millis-start   ) s/Num
+   (s/required-key :out-accuracy   ) s/Int
+   (s/required-key :out-bytes      ) s/Num
+   (s/required-key :out-file-bytes ) s/Int
+   (s/required-key :status         ) s/Str
+   (s/required-key :time-end       ) s/Str
+   (s/required-key :time-start     ) s/Str
+   (s/required-key :took           ) s/Num})
+
 (def VcsLog
   {(s/required-key :commit-id     ) s/Str
    (s/required-key :message-short ) s/Str
@@ -121,13 +142,61 @@
    (s/required-key :author-email  ) s/Str
    (s/required-key :author-time   ) s/Str})
 
+(def XML
+  {(s/required-key :tag     ) s/Keyword
+   (s/required-key :attrs   ) {s/Keyword s/Str}
+   (s/required-key :content ) [s/Any]})
+
+(def FailedTestCase
+  {(s/required-key :error-type ) s/Str
+   (s/required-key :class      ) s/Str
+   (s/required-key :test       ) s/Str
+   (s/required-key :stacktrace ) s/Str
+   (s/required-key :summary    ) s/Str
+   (s/required-key :type       ) s/Str
+   (s/optional-key :message    ) s/Str})
+
+(def TestSummary
+  {(s/required-key :errors    ) s/Num
+   (s/required-key :failures  ) s/Num
+   (s/required-key :tests     ) s/Num
+   (s/required-key :skipped   ) s/Num
+   (s/required-key :failed-testcases ) [FailedTestCase]})
+
+(def TestReport
+  {(s/required-key :report-has-tests) s/Bool
+   (s/optional-key :report) TestSummary})
+
+(def StoreTestSummary
+  {(s/required-key :errors    ) s/Num
+   (s/required-key :failures  ) s/Num
+   (s/required-key :tests     ) s/Num
+   (s/required-key :skipped   ) s/Num
+   (s/required-key :failed-testcases)
+   [{(s/required-key :error-type ) s/Str
+     (s/required-key :class      ) s/Str
+     (s/required-key :test       ) s/Str
+     (s/required-key :type       ) s/Str
+     (s/required-key :summary    ) s/Str
+     (s/optional-key :message    ) s/Str}]})
+
+(def StoredFailure
+  (merge
+   FailedTestCase
+   {(s/required-key :build-id ) s/Str
+    (s/required-key :time     ) s/Str
+    (s/required-key :org      ) s/Str
+    (s/required-key :project  ) s/Str
+    (s/required-key :branch   ) s/Str}))
+
 (def StoredBuild
   {(s/required-key :id     ) s/Str
    (s/required-key :build  ) BuildInfo
    (s/required-key :sys    ) BuildSystem
    (s/required-key :vcs    ) VcsLog
    (s/required-key :jenkins) java.util.Map
-   (s/required-key :process) ProcessResult})
+   (s/required-key :process) StoreProcessResult
+   (s/required-key :test   ) (s/maybe StoreTestSummary)})
 
 (def EmailCtx
   {(s/required-key :id     ) s/Str
@@ -139,10 +208,11 @@
    (s/required-key :vcs    ) (merge VcsLog
                                     {(s/required-key :commit-id-short) s/Str})
    (s/required-key :jenkins) JenkinsInfo
-   (s/required-key :process) (merge ProcessResult
+   (s/required-key :process) (merge StoreProcessResult
                                     {(s/required-key :cmd) s/Str
                                      (s/required-key :args) s/Str
                                      (s/required-key :took-human) s/Str})
+   (s/required-key :test) (s/maybe StoreTestSummary)
    }
 
   #_{
@@ -211,24 +281,3 @@
      (s/optional-key :url              ) (s/maybe s/Str)
      (s/optional-key :workspace        ) s/Str
      })
-
-(def XML
-  {(s/required-key :tag     ) s/Keyword
-   (s/required-key :attrs   ) {s/Keyword s/Str}
-   (s/required-key :content ) [s/Any]})
-
-(def TestCase
-  {(s/required-key :error-type ) s/Keyword
-   (s/required-key :class      ) s/Str
-   (s/required-key :test       ) s/Str
-   (s/required-key :stacktrace ) s/Str
-   (s/required-key :summary    ) s/Str
-   (s/required-key :type       ) s/Str
-   (s/optional-key :message    ) s/Str})
-
-(def TestSummary
-  {(s/required-key :errors    ) s/Num
-   (s/required-key :failures  ) s/Num
-   (s/required-key :tests     ) s/Num
-   (s/required-key :skipped   ) s/Num
-   (s/required-key :testcases ) [TestCase]})

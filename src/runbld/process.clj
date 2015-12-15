@@ -56,11 +56,12 @@
        }))))
 
 (s/defn run :- {(s/required-key :opts) OptsFinal
-                (s/required-key :result) ProcessResult}
+                (s/required-key :process-result) ProcessResult}
   [opts :- OptsFinal]
   {:opts opts
-   :result (exec
-            (-> opts :process :program)
-            (-> opts :process :args)
-            (-> opts :process :scriptfile)
-            (-> opts :process :cwd))})
+   :process-result
+   (exec
+    (-> opts :process :program)
+    (-> opts :process :args)
+    (-> opts :process :scriptfile)
+    (-> opts :process :cwd))})

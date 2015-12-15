@@ -65,7 +65,8 @@
                 opts (opts/parse-args args)
                 res (apply main/-main args)]
             (is (= 0 (:exit-code res)))
-            (is (= 0 (-> (store/get (-> opts :es :conn) (:store-result res))
+            (is (= 0 (-> (store/get (-> opts :es :conn)
+                                    (-> res :store-result :addr))
                          :process
                          :exit-code)))
             (is (.startsWith (let [[_ _ _ subj _ _] @email] subj) "SUCC"))))))))

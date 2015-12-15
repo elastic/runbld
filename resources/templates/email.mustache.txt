@@ -1,44 +1,49 @@
-{{ status }}
+========================================================================
+{{ process.status }}
+========================================================================
+{{ build.org }}/{{ build.project }}
+{{ build.branch }} {{ build.branch-url }}
+
+Duration {{ process.took-human }} ({{ process.took }}ms)
+Started  {{ process.time-start }}
+Ended    {{ process.time-end }}
+Host     {{ sys.hostname }} ({{ sys.cpus }}-cpu, {{ sys.ram-gb }}GB, {{ sys.os }} {{ sys.os-version }}, {{ sys.arch }}, up {{ sys.uptime }})
 ========================================================================
 
-{{ org }}/{{ project }}
-{{ branch }} {{branch-url}}
-
-Duration {{ took-human }} ({{ took }}ms)
-Started {{ time-start }}
-Ended {{ time-end }}
-Hostname {{ hostname }} (up {{ uptime_days }} days)
-Operating System {{ operatingsystem }} {{ operatingsystemrelease }}
-Architecture {{ architecture }} ({{ processorcount }} core)
 
 ========================================================================
-{{commit-url}}
-Author: {{ commit-name }} <{{ commit-email }}>
-Date: {{ commit-time }}
+HEAD {{ vcs.commit-url }}
+========================================================================
+commit {{ vcs.commit-id }}
+Author: {{ vcs.author-name }} <{{ vcs.author-email }}>
+Date: {{ vcs.commit-time }}
 
-{{ commit-desc }}
+{{ vcs.message-short }}
+========================================================================
 
 
-BUILD (exit: {{ exit-code }})
+========================================================================
+BUILD (exit: {{ process.exit-code }})
 ========================================================================
 ```
-{{ cmd-source }}
+{{ process.cmd-source }}
 ```
+========================================================================
 
+
+{{#test}}
+========================================================================
 SUMMARY
-({{ report.tests }} tests, {{ report.errors }} errors, {{ report.failures }} failures, {{ report.skipped }} skipped)
 ========================================================================
-{{#report.testcases}}
+Tests RUN:         {{ test.tests }}
+Tests FAILED:      {{ test.failures }}
+Tests with ERRORs: {{ test.errors }}
+Tests SKIPPED:     {{ test.skipped }}
+========================================================================
+{{#test.failed-testcases}}
 {{summary}}
-{{/report.testcases}}
-
-
-STDERR
+{{/test.failed-testcases}}
 ========================================================================
-{{ stderr }}
-
-STDOUT
-========================================================================
-{{ console-url }}
+{{/test}}
 
 

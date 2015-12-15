@@ -9,6 +9,7 @@
             [runbld.process :as proc]
             [runbld.store :as store]
             [runbld.system :as system]
+            [runbld.tests :as tests]
             [runbld.vcs.repo :as repo]
             [schema.core :as s]
             [slingshot.slingshot :refer [try+ throw+]]))
@@ -48,32 +49,28 @@
     (try+
      (let [opts-init (opts/parse-args args)
            _ (log ">>>>>>>>>>>> SCRIPT EXECUTION BEGIN >>>>>>>>>>>>")
-           {:keys [opts result]} (run opts-init)
+           {:keys [opts process-result]} (run opts-init)
            _ (log "<<<<<<<<<<<< SCRIPT EXECUTION END   <<<<<<<<<<<<")
-           {:keys [took status exit-code
-                   out-bytes err-bytes]} (:process result)
+           {:keys [took status exit-code out-bytes err-bytes]} process-result
            _ (log (format "DURATION: %sms" took))
            _ (log (format "STDOUT: %d bytes" out-bytes))
            _ (log (format "STDERR: %d bytes" err-bytes))
            _ (log (format "WRAPPED PROCESS: %s (%d)" status exit-code))
 
-           storedoc (store/save! opts result)
-           _ (log (format "SAVED: https://%s:%s/%s/%s/%s"
-                          (-> opts :es :conn :host)
-                          (-> opts :es :conn :port)
-                          (-> storedoc :index)
-                          (-> storedoc :type)
-                          (-> storedoc :id)))
+           test-report (tests/report (-> opts :process :cwd))
 
-           emaildoc (email/maybe-send! opts storedoc)
-           _ (log (format "MAILED: %s" (-> emaildoc :rcpt)))
+           store-result (store/save! opts process-result test-report)
+           _ (log (format "SAVED: %s" (:url store-result)))
+
+           email-result (email/maybe-send! opts (:addr store-result))
+           _ (log (format "MAILED: %s" (-> email-result :rcpt)))
 
            ]
 
        (if (environ/env :dev)
-         (assoc result
-                :store-result storedoc
-                :email-result emaildoc)
+         (assoc process-result
+                :store-result store-result
+                :email-result email-result)
          (die 0)))
 
      (catch [:error :runbld.main/errors] {:keys [errors msg]}

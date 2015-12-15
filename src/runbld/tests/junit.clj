@@ -25,7 +25,7 @@
     test :- s/Str
     xml :- XML]
    (merge
-    {:error-type (:tag xml)
+    {:error-type (name (:tag xml))
      :class class
      :test test
      :stacktrace (content-text (:content xml))
@@ -40,7 +40,7 @@
 (defn failed-testcase [xml]
   (let [{:keys [classname name]} (:attrs xml)]
     (map (partial collect-errors-and-failures classname name)
-         (x/select xml [#{:failure :error :skipped}]))))
+         (x/select xml [#{:failure :error}]))))
 
 (defn failed-testcases [xml]
   (mapcat failed-testcase
@@ -50,21 +50,19 @@
   (let [meta (select-keys
               (testcase-meta xml)
               [:name :errors :failures :tests :skipped])]
-    (when (or (pos? (:failures meta))
-              (pos? (:errors meta)))
-      (assoc meta
-             :testcases
-             (failed-testcases xml)))))
+    (assoc meta
+           :failed-testcases
+           (failed-testcases xml))))
 
 (s/defn combine-failure-reports :- TestSummary
   [total testsuite]
   (try
     (-> total
-        (update :errors + (:errors testsuite))
-        (update :failures + (:failures testsuite))
-        (update :tests + (:tests testsuite))
-        (update :skipped + (:skipped testsuite))
-        (update :testcases concat (:testcases testsuite)))
+        (update :errors   + (:errors    testsuite))
+        (update :failures + (:failures  testsuite))
+        (update :tests    + (:tests     testsuite))
+        (update :skipped  + (:skipped   testsuite))
+        (update :failed-testcases concat (:failed-testcases testsuite)))
     (catch Throwable t
       (clojure.pprint/pprint testsuite)
       (throw t))))
@@ -86,4 +84,4 @@
                                           :failures 0
                                           :tests 0
                                           :skipped 0
-                                          :testcases []}))))
+                                          :failed-testcases []}))))

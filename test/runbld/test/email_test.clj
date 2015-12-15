@@ -12,4 +12,4 @@
             (io/resource "templates/email.mustache.html"))
            (edn/read-string
             (slurp "test/context.edn"))))
-    (is (= 1949 (count (slurp f))))))
+    (is (= 1523 (count (slurp f))))))

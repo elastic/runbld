@@ -15,7 +15,8 @@
 (def defaults
   {:es
    {:url "http://localhost:9200"
-    :index "'build'-yyyy-MM"
+    :build-index "'build'-yyyy-MM"
+    :failure-index "'failure'-yyyy-MM"
     :http-opts {:insecure? false}}
 
    :s3
@@ -65,7 +66,7 @@
 
 (s/defn load-config-with-profiles :- java.util.Map
   [job-name :- s/Str
-   filepath :- s/Str]
+   filepath :- (s/cond-pre s/Str java.io.File)]
   (let [conf (load-config filepath)
         res (deep-merge-with deep-merge
                              (dissoc conf :profiles)
@@ -142,12 +143,10 @@
     (let [options (assemble-all-opts
                    (normalize options))]
       (merge options
-             {:es (let [idx (expand-date-pattern
-                             (-> options :es :index))
-                        es-opts (assoc (:es options) :index idx)]
-                    {:index idx
-                     :conn (es/make es-opts)})
-
+             {:es (-> (:es options)
+                      (update :build-index expand-date-pattern)
+                      (update :failure-index expand-date-pattern)
+                      (assoc :conn (es/make (:es options))))
               :process (merge
                         ;; Invariant: Jenkins passes it in through arguments
                         {:scriptfile (first arguments)}

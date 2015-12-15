@@ -20,21 +20,34 @@
      (string? s) [s]
      (sequential? s) s)))
 
-(s/defn send* :- clojure.lang.IPersistentMap
-  [conn    :- {s/Keyword s/Any}
-   from    :- s/Str
-   to      :- [s/Str]
-   subject :- s/Str
-   plain   :- s/Str
-   html    :- (s/maybe s/Str)]
-  (let [body [:alternative
-              {:type "text/plain; charset=utf-8"
-               :content plain}]
+(s/defn attach-failure :- {(s/required-key :type) s/Keyword
+                           (s/required-key :content) java.io.File
+                           (s/required-key :content-type) s/Str}
+  [failure]
+  (let [fname (format "/tmp/%s-%s-%s.txt"
+                      (:build-id failure)
+                      (:class failure)
+                      (:test failure))]
+    (spit fname (:stacktrace failure))
+    {:type :attachment
+     :content (java.io.File. fname)
+     :content-type "text/plain"}))
+
+(s/defn send* :- s/Any
+  [conn     :- {s/Keyword s/Any}
+   from     :- s/Str
+   to       :- [s/Str]
+   subject  :- s/Str
+   plain    :- s/Str
+   html     :- (s/maybe s/Str)
+   failures :- [s/Any]]
+  (let [failure-attachments (map attach-failure failures)
         body (if html
-               (conj body
-                     {:type "text/html; charset=utf-8"
-                      :content html})
-               body)]
+               [{:type "text/html; charset=utf-8"
+                  :content html}]
+               [{:type "text/plain; charset=utf-8"
+               :content plain}])
+        body (concat body failure-attachments)]
     (mail/send-message
      conn
      {:from from
@@ -42,9 +55,10 @@
       :subject subject
       :body body})))
 
-(s/defn send :- {s/Any s/Any}
+(s/defn send :- s/Any
   [opts :- OptsFinal
-   ctx :- EmailCtx]
+   ctx :- EmailCtx
+   failures :- [s/Any]]
   ;; If needing to regenerate for render tests
   #_(spit "context.edn"
           (with-out-str
@@ -65,7 +79,8 @@
             (slurp
              (io/resolve-resource
               (-> opts :email :template-html)))
-            ctx))))
+            ctx))
+         failures))
 
 (s/defn make-context :- EmailCtx
   ([opts build]
@@ -86,5 +101,9 @@
                            commit-short))))))
 
 (defn maybe-send! [opts {:keys [index type id] :as addr}]
-  (let [build-doc (store/get (-> opts :es :conn) addr)]
-    (send opts (make-context opts build-doc))))
+  (let [build-doc (store/get (-> opts :es :conn) addr)
+        failure-docs (store/get-failures
+                      (-> opts :es :conn)
+                      (-> opts :es :failure-index)
+                      (:id build-doc))]
+    (send opts (make-context opts build-doc) failure-docs)))
