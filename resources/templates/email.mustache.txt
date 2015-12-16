@@ -1,35 +1,45 @@
-{{ status }}
+========================================================================
+{{ process.status }}
+========================================================================
+{{ build.org }}/{{ build.project }}
+{{ build.branch }} {{ build.branch-url }}
+
+Duration {{ process.took-human }} ({{ process.took }}ms)
+Started  {{ process.time-start }}
+Ended    {{ process.time-end }}
+Host     {{ sys.hostname }} ({{ sys.cpus }}-cpu, {{ sys.ram-gb }}GB, {{ sys.os }} {{ sys.os-version }}, {{ sys.arch }}, up {{ sys.uptime }})
 ========================================================================
 
-{{ org }}/{{ project }}
-{{ branch }} {{branch-url}}
-
-Duration {{ took-human }} ({{ took }}ms)
-Started {{ time-start }}
-Ended {{ time-end }}
-Hostname {{ hostname }} (up {{ uptime_days }} days)
-Operating System {{ operatingsystem }} {{ operatingsystemrelease }}
-Architecture {{ architecture }} ({{ processorcount }} core)
 
 ========================================================================
-{{commit-url}}
-Author: {{ commit-name }} <{{ commit-email }}>
-Date: {{ commit-time }}
-
-{{ commit-desc }}
-
-
-BUILD (exit: {{ exit-code }})
+HEAD {{ vcs.commit-url }}
+========================================================================
+{{ vcs.log-pretty }}
 ========================================================================
 
-{{ cmd-source }}
 
-STDERR
 ========================================================================
-{{ stderr }}
+BUILD (exit: {{ process.exit-code }})
+========================================================================
+```
+{{ process.cmd-source }}
+```
+========================================================================
 
-STDOUT
+
+{{#test}}
 ========================================================================
-{{ console-url }}
+SUMMARY
+========================================================================
+Tests RUN:         {{ test.tests }}
+Tests FAILED:      {{ test.failures }}
+Tests with ERRORs: {{ test.errors }}
+Tests SKIPPED:     {{ test.skipped }}
+========================================================================
+{{#test.failed-testcases}}
+{{summary}}
+{{/test.failed-testcases}}
+========================================================================
+{{/test}}
 
 

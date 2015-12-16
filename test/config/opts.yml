@@ -1,0 +1,23 @@
+email:
+  host: smtp.example.com
+  port: 587
+  user: smtpuser
+  pass: pass!
+  from: default@example.com
+  to: default@example.com
+  template-txt: test/templates/default.mustache
+  template-html: templates/email.mustache.html
+
+# any matches will be merged in order with top-level sections
+profiles:
+  - "^test,.*":
+      email:
+        to: override@example.com
+  - "^test,foo.*":
+      email:
+        from: override@example.com
+  - not-used:
+      email:
+        from: not-used@example.com
+      process:
+        program: not-used

@@ -1,4 +1,6 @@
 (ns runbld.process
+  (:require [runbld.schema :refer :all]
+            [schema.core :as s])
   (:require [runbld.util.data :as data]
             [runbld.util.date :as date]
             [runbld.util.io :as io]))
@@ -13,21 +15,19 @@
                                  (.getErrorStream proc) err)
           exit-code (.waitFor proc)
           end (System/currentTimeMillis)]
-      {:start-millis start
-       :time-start (date/ms-to-iso start)
-       :end-millis end
-       :time-end (date/ms-to-iso end)
-       :took (- end start)
-       :exit-code exit-code
-       :status (if (pos? exit-code) "FAILURE" "SUCCESS")
-       :out-bytes @out-bytes
+      {
        :err-bytes @err-bytes
-       :out-accuracy (data/bigdec
-                      (data/safe-div (count (slurp outfile)) @out-bytes) 4)
-       :err-accuracy (data/bigdec
-                      (data/safe-div (count (slurp errfile)) @err-bytes) 4)})))
+       :exit-code exit-code
+       :millis-end end
+       :millis-start start
+       :out-bytes @out-bytes
+       :status (if (pos? exit-code) "FAILURE" "SUCCESS")
+       :time-end (date/ms-to-iso end)
+       :time-start (date/ms-to-iso start)
+       :took (- end start)
+       })))
 
-(defn exec
+(s/defn exec :- ProcessResult
   ([program args scriptfile]
    (exec program args scriptfile (System/getProperty "user.dir")))
   ([program args scriptfile cwd]
@@ -38,22 +38,30 @@
          cmd (flatten [program args scriptfile*])
          pb (doto (ProcessBuilder. cmd)
               (.directory dir))
-         res (exec* pb stdoutfile stderrfile)]
+         {:keys [out-bytes
+                 err-bytes] :as res} (exec* pb stdoutfile stderrfile)
+         out-file-bytes (count (slurp stdoutfile))
+         err-file-bytes (count (slurp stderrfile))]
      (flush)
      (merge
       res
       {:cmd cmd
        :cmd-source (slurp scriptfile)
        :out-file (str stdoutfile)
-       :err-file (str stderrfile)}))))
+       :err-file (str stderrfile)
+       :out-file-bytes out-file-bytes
+       :err-file-bytes err-file-bytes
+       :out-accuracy (data/scaled-percent out-file-bytes out-bytes)
+       :err-accuracy (data/scaled-percent err-file-bytes err-bytes)
+       }))))
 
-(defn run [opts]
-  (assoc opts
-         :process
-         (merge
-          (:process opts)
-          (exec
-           (-> opts :process :program)
-           (-> opts :process :args)
-           (-> opts :process :scriptfile)
-           (-> opts :process :cwd)))))
+(s/defn run :- {(s/required-key :opts) OptsFinal
+                (s/required-key :process-result) ProcessResult}
+  [opts :- OptsFinal]
+  {:opts opts
+   :process-result
+   (exec
+    (-> opts :process :program)
+    (-> opts :process :args)
+    (-> opts :process :scriptfile)
+    (-> opts :process :cwd))})
