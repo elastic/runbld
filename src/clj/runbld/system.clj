@@ -29,26 +29,29 @@
          ram-mb (Float/parseFloat (:memorysize_mb facts))
          ram-gb (.setScale
                  (bigdec (/ ram-mb 1024)) 2
-                 java.math.BigDecimal/ROUND_HALF_UP)]
-     {:arch           (:architecture            facts)
-      :cpu-type       (:processor0              facts)
-      :cpus           (:processorcount          facts)
-      :cpus-physical  (:physicalprocessorcount  facts)
-      :hostname       (:hostname                facts)
-      :ipv4           (:ipaddress               facts)
-      :ipv6           (:ipaddress6              facts)
-      :kernel-release (:kernelrelease           facts)
-      :kernel-version (:kernelversion           facts)
-      :model          (:hardwaremodel           facts)
-      :os             (:operatingsystem         facts)
-      :os-version     (:operatingsystemrelease  facts)
-      :ram-mb         ram-mb
-      :ram-gb         ram-gb
-      :timezone       (:timezone                facts)
-      :uptime-days    (:uptime_days             facts)
-      :uptime-secs    (:uptime_seconds          facts)
-      :uptime         (:uptime                  facts)
-      :virtual        (:is_virtual              facts)})))
+                 java.math.BigDecimal/ROUND_HALF_UP)
+         ipv6 (:ipaddress6 facts)]
+     (merge
+      {:arch           (:architecture            facts)
+       :cpu-type       (:processor0              facts)
+       :cpus           (:processorcount          facts)
+       :cpus-physical  (:physicalprocessorcount  facts)
+       :hostname       (:hostname                facts)
+       :ipv4           (:ipaddress               facts)
+       :kernel-release (:kernelrelease           facts)
+       :kernel-version (:kernelversion           facts)
+       :model          (:hardwaremodel           facts)
+       :os             (:operatingsystem         facts)
+       :os-version     (:operatingsystemrelease  facts)
+       :ram-mb         ram-mb
+       :ram-gb         ram-gb
+       :timezone       (:timezone                facts)
+       :uptime-days    (:uptime_days             facts)
+       :uptime-secs    (:uptime_seconds          facts)
+       :uptime         (:uptime                  facts)
+       :virtual        (:is_virtual              facts)}
+      (when ipv6
+        {:ipv6 ipv6})))))
 
 (s/defn wrap-system :- Opts2
   [proc :- clojure.lang.IFn]

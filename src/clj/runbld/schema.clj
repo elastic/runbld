@@ -50,7 +50,7 @@
    (s/required-key :cpus-physical  ) s/Num
    (s/required-key :hostname       ) s/Str
    (s/required-key :ipv4           ) s/Str
-   (s/required-key :ipv6           ) s/Str
+   (s/optional-key :ipv6           ) s/Str
    (s/required-key :kernel-release ) s/Str
    (s/required-key :kernel-version ) s/Str
    (s/required-key :model          ) s/Str
