@@ -15,6 +15,7 @@
                prismatic/schema]
   :source-paths ["src/clj"]
   :java-source-paths ["src/java"]
+  :javac-options ["-Xlint:unchecked"]
   :dependencies [[clj-jgit "0.8.8"]
                  [clj-time "0.11.0"]
                  [circleci/clj-yaml "0.5.4"]

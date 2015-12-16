@@ -37,7 +37,7 @@ public class SvnRepository {
     }
 
     public SVNLogEntry latestLog(long startRevision, long endRevision) {
-        Collection<SVNLogEntry> logEntries = null;
+        Collection logEntries = null;
 
         try {
             logEntries = repository.log(new String[]{""}, null,
