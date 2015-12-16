@@ -132,15 +132,21 @@
    (s/required-key :took           ) s/Num})
 
 (def VcsLog
-  {(s/required-key :commit-id     ) s/Str
-   (s/required-key :message-short ) s/Str
-   (s/required-key :message-full  ) s/Str
-   (s/required-key :commit-name   ) s/Str
-   (s/required-key :commit-email  ) s/Str
-   (s/required-key :commit-time   ) s/Str
+  {
    (s/required-key :author-name   ) s/Str
-   (s/required-key :author-email  ) s/Str
-   (s/required-key :author-time   ) s/Str})
+   (s/required-key :commit-id     ) s/Str
+   (s/required-key :commit-short  ) s/Str
+   (s/required-key :commit-time   ) s/Str
+   (s/required-key :message       ) s/Str
+   (s/required-key :type          ) s/Str
+   (s/required-key :log-pretty    ) s/Str
+
+   (s/optional-key :author-email  ) s/Str
+   (s/optional-key :author-time   ) s/Str
+   (s/optional-key :commit-email  ) s/Str
+   (s/optional-key :commit-name   ) s/Str
+   (s/optional-key :message-full  ) s/Str
+   })
 
 (def XML
   {(s/required-key :tag     ) s/Keyword
@@ -205,8 +211,7 @@
    (s/required-key :email  ) {(s/required-key :to) s/Str
                               (s/required-key :subject) s/Str
                               }
-   (s/required-key :vcs    ) (merge VcsLog
-                                    {(s/required-key :commit-id-short) s/Str})
+   (s/required-key :vcs    ) VcsLog
    (s/required-key :jenkins) JenkinsInfo
    (s/required-key :process) (merge StoreProcessResult
                                     {(s/required-key :cmd) s/Str

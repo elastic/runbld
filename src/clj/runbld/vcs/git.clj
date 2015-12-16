@@ -10,6 +10,8 @@
             [runbld.vcs :as vcs :refer [VcsRepo]]
             [slingshot.slingshot :refer [throw+]]))
 
+(def vendor "git")
+
 (defn repo? [dir]
   (when dir
     (.isDirectory (jio/file dir ".git"))))
@@ -46,21 +48,37 @@
 
 (defn commit-map [commit]
   (let [author (.getAuthorIdent commit)
-        committer (.getCommitterIdent commit)]
-    {:commit-id (.getName commit)
-     :message-short (.getShortMessage commit)
+        committer (.getCommitterIdent commit)
+        commit-id (.getName commit)
+        author-name (and author (.getName author))
+        author-email (and author (.getEmailAddress author))
+        message (.getShortMessage commit)
+        commit-time (and committer
+                         (date/date-to-iso
+                          (.getWhen committer)))]
+    {:commit-id commit-id
+     :commit-short (->> commit-id
+                        (take 7)
+                        (apply str))
+
+     :message message
      :message-full (.getFullMessage commit)
-     :commit-time (and committer
-                       (date/date-to-iso
-                        (.getWhen committer)))
+     :commit-time commit-time
      :commit-name (and committer (.getName committer))
      :commit-email (and committer (.getEmailAddress committer))
      :author-time (and author
                        (date/date-to-iso
                         (.getWhen author)))
-     :author-name (and author (.getName author))
-     :author-email (and author (.getEmailAddress author))
-     }))
+     :author-name author-name
+     :author-email author-email
+     :type vendor
+     :log-pretty (format
+                  "commit %s\nAuthor: %s <%s>\nDate:   %s\n\n%s"
+                  commit-id
+                  (or author-name "")
+                  (or author-email "")
+                  commit-time
+                  message)}))
 
 (defn resolve-remote [^String loc]
   (condp #(.startsWith %2 %1) loc
@@ -96,4 +114,8 @@
 
 (extend GitRepo
   VcsRepo
-  {:log-latest log-latest})
+  {:log-latest log-latest
+   :vendor (fn [& args] vendor)})
+
+(s/defn make-repo [dir]
+  (GitRepo. dir))

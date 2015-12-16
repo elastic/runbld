@@ -14,11 +14,7 @@ Host     {{ sys.hostname }} ({{ sys.cpus }}-cpu, {{ sys.ram-gb }}GB, {{ sys.os }
 ========================================================================
 HEAD {{ vcs.commit-url }}
 ========================================================================
-commit {{ vcs.commit-id }}
-Author: {{ vcs.author-name }} <{{ vcs.author-email }}>
-Date: {{ vcs.commit-time }}
-
-{{ vcs.message-short }}
+{{ vcs.log-pretty }}
 ========================================================================
 
 

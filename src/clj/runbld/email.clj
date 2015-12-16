@@ -7,6 +7,7 @@
             [runbld.store :as store]
             [runbld.util.date :as date]
             [runbld.util.io :as io]
+            [runbld.vcs :as vcs]
             [schema.core :as s]
             [stencil.core :as mustache]))
 
@@ -44,9 +45,9 @@
   (let [failure-attachments (map attach-failure failures)
         body (if html
                [{:type "text/html; charset=utf-8"
-                  :content html}]
+                 :content html}]
                [{:type "text/plain; charset=utf-8"
-               :content plain}])
+                 :content plain}])
         body (concat body failure-attachments)]
     (mail/send-message
      conn
@@ -82,23 +83,33 @@
             ctx))
          failures))
 
+(defn strip-out-runbld [src]
+  (let [runbld-shebang (fn [line]
+                         (not
+                          (re-find #"^#!.*runbld" line)))]
+    (->> src
+         java.io.StringReader.
+         clojure.java.io/reader
+         line-seq
+         (filter runbld-shebang)
+         (interpose "\n")
+         (apply str))))
+
 (s/defn make-context :- EmailCtx
   ([opts build]
-   (let [commit-short (->> (-> build :vcs :commit-id)
-                           (take 7) (apply str))]
-     (-> build
-         (update-in [:process :cmd] #(str/join " " %))
-         (update-in [:process :args] #(str/join " " %))
-         (update-in [:email :to] #(str/join ", " %))
-         (assoc-in [:process :took-human]
-                   (date/human-duration
-                    (/ (-> build :process :took) 1000)))
-         (assoc-in [:vcs :commit-id-short] commit-short)
-         (assoc-in [:email :subject]
-                   (format "%s %s %s"
-                           (-> build :process :status)
-                           (-> build :build :org-project-branch)
-                           commit-short))))))
+   (-> build
+       (update-in [:process :cmd] #(str/join " " %))
+       (update-in [:process :cmd-source] strip-out-runbld)
+       (update-in [:process :args] #(str/join " " %))
+       (update-in [:email :to] #(str/join ", " %))
+       (assoc-in [:process :took-human]
+                 (date/human-duration
+                  (/ (-> build :process :took) 1000)))
+       (assoc-in [:email :subject]
+                 (format "%s %s %s"
+                         (-> build :process :status)
+                         (-> build :build :org-project-branch)
+                         (-> build :vcs :commit-short))))))
 
 (defn maybe-send! [opts {:keys [index type id] :as addr}]
   (let [build-doc (store/get (-> opts :es :conn) addr)

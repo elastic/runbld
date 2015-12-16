@@ -11,13 +11,13 @@
 (deftest test-git-commit
   (git/with-tmp-repo [d "tmp/git/vcs-test"]
     (is (= "Add build"
-           (:message-short
+           (:message
             (vcs/log-latest
              (runbld.vcs.git.GitRepo. d)))))))
 
 (deftest test-discovery
   (git/with-tmp-repo [d "tmp/git/vcs-test"]
     (is (= "Add build"
-           (:message-short
-            (vcs/log-latest (repo/make-repo d)))))))
+           (:message
+            (vcs/log-latest (git/make-repo d)))))))
 
