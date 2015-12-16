@@ -24,10 +24,12 @@
    maps))
 
 (defn safe-div
-  ([n m]
-   (if (and m (pos? m))
-     (float (/ n m))
-     0)))
+  ([m n]
+   (if (and m n (zero? m) (zero? n))
+     1.0
+     (if (and n (pos? n))
+       (float (/ m n))
+       0.0))))
 
 (defn bigdec
   "Set f to n places after the decimal."
@@ -37,3 +39,12 @@
    (when f
      (-> (clojure.core/bigdec f)
          (.setScale n BigDecimal/ROUND_HALF_UP)))))
+
+(defn scaled-percent
+  ([m n]
+   (int
+    (* 10000 (bigdec (safe-div m n))))))
+
+(defn unscaled-percent
+  ([n]
+   (bigdec (/ n 100))))
