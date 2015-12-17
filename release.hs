@@ -30,10 +30,14 @@ make :: Text -> IO ()
 make target = procOrDie "make" [target]
 
 upload :: Text -> Text -> IO ()
-upload ver loc = procOrDie "s3cmd" [ "put", "-P"
-               , (T.append "target/runbld-" ver)
-               , (T.append "s3://" loc)
-               ]
+upload ver loc =
+  if loc == (T.last loc) then
+    procOrDie "s3cmd" [ "put", "-P"
+                      , (T.append "target/runbld-" ver)
+                      , (T.append "s3://" loc)
+                      ]
+  else
+    die ("\"" <> loc <> "\" should end in a slash")
 
 main = do
   let vfile = T.pack "resources/version.txt"
