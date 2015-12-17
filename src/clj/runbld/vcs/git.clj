@@ -106,16 +106,53 @@
                (git/load-repo dir)))]
     (commit-map HEAD)))
 
+(defn branch-url
+  [this]
+  (if (and (.url this)
+           (.contains (.url this) "github.com"))
+    (format "%s/%s/%s/tree/%s"
+            (.url this)
+            (.org this)
+            (.project this)
+            (.branch this))))
+
+(defn commit-url
+  [this commit-id]
+  (if (and (.url this)
+           (.contains (.url this) "github.com"))
+    (format "%s/%s/%s/commit/%s"
+            (.url this)
+            (.org this)
+            (.project this)
+            commit-id)))
+
+(defn project-url
+  [this]
+  (.url this))
+
 (s/defn log-latest :- VcsLog
   ([this]
-   (head-commit (.dir this))))
+   (let [{:keys [commit-id] :as commit} (head-commit (.dir this))]
+     (merge
+      commit
+      {:project-url (project-url this)}
+      (when-let [u (branch-url this)]
+        {:branch-url u})
+      (when-let [u (commit-url this commit-id)]
+        {:commit-url u})))))
 
-(s/defrecord GitRepo [dir :- s/Str])
+(s/defrecord GitRepo
+    [dir     :- s/Str  ;; local working copy
+     url     :- s/Str  ;; remote
+     org     :- s/Str
+     project :- s/Str
+     branch  :- s/Str])
 
 (extend GitRepo
   VcsRepo
   {:log-latest log-latest
    :vendor (fn [& args] vendor)})
 
-(s/defn make-repo [dir]
-  (GitRepo. dir))
+(s/defn make-repo :- GitRepo
+  [dir url org project branch]
+  (GitRepo. dir url org project branch))
