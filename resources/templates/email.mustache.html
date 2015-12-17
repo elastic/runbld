@@ -4,6 +4,7 @@
 <h2><code><a href="{{project-url}}">{{ build.org }}/{{ build.project }}</a><br/>
 <a href="{{branch-url}}">{{ build.branch }}</a></code></h2>
 <table>
+<tr><td>Log</td><td>{{ build.console-log }}</td></tr>
 <tr><td>Duration</td><td>{{ process.took-human }} ({{ process.took }}ms)</td></tr>
 <tr><td>Started</td><td>{{ process.time-start }}</td></tr>
 <tr><td>Ended</td><td>{{ process.time-end }}</td></tr>
@@ -24,7 +25,7 @@ Date: {{ vcs.commit-time }}
 {{ vcs.message-short }}</pre>
 </div>
 
-<h3>BUILD</h3>
+<h3>BUILD (<a href="{{ build.console-log }}">log</a>)</h3>
 <p><code>Exited: {{ process.exit-code }}</code></p>
 <div style="background-color:#cee;padding:1px 15px">
 <pre>{{ process.cmd-source }}</pre>

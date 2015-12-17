@@ -3,7 +3,6 @@
             [schema.test])
   (:require [runbld.vcs :as vcs]
             [runbld.vcs.git :as git]
-            [runbld.vcs.repo :as repo]
             :reload-all))
 
 (use-fixtures :once schema.test/validate-schemas)
@@ -13,11 +12,14 @@
     (is (= "Add build"
            (:message
             (vcs/log-latest
-             (runbld.vcs.git.GitRepo. d)))))))
+             (runbld.vcs.git.GitRepo.
+              d "http://example.com" "elastic" "foo" "master")))))))
 
 (deftest test-discovery
   (git/with-tmp-repo [d "tmp/git/vcs-test"]
     (is (= "Add build"
            (:message
-            (vcs/log-latest (git/make-repo d)))))))
+            (vcs/log-latest
+             (git/make-repo
+              d "http://example.com" "elastic" "foo" "master")))))))
 
