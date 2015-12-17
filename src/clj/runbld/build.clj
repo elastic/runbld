@@ -6,7 +6,6 @@
             [runbld.util.data :refer [deep-merge-with deep-merge]]
             [runbld.util.date :as date]
             [runbld.scheduler :as scheduler]
-            [runbld.vcs :as vcs]
             [slingshot.slingshot :refer [throw+]]))
 
 (defn make-rand-uuid []
@@ -38,7 +37,7 @@
        :job-name-extra job-name-extra
        :org-project-branch (format "%s/%s#%s" org project branch)})))
 
-(s/defn wrap-build-meta :- OptsFinal
+(s/defn wrap-build-meta :- OptsStage5
   [proc :- clojure.lang.IFn]
   (fn [opts]
     (proc

@@ -78,7 +78,10 @@
    (s/required-key :scheduler-type     ) s/Str
    (s/required-key :url                ) s/Str
    (s/required-key :console-url        ) s/Str
-   (s/required-key :tags               ) [s/Str]})
+   (s/required-key :tags               ) [s/Str]
+   (s/optional-key :number             ) s/Str
+   (s/optional-key :executor           ) s/Str
+   (s/optional-key :node               ) s/Str})
 
 (def SchedulerInfo
   {(s/required-key :type     ) (s/maybe s/Str)
@@ -95,11 +98,11 @@
   (merge OptsStage3 {(s/required-key :scheduler) (s/protocol Scheduler)}))
 
 (def OptsStage5
-  (merge OptsStage4 {(s/required-key :vcs) {s/Keyword s/Any}}))
+  (merge OptsStage4 {(s/required-key :id) s/Str
+                     (s/required-key :build) Build}))
 
 (def OptsFinal
-  (merge OptsStage5 {(s/required-key :id) s/Str
-                     (s/required-key :build) Build}))
+  (merge OptsStage5 {(s/required-key :vcs) {s/Keyword s/Any}}))
 
 (def ProcessResult
   {(s/required-key :cmd            ) [s/Str]
@@ -146,6 +149,9 @@
    (s/required-key :message       ) s/Str
    (s/required-key :type          ) s/Str
    (s/required-key :log-pretty    ) s/Str
+   (s/required-key :project-url   ) s/Str
+   (s/optional-key :branch-url    ) s/Str
+   (s/optional-key :commit-url    ) s/Str
 
    (s/optional-key :author-email  ) s/Str
    (s/optional-key :author-time   ) s/Str

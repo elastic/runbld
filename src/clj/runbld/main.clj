@@ -39,8 +39,8 @@
 
 (def run
   (-> #'proc/run
-      build/wrap-build-meta
       vcs/wrap-vcs-info
+      build/wrap-build-meta
       scheduler/wrap-scheduler
       env/wrap-env
       system/wrap-system))

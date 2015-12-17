@@ -12,7 +12,7 @@
     (format "%s/console" (scheduler/build-url this)))
   (tags [this]
     (str/split
-     (get-in (.opts this) [:env "NODE_LABELS"]) " "))
+     (get-in (.opts this) [:env "NODE_LABELS"]) #" "))
   (extra-info [this]
     (let [opts (.opts this)]
       {:number   (get-in opts [:env "BUILD_NUMBER"])
@@ -20,12 +20,13 @@
        :node     (get-in opts [:env "NODE_NAME"])}))
   (vendor [_] :jenkins)
   (as-map [this]
-    {(scheduler/vendor this) (scheduler/extra-info this)
-     :scheduler-type (name (scheduler/vendor this))
-     :url (scheduler/build-url this)
-     :console-url (scheduler/console-url this)
-     :tags (scheduler/tags this)}))
+    (merge
+     {:scheduler-type (name (scheduler/vendor this))
+      :url (scheduler/build-url this)
+      :console-url (scheduler/console-url this)
+      :tags (scheduler/tags this)}
+     (scheduler/extra-info this))))
 
 (s/defn make :- JenkinsScheduler
-  [opts :- OptsStage4]
+  [opts :- OptsStage3]
   (JenkinsScheduler. opts))
