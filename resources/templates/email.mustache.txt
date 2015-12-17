@@ -4,6 +4,7 @@
 {{ build.org }}/{{ build.project }}
 {{ build.branch }} {{ build.branch-url }}
 
+Log      {{ build.console-url }}
 Duration {{ process.took-human }} ({{ process.took }}ms)
 Started  {{ process.time-start }}
 Ended    {{ process.time-end }}

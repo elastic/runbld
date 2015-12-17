@@ -7,10 +7,11 @@
             [runbld.env :as env]
             [runbld.opts :as opts]
             [runbld.process :as proc]
+            [runbld.scheduler.middleware :as scheduler]
             [runbld.store :as store]
             [runbld.system :as system]
             [runbld.tests :as tests]
-            [runbld.vcs.repo :as repo]
+            [runbld.vcs.middleware :as vcs]
             [schema.core :as s]
             [slingshot.slingshot :refer [try+ throw+]]))
 
@@ -38,8 +39,9 @@
 
 (def run
   (-> #'proc/run
-      repo/wrap-vcs-info
       build/wrap-build-meta
+      vcs/wrap-vcs-info
+      scheduler/wrap-scheduler
       env/wrap-env
       system/wrap-system))
 

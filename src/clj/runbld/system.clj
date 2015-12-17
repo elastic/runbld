@@ -82,7 +82,7 @@
       (when ipv6
         {:ipv6 ipv6})))))
 
-(s/defn wrap-system :- Opts2
+(s/defn wrap-system :- OptsStage2
   [proc :- clojure.lang.IFn]
   (fn [opts]
     (proc (assoc opts :sys (inspect-system facter)))))

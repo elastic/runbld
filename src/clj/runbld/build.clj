@@ -5,7 +5,8 @@
             [environ.core :as environ]
             [runbld.util.data :refer [deep-merge-with deep-merge]]
             [runbld.util.date :as date]
-            [runbld.vcs.git :as git]
+            [runbld.scheduler :as scheduler]
+            [runbld.vcs :as vcs]
             [slingshot.slingshot :refer [throw+]]))
 
 (defn make-rand-uuid []
@@ -30,24 +31,19 @@
             (format
              "^([^,]+)\\%s([^,]+)\\%s([^,]+)\\%s?([^,]*)?$"
              delim delim delim)) s)]
-      {:org org
+      {:job-name job-name
+       :org org
        :project project
        :branch branch
        :job-name-extra job-name-extra
        :org-project-branch (format "%s/%s#%s" org project branch)})))
 
-(s/defn wrap-build-meta :- Opts4
+(s/defn wrap-build-meta :- OptsFinal
   [proc :- clojure.lang.IFn]
   (fn [opts]
     (proc
      (assoc opts
             :id (make-id)
             :build (merge (:build opts)
-                          (split-job-name (:job-name opts)))
-            :jenkins {:url      (get-in opts [:env "BUILD_URL"])
-                      :number   (get-in opts [:env "BUILD_NUMBER"])
-                      :executor (get-in opts [:env "EXECUTOR_NUMBER"])
-                      :node     (get-in opts [:env "NODE_NAME"])
-                      :labels   (get-in opts [:env "NODE_LABELS"])}))))
-
-
+                          (split-job-name (:job-name opts))
+                          (scheduler/as-map (:scheduler opts)))))))

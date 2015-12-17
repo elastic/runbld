@@ -1,5 +1,6 @@
 (ns runbld.schema
-  (:require [schema.core :as s])
+  (:require [schema.core :as s]
+            [runbld.scheduler :refer [Scheduler]])
   (:import (elasticsearch.connection Connection)))
 
 (def OptsEmail
@@ -67,33 +68,38 @@
 (def Env
   {s/Str s/Any})
 
-(def BuildInfo
+(def Build
   {(s/required-key :org                ) s/Str
    (s/required-key :project            ) s/Str
    (s/required-key :branch             ) s/Str
    (s/required-key :job-name-extra     ) s/Str
-   (s/required-key :org-project-branch ) s/Str})
+   (s/required-key :job-name           ) s/Str
+   (s/required-key :org-project-branch ) s/Str
+   (s/required-key :scheduler-type     ) s/Str
+   (s/required-key :url                ) s/Str
+   (s/required-key :console-url        ) s/Str
+   (s/required-key :tags               ) [s/Str]})
 
-(def JenkinsInfo
-  {(s/required-key :url      ) (s/maybe s/Str)
-   (s/required-key :number   ) (s/maybe s/Str)
-   (s/required-key :executor ) (s/maybe s/Str)
-   (s/required-key :node     ) (s/maybe s/Str)
-   (s/required-key :labels   ) (s/maybe s/Str)})
+(def SchedulerInfo
+  {(s/required-key :type     ) (s/maybe s/Str)
+   (s/required-key :url      ) (s/maybe s/Str)
+   (s/required-key :node     ) (s/maybe s/Str)})
 
-(def Opts2
+(def OptsStage2
   (merge Opts {(s/required-key :sys) BuildSystem}))
 
-(def Opts3
-  (merge Opts2 {(s/required-key :env) Env}))
+(def OptsStage3
+  (merge OptsStage2 {(s/required-key :env) Env}))
 
-(def Opts4
-  (merge Opts3 {(s/required-key :id) s/Str
-                (s/required-key :build) BuildInfo
-                (s/required-key :jenkins) JenkinsInfo}))
+(def OptsStage4
+  (merge OptsStage3 {(s/required-key :scheduler) (s/protocol Scheduler)}))
+
+(def OptsStage5
+  (merge OptsStage4 {(s/required-key :vcs) {s/Keyword s/Any}}))
 
 (def OptsFinal
-  (merge Opts4 {(s/required-key :vcs) {s/Keyword s/Any}}))
+  (merge OptsStage5 {(s/required-key :id) s/Str
+                     (s/required-key :build) Build}))
 
 (def ProcessResult
   {(s/required-key :cmd            ) [s/Str]
@@ -197,92 +203,22 @@
 
 (def StoredBuild
   {(s/required-key :id     ) s/Str
-   (s/required-key :build  ) BuildInfo
+   (s/required-key :build  ) Build
    (s/required-key :sys    ) BuildSystem
    (s/required-key :vcs    ) VcsLog
-   (s/required-key :jenkins) java.util.Map
    (s/required-key :process) StoreProcessResult
    (s/required-key :test   ) (s/maybe StoreTestSummary)})
 
 (def EmailCtx
   {(s/required-key :id     ) s/Str
-   (s/required-key :build  ) BuildInfo
+   (s/required-key :build  ) Build
    (s/required-key :sys    ) BuildSystem
    (s/required-key :email  ) {(s/required-key :to) s/Str
                               (s/required-key :subject) s/Str
                               }
    (s/required-key :vcs    ) VcsLog
-   (s/required-key :jenkins) JenkinsInfo
    (s/required-key :process) (merge StoreProcessResult
                                     {(s/required-key :cmd) s/Str
                                      (s/required-key :args) s/Str
                                      (s/required-key :took-human) s/Str})
-   (s/required-key :test) (s/maybe StoreTestSummary)
-   }
-
-  #_{
-     (s/required-key :branch-url       ) s/Str
-     (s/required-key :build-name       ) s/Str
-     (s/required-key :commit           ) s/Str
-     (s/required-key :commit-desc      ) s/Str
-     (s/required-key :commit-email     ) s/Str
-     (s/required-key :commit-msg       ) s/Str
-     (s/required-key :commit-name      ) s/Str
-     (s/required-key :commit-time      ) s/Str
-     (s/required-key :commit-url       ) s/Str
-     (s/required-key :console-url      ) s/Str
-     (s/required-key :env              ) {s/Str s/Any}
-     (s/required-key :exit-code        ) s/Num
-     (s/required-key :job-name         ) s/Str
-     (s/required-key :out-bytes        ) s/Num
-     (s/required-key :err-bytes        ) s/Num
-     (s/required-key :out-accuracy     ) s/Num
-     (s/required-key :err-accuracy     ) s/Num
-     (s/required-key :out-file         ) s/Str
-     (s/required-key :err-file         ) s/Str
-     (s/required-key :mail-from        ) s/Str
-     (s/required-key :org              ) s/Str
-     (s/required-key :project          ) s/Str
-     (s/required-key :project-url      ) s/Str
-     (s/required-key :rcpt-to          ) [s/Str]
-     (s/required-key :report           ) {(s/required-key :errors) s/Num
-                                          (s/required-key :failures) s/Num
-                                          (s/required-key :skipped) s/Num
-                                          (s/required-key :tests) s/Num
-                                          (s/required-key :testcases) [{s/Keyword s/Any}]}
-     (s/required-key :scriptfile       ) s/Str
-     (s/required-key :start-millis     ) s/Num
-     (s/required-key :status           ) s/Str
-     (s/required-key :time-end         ) s/Str
-     (s/required-key :time-start       ) s/Str
-     (s/required-key :took             ) s/Num
-
-     (s/optional-key :architecture     ) s/Str
-     (s/optional-key :args             ) [s/Str]
-     (s/optional-key :branch           ) s/Str
-     (s/optional-key :cwd              ) s/Str
-     (s/optional-key :end-millis       ) s/Num
-     (s/optional-key :hardwaremodel    ) s/Str
-     (s/optional-key :hostname         ) s/Str
-     (s/optional-key :ipaddress        ) s/Str
-     (s/optional-key :ipaddress6       ) s/Str
-     (s/optional-key :jenkins-executor ) (s/maybe s/Str)
-     (s/optional-key :jenkins-labels   ) (s/maybe s/Str)
-     (s/optional-key :jenkins-node     ) (s/maybe s/Str)
-     (s/optional-key :jenkins-number   ) (s/maybe s/Str)
-     (s/optional-key :job-name-extra   ) s/Str
-     (s/optional-key :kernelrelease    ) s/Str
-     (s/optional-key :kernelversion    ) s/Str
-     (s/optional-key :memorysize_mb    ) s/Str
-     (s/optional-key :operatingsystem  ) s/Str
-     (s/optional-key :operatingsystemrelease ) s/Str
-     (s/optional-key :physicalprocessorcount ) s/Num
-     (s/optional-key :processor0       ) s/Str
-     (s/optional-key :processorcount   ) (s/cond-pre s/Str s/Num)
-     (s/optional-key :profile-name     ) s/Str
-     (s/optional-key :program          ) s/Str
-     (s/optional-key :timezone         ) s/Str
-     (s/optional-key :uptime_days      ) s/Num
-     (s/optional-key :url              ) (s/maybe s/Str)
-     (s/optional-key :workspace        ) s/Str
-     })
+   (s/required-key :test) (s/maybe StoreTestSummary)})
