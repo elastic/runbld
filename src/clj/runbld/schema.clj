@@ -56,6 +56,7 @@
    (s/required-key :hostname       ) s/Str
    (s/required-key :ipv4           ) s/Str
    (s/optional-key :ipv6           ) s/Str
+   (s/required-key :kernel-name    ) s/Str
    (s/required-key :kernel-release ) s/Str
    (s/required-key :kernel-version ) s/Str
    (s/required-key :model          ) s/Str
