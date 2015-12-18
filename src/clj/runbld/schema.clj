@@ -3,6 +3,10 @@
             [runbld.scheduler :refer [Scheduler]])
   (:import (elasticsearch.connection Connection)))
 
+(def VersionInfo
+  {(s/required-key :string) s/Str
+   (s/required-key :hash  ) s/Str})
+
 (def OptsEmail
   {(s/required-key :from              ) s/Str
    (s/required-key :host              ) s/Str
@@ -37,7 +41,7 @@
 
 (def Opts
   {(s/required-key :job-name    ) s/Str
-   (s/required-key :version     ) (s/maybe s/Bool)
+   (s/required-key :version     ) VersionInfo
    (s/required-key :configfile  ) (s/maybe s/Str)
    (s/required-key :email       ) OptsEmail
    (s/required-key :es          ) OptsElasticsearch
@@ -209,6 +213,7 @@
 
 (def StoredBuild
   {(s/required-key :id     ) s/Str
+   (s/required-key :version) VersionInfo
    (s/required-key :build  ) Build
    (s/required-key :sys    ) BuildSystem
    (s/required-key :vcs    ) VcsLog
@@ -217,6 +222,7 @@
 
 (def EmailCtx
   {(s/required-key :id     ) s/Str
+   (s/required-key :version) VersionInfo
    (s/required-key :build  ) Build
    (s/required-key :sys    ) BuildSystem
    (s/required-key :email  ) {(s/required-key :to) s/Str
