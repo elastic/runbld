@@ -25,13 +25,15 @@
                            (s/required-key :content) java.io.File
                            (s/required-key :content-type) s/Str}
   [failure]
-  (let [fname (format "/tmp/%s-%s-%s.txt"
-                      (:build-id failure)
-                      (:class failure)
-                      (:test failure))]
-    (spit fname (:stacktrace failure))
+  (let [basename (java.net.URLEncoder/encode
+                  (format "%s-%s-%s.txt"
+                          (:build-id failure)
+                          (:class failure)
+                          (:test failure)))
+        f (io/file "/tmp" basename)]
+    (spit f (:stacktrace failure))
     {:type :attachment
-     :content (java.io.File. fname)
+     :content f
      :content-type "text/plain"}))
 
 (s/defn send* :- s/Any
