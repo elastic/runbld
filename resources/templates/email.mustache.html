@@ -8,12 +8,9 @@
 <tr><td>Duration</td><td>{{ process.took-human }} ({{ process.took }}ms)</td></tr>
 <tr><td>Started</td><td>{{ process.time-start }}</td></tr>
 <tr><td>Ended</td><td>{{ process.time-end }}</td></tr>
-<tr><td>Host</td><td><code>{{ sys.hostname }}
-      ({{ sys.cpus }}-cpu,
-      {{ sys.ram-gb }}GB,
-      {{ sys.os }} {{ sys.os-version }},
-      {{ sys.arch }},
-      up {{ sys.uptime }}</code></td></tr>
+<tr><td>Host</td><td><code>{{ sys.hostname }} (up {{ sys.uptime }})</code></td></tr>
+<tr><td>OS</td><td><code>{{ sys.os }} {{ sys.os-version }}</code></td></tr>
+<tr><td>Specs</td><td><code>{{ sys.cpus }} CPUs, {{ sys.ram-gb }}GB RAM</code></td></tr>
 </table>
 <p></p>
 <div style="background-color:#eec;padding:1px 15px">
