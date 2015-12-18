@@ -12,6 +12,7 @@
             [runbld.system :as system]
             [runbld.tests :as tests]
             [runbld.vcs.middleware :as vcs]
+            [runbld.version :as version]
             [schema.core :as s]
             [slingshot.slingshot :refer [try+ throw+]]))
 
@@ -49,6 +50,7 @@
 (defn -main [& args]
   (s/with-fn-validation
     (try+
+     (log (version/string))
      (let [opts-init (opts/parse-args args)
            _ (log ">>>>>>>>>>>> SCRIPT EXECUTION BEGIN >>>>>>>>>>>>")
            {:keys [opts process-result]} (run opts-init)
