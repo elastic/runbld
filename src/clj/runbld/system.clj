@@ -58,7 +58,18 @@
      :ram-gb ram-gb}))
 
 (defn as-int [value]
-  (Integer/parseInt (str value)))
+  (when value
+    (cond
+      (integer? value) value
+      (and
+       (string? value)
+       (re-find #"\d+" value)) (Integer/parseInt value)
+      :else (throw+
+             {:type ::error
+              :msg (format
+                    "don't know how to make an integer out of: %s (%s)"
+                    (pr-str value)
+                    (type value))}))))
 
 (s/defn inspect-system :- BuildSystem
   ([facter-fn :- clojure.lang.IFn]
