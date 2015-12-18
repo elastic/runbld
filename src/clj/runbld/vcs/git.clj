@@ -107,25 +107,23 @@
                (git/load-repo dir)))]
     (commit-map HEAD)))
 
+(defn project-url
+  [this]
+  (format "https://github.com/%s/%s"
+          (.org this)
+          (.project this)))
+
 (defn branch-url
   [this]
-  (if (and (.url this)
-           (.contains (.url this) "github.com"))
-    (format "%s/tree/%s"
-            (strip-trailing-slashes (.url this))
-            (.branch this))))
+  (format "%s/tree/%s"
+          (project-url this)
+          (.branch this)))
 
 (defn commit-url
   [this commit-id]
-  (if (and (.url this)
-           (.contains (.url this) "github.com"))
-    (format "%s/commit/%s"
-            (strip-trailing-slashes (.url this))
-            commit-id)))
-
-(defn project-url
-  [this]
-  (.url this))
+  (format "%s/commit/%s"
+          (project-url this)
+          commit-id))
 
 (s/defn log-latest :- VcsLog
   ([this]
@@ -138,9 +136,9 @@
       (when-let [u (commit-url this commit-id)]
         {:commit-url u})))))
 
+;; Assume GitHub for now...
 (s/defrecord GitRepo
     [dir     :- s/Str  ;; local working copy
-     url     :- s/Str  ;; remote
      org     :- s/Str
      project :- s/Str
      branch  :- s/Str])
@@ -151,5 +149,5 @@
    :vendor (fn [& args] vendor)})
 
 (s/defn make-repo :- GitRepo
-  [dir url org project branch]
-  (GitRepo. dir url org project branch))
+  [dir org project branch]
+  (GitRepo. dir org project branch))
