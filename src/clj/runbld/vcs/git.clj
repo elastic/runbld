@@ -110,20 +110,16 @@
   [this]
   (if (and (.url this)
            (.contains (.url this) "github.com"))
-    (format "%s/%s/%s/tree/%s"
+    (format "%s/tree/%s"
             (.url this)
-            (.org this)
-            (.project this)
-            (.branch this))))
+             (.branch this))))
 
 (defn commit-url
   [this commit-id]
   (if (and (.url this)
            (.contains (.url this) "github.com"))
-    (format "%s/%s/%s/commit/%s"
+    (format "%s/commit/%s"
             (.url this)
-            (.org this)
-            (.project this)
             commit-id)))
 
 (defn project-url

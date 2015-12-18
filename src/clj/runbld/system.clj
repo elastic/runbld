@@ -57,6 +57,9 @@
     {:ram-mb ram-mb
      :ram-gb ram-gb}))
 
+(defn as-int [value]
+  (Integer/parseInt (str value)))
+
 (s/defn inspect-system :- BuildSystem
   ([facter-fn :- clojure.lang.IFn]
    (let [facts (facter-fn)
@@ -64,8 +67,10 @@
      (merge
       {:arch           (:architecture            facts)
        :cpu-type       (:processor0              facts)
-       :cpus           (:processorcount          facts)
-       :cpus-physical  (:physicalprocessorcount  facts)
+       :cpus           (as-int
+                        (:processorcount         facts))
+       :cpus-physical  (as-int
+                        (:physicalprocessorcount facts))
        :hostname       (:hostname                facts)
        :ipv4           (:ipaddress               facts)
        :kernel-release (:kernelrelease           facts)
@@ -77,7 +82,8 @@
        :uptime-days    (:uptime_days             facts)
        :uptime-secs    (:uptime_seconds          facts)
        :uptime         (:uptime                  facts)
-       :virtual        (:is_virtual              facts)}
+       :virtual        (boolean
+                        (:is_virtual             facts))}
       (memory-details facts)
       (when ipv6
         {:ipv6 ipv6})))))
