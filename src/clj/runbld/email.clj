@@ -21,15 +21,23 @@
      (string? s) [s]
      (sequential? s) s)))
 
+(defn entropy []
+  (->> (java.util.UUID/randomUUID)
+       str
+       (take 4)
+       (apply str)
+       .toUpperCase))
+
 (s/defn attach-failure :- {(s/required-key :type) s/Keyword
                            (s/required-key :content) java.io.File
                            (s/required-key :content-type) s/Str}
   [failure]
   (let [basename (java.net.URLEncoder/encode
-                  (format "%s-%s-%s.txt"
+                  (format "%s-%s-%s-%s.txt"
                           (:build-id failure)
                           (:class failure)
-                          (:test failure)))
+                          (:test failure)
+                          (entropy)))
         f (io/file "/tmp" basename)]
     (spit f (:stacktrace failure))
     {:type :attachment
