@@ -8,8 +8,9 @@ Log      {{ build.console-url }}
 Duration {{ process.took-human }} ({{ process.took }}ms)
 Started  {{ process.time-start }}
 Ended    {{ process.time-end }}
-Host     {{ sys.hostname }} (up {{ sys.uptime }}, {{ sys.cpus }} CPUs, {{ sys.ram-gb }}GB RAM)
+Host     {{ sys.hostname }} (up {{ sys.uptime }})
 OS       {{ sys.os }} {{ sys.os-version }}
+Specs    {{ sys.cpus }} CPUs, {{ sys.ram-gb }}GB RAM
 ===============
 
 
@@ -45,3 +46,5 @@ Tests SKIPPED:     {{ test.skipped }}
 {{/test}}
 
 
+{{ id }}
+runbld {{ version.string }}/{{ version.hash }}

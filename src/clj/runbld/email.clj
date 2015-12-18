@@ -63,7 +63,7 @@
    ctx :- EmailCtx
    failures :- [s/Any]]
   ;; If needing to regenerate for render tests
-  #_(spit "context.edn"
+  #_(spit "test/context.edn"
           (with-out-str
             (clojure.pprint/pprint
              (into (sorted-map) ctx))))

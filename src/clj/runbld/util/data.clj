@@ -1,6 +1,7 @@
 (ns runbld.util.data
   (:refer-clojure :exclude [bigdec])
-  (:require [clojure.walk]))
+  (:require [clojure.string :as str]
+            [clojure.walk]))
 
 ;; http://dev.clojure.org/jira/browse/CLJ-1468
 (defn deep-merge
@@ -48,3 +49,10 @@
 (defn unscaled-percent
   ([n]
    (bigdec (/ n 100))))
+
+(defn strip-trailing-slashes [s]
+  (when s
+    (if-let [[_ rst] (re-find #"^/+(.*)"
+                              (->> s str/trim str/reverse))]
+      (str/reverse rst)
+      s)))

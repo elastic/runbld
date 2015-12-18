@@ -1,31 +1,28 @@
 <html>
 <body style="font-family:helvetica;font-size:1.1em">
 <h1>{{ process.status }}</h1>
-<h2><code><a href="{{project-url}}">{{ build.org }}/{{ build.project }}</a><br/>
-<a href="{{branch-url}}">{{ build.branch }}</a></code></h2>
+<h2><code><a href="{{vcs.project-url}}">{{ build.org }}/{{ build.project }}</a><br/>
+<a href="{{vcs.branch-url}}">{{ build.branch }}</a></code></h2>
 <table>
-<tr><td>Log</td><td>{{ build.console-log }}</td></tr>
+<tr><td>Log</td><td>{{ build.console-url }}</td></tr>
 <tr><td>Duration</td><td>{{ process.took-human }} ({{ process.took }}ms)</td></tr>
 <tr><td>Started</td><td>{{ process.time-start }}</td></tr>
 <tr><td>Ended</td><td>{{ process.time-end }}</td></tr>
-<tr><td>Host</td><td><code>{{ sys.hostname }}
-      ({{ sys.cpus }}-cpu,
-      {{ sys.ram-gb }}GB,
-      {{ sys.os }} {{ sys.os-version }},
-      {{ sys.arch }},
-      up {{ sys.uptime }}</code></td></tr>
+<tr><td>Host</td><td><code>{{ sys.hostname }} (up {{ sys.uptime }})</code></td></tr>
+<tr><td>OS</td><td><code>{{ sys.os }} {{ sys.os-version }}</code></td></tr>
+<tr><td>Specs</td><td><code>{{ sys.cpus }} CPUs, {{ sys.ram-gb }}GB RAM</code></td></tr>
 </table>
 <p></p>
 <div style="background-color:#eec;padding:1px 15px">
-<pre>branch <a href="{{branch-url}}">{{ build.branch }}</a>
-commit <a href="{{commit-url}}">{{ vcs.commit-id }}</a>
+<pre>branch <a href="{{vcs.branch-url}}">{{ build.branch }}</a>
+commit <a href="{{vcs.commit-url}}">{{ vcs.commit-id }}</a>
 Author: {{ vcs.author-name }} &lt;{{ vcs.author-email }}&gt;
 Date: {{ vcs.commit-time }}
 
-{{ vcs.message-short }}</pre>
+{{ vcs.message }}</pre>
 </div>
 
-<h3>BUILD (<a href="{{ build.console-log }}">log</a>)</h3>
+<h3>BUILD (<a href="{{ build.console-url }}">log</a>)</h3>
 <p><code>Exited: {{ process.exit-code }}</code></p>
 <div style="background-color:#cee;padding:1px 15px">
 <pre>{{ process.cmd-source }}</pre>
@@ -55,8 +52,14 @@ Date: {{ vcs.commit-time }}
 
 <h3>STDOUT</h3>
 <div style="background-color:#cee;padding:1px 15px">
-<pre>{{ console-url }}</pre>
+<pre>{{ build.console-url }}</pre>
 </div>
 -->
+
+<p>
+<code>{{ id }}</code><br />
+<code>runbld-{{ version.string }}/{{ version.hash }}</code><br />
+</p>
+
 </body>
 </html>

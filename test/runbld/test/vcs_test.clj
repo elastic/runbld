@@ -12,14 +12,12 @@
     (is (= "Add build"
            (:message
             (vcs/log-latest
-             (runbld.vcs.git.GitRepo.
-              d "http://example.com" "elastic" "foo" "master")))))))
+             (runbld.vcs.git.GitRepo. d "elastic" "foo" "master")))))))
 
 (deftest test-discovery
   (git/with-tmp-repo [d "tmp/git/vcs-test"]
     (is (= "Add build"
            (:message
             (vcs/log-latest
-             (git/make-repo
-              d "http://example.com" "elastic" "foo" "master")))))))
+             (git/make-repo d "elastic" "foo" "master")))))))
 

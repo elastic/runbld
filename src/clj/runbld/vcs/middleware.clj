@@ -14,9 +14,6 @@
       (.isDirectory
        (io/file cwd ".git")) (git/make-repo
                               cwd
-                              (if (environ/env :dev)
-                                "http://example.com"
-                                (get-in opts [:env "GIT_URL"]))
                               (get-in opts [:build :org])
                               (get-in opts [:build :project])
                               (get-in opts [:build :branch]))

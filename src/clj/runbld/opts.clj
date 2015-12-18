@@ -150,4 +150,6 @@
               :process (merge
                         ;; Invariant: Jenkins passes it in through arguments
                         {:scriptfile (first arguments)}
-                        (:process options))}))))
+                        (:process options))
+              :version {:string (version/version)
+                        :hash (version/build)}}))))
