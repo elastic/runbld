@@ -1,8 +1,8 @@
 <html>
 <body style="font-family:helvetica;font-size:1.1em">
 <h1>{{ process.status }}</h1>
-<h2><code><a href="{{project-url}}">{{ build.org }}/{{ build.project }}</a><br/>
-<a href="{{branch-url}}">{{ build.branch }}</a></code></h2>
+<h2><code><a href="{{vcs.project-url}}">{{ build.org }}/{{ build.project }}</a><br/>
+<a href="{{vcs.branch-url}}">{{ build.branch }}</a></code></h2>
 <table>
 <tr><td>Log</td><td>{{ build.console-url }}</td></tr>
 <tr><td>Duration</td><td>{{ process.took-human }} ({{ process.took }}ms)</td></tr>
@@ -14,8 +14,8 @@
 </table>
 <p></p>
 <div style="background-color:#eec;padding:1px 15px">
-<pre>branch <a href="{{branch-url}}">{{ build.branch }}</a>
-commit <a href="{{commit-url}}">{{ vcs.commit-id }}</a>
+<pre>branch <a href="{{vcs.branch-url}}">{{ build.branch }}</a>
+commit <a href="{{vcs.commit-url}}">{{ vcs.commit-id }}</a>
 Author: {{ vcs.author-name }} &lt;{{ vcs.author-email }}&gt;
 Date: {{ vcs.commit-time }}
 
@@ -52,7 +52,7 @@ Date: {{ vcs.commit-time }}
 
 <h3>STDOUT</h3>
 <div style="background-color:#cee;padding:1px 15px">
-<pre>{{ console-url }}</pre>
+<pre>{{ build.console-url }}</pre>
 </div>
 -->
 
