@@ -84,6 +84,7 @@
                         (:physicalprocessorcount facts))
        :hostname       (:hostname                facts)
        :ipv4           (:ipaddress               facts)
+       :kernel-name    (:kernel                  facts)
        :kernel-release (:kernelrelease           facts)
        :kernel-version (:kernelversion           facts)
        :model          (:hardwaremodel           facts)

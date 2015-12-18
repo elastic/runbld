@@ -9,7 +9,7 @@ Duration {{ process.took-human }} ({{ process.took }}ms)
 Started  {{ process.time-start }}
 Ended    {{ process.time-end }}
 Host     {{ sys.hostname }} (up {{ sys.uptime }})
-OS       {{ sys.os }} {{ sys.os-version }}
+OS       {{ sys.os }} {{ sys.os-version }}, {{ sys.kernel-name }} {{ sys.kernel-release }}
 Specs    {{ sys.cpus }} CPUs, {{ sys.ram-gb }}GB RAM
 ===============
 
