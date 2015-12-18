@@ -9,7 +9,7 @@
 <tr><td>Started</td><td>{{ process.time-start }}</td></tr>
 <tr><td>Ended</td><td>{{ process.time-end }}</td></tr>
 <tr><td>Host</td><td><code>{{ sys.hostname }} (up {{ sys.uptime }})</code></td></tr>
-<tr><td>OS</td><td><code>{{ sys.os }} {{ sys.os-version }}</code></td></tr>
+<tr><td>OS</td><td><code>{{ sys.os }} {{ sys.os-version }}, {{ sys.kernel-name }} {{ sys.kernel-release }}</code></td></tr>
 <tr><td>Specs</td><td><code>{{ sys.cpus }} CPUs, {{ sys.ram-gb }}GB RAM</code></td></tr>
 </table>
 <p></p>
