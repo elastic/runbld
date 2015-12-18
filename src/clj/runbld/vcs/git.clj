@@ -5,6 +5,7 @@
             [clojure.java.io :as jio]
             [clojure.java.shell :as sh]
             [environ.core :as environ]
+            [runbld.util.data :refer [strip-trailing-slashes]]
             [runbld.util.date :as date]
             [runbld.util.io :as io]
             [runbld.vcs :as vcs :refer [VcsRepo]]
@@ -111,15 +112,15 @@
   (if (and (.url this)
            (.contains (.url this) "github.com"))
     (format "%s/tree/%s"
-            (.url this)
-             (.branch this))))
+            (strip-trailing-slashes (.url this))
+            (.branch this))))
 
 (defn commit-url
   [this commit-id]
   (if (and (.url this)
            (.contains (.url this) "github.com"))
     (format "%s/commit/%s"
-            (.url this)
+            (strip-trailing-slashes (.url this))
             commit-id)))
 
 (defn project-url
