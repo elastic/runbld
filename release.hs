@@ -31,7 +31,7 @@ make target = procOrDie "make" [target]
 
 upload :: Text -> Text -> IO ()
 upload ver loc =
-  if loc == (T.last loc) then
+  if (T.last loc) == '/' then
     procOrDie "s3cmd" [ "put", "-P"
                       , (T.append "target/runbld-" ver)
                       , (T.append "s3://" loc)
