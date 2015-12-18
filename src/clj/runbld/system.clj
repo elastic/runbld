@@ -19,10 +19,14 @@
     (assoc (clojure.edn/read-string
             (slurp "test/facter.edn"))
            :dev-profile true)
-    (if (facter-installed?)
-      (yaml/parse-string (:out (sh/sh "facter" "--yaml")))
-      (throw+ {:warning ::no-facter
-               :msg "facter cannot be found in PATH"}))))
+    (let [cmd ["facter" "--yaml"]]
+      (if (facter-installed?)
+        (if-let [facts (yaml/parse-string (:out (apply sh/sh cmd)))]
+          facts
+          (throw+ {:error ::empty-factor
+                   :msg (format "facter returned empty: %s" cmd)}))
+        (throw+ {:warning ::no-facter
+                 :msg "facter cannot be found in PATH"})))))
 
 (defn find-ram-mb
   "Hack until we can fix our facter versions, or get it to always
