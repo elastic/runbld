@@ -119,7 +119,9 @@
                  (format "%s %s %s"
                          (-> build :process :status)
                          (-> build :build :org-project-branch)
-                         (-> build :vcs :commit-short))))))
+                         (-> build :vcs :commit-short)))
+       (update-in [:version :hash]
+                  #(->> % (take 7) (apply str))))))
 
 (defn maybe-send! [opts {:keys [index type id] :as addr}]
   (let [build-doc (store/get (-> opts :es :conn) addr)
