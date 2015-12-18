@@ -28,8 +28,8 @@
           (re-find
            (re-pattern
             (format
-             "^([^,]+)\\%s([^,]+)\\%s([^,]+)\\%s?([^,]*)?$"
-             delim delim delim)) s)]
+             "^([^%s]+)\\%s([^%s]+)\\%s([^%s]+)\\%s?([^%s]*)?$"
+             delim delim delim delim delim delim delim)) s)]
       {:job-name job-name
        :org org
        :project project
