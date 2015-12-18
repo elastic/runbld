@@ -45,3 +45,5 @@ Tests SKIPPED:     {{ test.skipped }}
 {{/test}}
 
 
+{{ id }}
+runbld {{ version.string }}/{{ version.hash }}

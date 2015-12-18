@@ -13,7 +13,8 @@
 (s/defn create-build-doc :- StoredBuild
   [opts result test-report]
   (merge
-   (select-keys opts [:id :system :vcs :sys :jenkins :build])
+   (select-keys opts [:id :version :system
+                      :vcs :sys :jenkins :build])
    {:process (dissoc result :err-file :out-file)
     :test (when (:report-has-tests test-report)
             (let [f #(select-keys % [:error-type
