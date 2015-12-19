@@ -8,7 +8,8 @@
         res (apply sh/sh cmd)]
     (assert (= 0 (:exit res)) (format "%s: %s"
                                       (pr-str cmd)
-                                      (:err res)))))
+                                      (:err res)))
+    res))
 
 (defn rmdir-r [dir]
   (run "rm" "-r" dir))
