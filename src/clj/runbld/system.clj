@@ -1,13 +1,12 @@
 (ns runbld.system
   (:require [runbld.schema :refer :all]
-            [schema.core :as s])
+            [schema.core :as s]
+            [slingshot.slingshot :refer [throw+]])
   (:require [clj-yaml.core :as yaml]
             [clojure.java.shell :as sh]
-            [clojure.java.io :as io]
             [environ.core :as environ]
             [runbld.opts :as opts]
-            [schema.core :as s]
-            [slingshot.slingshot :refer [throw+]]))
+            [runbld.util.io :as io]))
 
 (defn facter-installed? []
   (let [{:keys [exit]} (sh/sh "which" "facter")]
@@ -19,14 +18,14 @@
     (assoc (clojure.edn/read-string
             (slurp "test/facter.edn"))
            :dev-profile true)
-    (let [cmd ["facter" "--yaml"]]
-      (if (facter-installed?)
-        (if-let [facts (yaml/parse-string (:out (apply sh/sh cmd)))]
-          facts
+    (if (facter-installed?)
+      (let [{:keys [out err exit]} (io/run "facter" "--yaml")]
+        (if out
+          (yaml/parse-string out)
           (throw+ {:error ::empty-factor
-                   :msg (format "facter returned empty: %s" cmd)}))
-        (throw+ {:warning ::no-facter
-                 :msg "facter cannot be found in PATH"})))))
+                   :msg (format "facter returned empty (%d): %s" exit err)})))
+      (throw+ {:warning ::no-facter
+               :msg "facter cannot be found in PATH"}))))
 
 (defn find-ram-mb
   "Hack until we can fix our facter versions, or get it to always
