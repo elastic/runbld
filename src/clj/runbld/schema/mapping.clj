@@ -18,49 +18,47 @@
     (instance? java.util.Map$Entry x) (key x)
     :else (first x)))
 
-(defn has-nesting? [x]
+(defn has-key? [m k]
+  (some #{k} (keys m)))
+
+(defn entry-has-subkey? [e k]
   (and
-   (map-entry? x)
-   (:properties (entry-val x))))
+   (map-entry? e)
+   (map? (entry-val e))
+   (has-key? (entry-val e) k)))
+
+(defn has-inner-object? [x]
+  (entry-has-subkey? x :properties))
 
 (defn entry [k v]
   (first {k v}))
 
 (defn schema-walk [form]
-  (let [has-schema-entry? (fn [x]
-                            (and
-                             (map-entry? x)
-                             (:_schema (entry-val x))))
-        make-key (fn [x]
-                   ((if (-> x entry-val :_schema :required)
-                      s/required-key s/optional-key)
+  (let [make-key (fn [x]
+                   ((if (-> x entry-val (has-key? :schema-required))
+                      (if (-> x entry-val :schema-required)
+                        s/required-key s/optional-key)
+                      s/required-key)
                     (entry-key x)))
         f (fn [x]
             (cond
-
-              (has-nesting? x)
+              (has-inner-object? x)
               (entry
                (make-key x) (schema-walk
                              (:properties
                               (entry-val x))))
 
-              (has-schema-entry? x)
+              (entry-has-subkey? x :schema-type)
               (entry
                (make-key x)
-               (-> x entry-val :_schema :type))
+               (-> x entry-val :schema-type))
               :else x))]
     (walk/postwalk f form)))
 
 (defn mapping-walk [form]
-  (let [has-mapping-entry? (fn [x]
-                            (and
-                             (map-entry? x)
-                             (:_mapping (entry-val x))))
-        f (fn [x]
+  (let [f (fn [x]
             (cond
-              (has-mapping-entry? x)
-              (entry (entry-key x) (:_mapping (entry-val x)))
-              (map? x) (dissoc x :_schema)
+              (map? x) (dissoc x :schema-type :schema-required)
               :else x))]
     (walk/postwalk f form)))
 
@@ -68,4 +66,3 @@
   `(do
      (def ~name ~(schema-walk map))
      (def ~(symbol (str name "Mapping")) ~(mapping-walk map))))
-
