@@ -1,12 +1,14 @@
 (ns runbld.schema
   (:require [schema.core :as s]
             [runbld.scheduler :refer [Scheduler]]
-            [runbld.schema.mapping :refer [defmapping] :as m])
+            [runbld.schema.mapping :as m])
   (:import (elasticsearch.connection Connection)))
 
-(defmapping VersionInfo
-  {:string m/not-analyzed
-   :hash m/not-analyzed})
+(def DocType :t)
+
+(def VersionInfo
+  {:string s/Str
+   :hash   s/Str})
 
 (def OptsEmail
   {(s/required-key :from              ) s/Str
@@ -28,11 +30,16 @@
    (s/required-key :scriptfile) s/Str})
 
 (def OptsElasticsearch
-  {(s/required-key :build-index   ) s/Str
-   (s/required-key :failure-index ) s/Str
-   (s/required-key :conn          ) Connection
-   (s/optional-key :http-opts     ) {s/Keyword s/Any}
-   (s/optional-key :url           ) s/Str})
+  {(s/required-key :build-index          ) s/Str
+   (s/required-key :build-index-search   ) s/Str
+   (s/required-key :build-index-write    ) s/Str
+   (s/required-key :failure-index        ) s/Str
+   (s/required-key :failure-index-search ) s/Str
+   (s/required-key :failure-index-write  ) s/Str
+   (s/required-key :max-index-bytes      ) s/Num
+   (s/required-key :conn                 ) Connection
+   (s/optional-key :http-opts            ) {s/Keyword s/Any}
+   (s/optional-key :url                  ) s/Str})
 
 (def OptsS3
   {(s/required-key :access-key) s/Str
@@ -49,45 +56,45 @@
    (s/required-key :process     ) OptsProcess
    (s/required-key :s3          ) OptsS3})
 
-(defmapping BuildSystem
-  {:arch                   m/not-analyzed
-   :cpu-type               m/not-analyzed
-   :cpus                   m/long
-   :cpus-physical          m/long
-   :hostname               m/not-analyzed
-   :ipv4                   m/not-analyzed
-   :ipv6                   m/opt-not-analyzed
-   :kernel-name            m/not-analyzed
-   :kernel-release         m/not-analyzed
-   :kernel-version         m/not-analyzed
-   :model                  m/not-analyzed
-   :os                     m/not-analyzed
-   :os-version             m/not-analyzed
-   :ram-mb                 m/double
-   :ram-gb                 m/double
-   :timezone               m/not-analyzed
-   :uptime                 m/analyzed
-   :uptime-days            m/long
-   :uptime-secs            m/long
-   :virtual                m/boolean})
+(def BuildSystem
+  {:arch                   s/Str
+   :cpu-type               s/Str
+   :cpus                   s/Num
+   :cpus-physical          s/Num
+   :hostname               s/Str
+   :ipv4                   s/Str
+   :ipv6                   s/Str
+   :kernel-name            s/Str
+   :kernel-release         s/Str
+   :kernel-version         s/Str
+   :model                  s/Str
+   :os                     s/Str
+   :os-version             s/Str
+   :ram-mb                 s/Num
+   :ram-gb                 s/Num
+   :timezone               s/Str
+   :uptime                 s/Str
+   :uptime-days            s/Num
+   :uptime-secs            s/Num
+   :virtual                s/Bool})
 
 (def Env
   {s/Str s/Any})
 
-(defmapping Build
-  {:org                 m/not-analyzed
-   :project             m/not-analyzed
-   :branch              m/not-analyzed
-   :job-name-extra      m/multi-string
-   :job-name            m/multi-string
-   :org-project-branch  m/not-analyzed
-   :scheduler-type      m/not-analyzed
-   :url                 m/multi-string
-   :console-url         m/multi-string
-   :tags                m/not-analyzed-string-list
-   :number              m/opt-not-analyzed
-   :executor            m/opt-not-analyzed
-   :node                m/opt-not-analyzed
+(def Build
+  {:org                 s/Str
+   :project             s/Str
+   :branch              s/Str
+   :job-name-extra      s/Str
+   :job-name            s/Str
+   :org-project-branch  s/Str
+   :scheduler-type      s/Str
+   :url                 s/Str
+   :console-url         s/Str
+   :tags                [s/Str]
+   (s/optional-key :number) s/Str
+   (s/optional-key :executor) s/Str
+   (s/optional-key :node) s/Str
    })
 
 (def SchedulerInfo
@@ -131,41 +138,41 @@
    (s/required-key :time-start     ) s/Str
    (s/required-key :took           ) s/Num})
 
-(defmapping StoredProcessResult
-  {:cmd             m/not-analyzed-string-list
-   :cmd-source      m/multi-string
-   :err-accuracy    m/long
-   :err-bytes       m/long
-   :err-file-bytes  m/long
-   :exit-code       m/long
-   :millis-end      m/long
-   :millis-start    m/long
-   :out-accuracy    m/long
-   :out-bytes       m/long
-   :out-file-bytes  m/long
-   :status          m/not-analyzed
-   :time-end        m/date
-   :time-start      m/date
-   :took            m/long})
+(def StoredProcessResult
+  {:cmd             [s/Str]
+   :cmd-source      s/Str
+   :err-accuracy    s/Num
+   :err-bytes       s/Num
+   :err-file-bytes  s/Num
+   :exit-code       s/Num
+   :millis-end      s/Num
+   :millis-start    s/Num
+   :out-accuracy    s/Num
+   :out-bytes       s/Num
+   :out-file-bytes  s/Num
+   :status          s/Str
+   :time-end        s/Str
+   :time-start      s/Str
+   :took            s/Num})
 
-(defmapping VcsLog
+(def VcsLog
   {
-   :author-name   m/multi-string
-   :commit-id     m/not-analyzed
-   :commit-short  m/not-analyzed
-   :commit-time   m/date
-   :message       m/analyzed
-   :type          m/not-analyzed
-   :log-pretty    m/analyzed
-   :project-url   m/not-analyzed
+   :author-name   s/Str
+   :commit-id     s/Str
+   :commit-short  s/Str
+   :commit-time   s/Str
+   :message       s/Str
+   :type          s/Str
+   :log-pretty    s/Str
+   :project-url   s/Str
 
-   :branch-url    m/opt-not-analyzed
-   :commit-url    m/opt-not-analyzed
-   :author-email  m/opt-multi-string
-   :author-time   m/opt-date
-   :commit-email  m/opt-not-analyzed
-   :commit-name   m/opt-multi-string
-   :message-full  m/opt-analyzed
+   (s/optional-key :branch-url   ) s/Str
+   (s/optional-key :commit-url   ) s/Str
+   (s/optional-key :author-email ) s/Str
+   (s/optional-key :author-time  ) s/Str
+   (s/optional-key :commit-email ) s/Str
+   (s/optional-key :commit-name  ) s/Str
+   (s/optional-key :message-full ) s/Str
    })
 
 (def XML
@@ -193,28 +200,26 @@
   {(s/required-key :report-has-tests) s/Bool
    (s/optional-key :report) TestSummary})
 
-(defmapping StoredFailure
-  {:error-type m/not-analyzed
-   :class      m/not-analyzed
-   :test       m/not-analyzed
-   :type       m/not-analyzed
-   :summary    m/multi-string
-   :message    m/multi-string})
+(def StoredFailure
+  {:error-type s/Str
+   :class      s/Str
+   :test       s/Str
+   :type       s/Str
+   :summary    s/Str
+   :message    s/Str})
 
-(defmapping StoredTestSummary
-  {:errors   m/long
-   :failures m/long
-   :tests    m/long
-   :skipped  m/long
+(def StoredTestSummary
+  {:errors   s/Num
+   :failures s/Num
+   :tests    s/Num
+   :skipped  s/Num
    :failed-testcases
-   {:properties
-    {:error-type m/not-analyzed
-     :class      m/not-analyzed
-     :test       m/not-analyzed
-     :type       m/not-analyzed
-     :summary    m/multi-string
-     :message    m/multi-string}
-    :schema-type [StoredFailure]}})
+   {:error-type s/Str
+    :class      s/Str
+    :test       s/Str
+    :type       s/Str
+    :summary    s/Str
+    :message    s/Str}})
 
 (def StoredFailure
   (merge
@@ -225,15 +230,109 @@
     (s/required-key :project  ) s/Str
     (s/required-key :branch   ) s/Str}))
 
-(defmapping StoredBuild
-  {:id m/not-analyzed
-   :version {:properties VersionInfoRaw}
-   :build {:properties BuildRaw}
-   :sys {:properties BuildSystemRaw}
-   :vcs {:properties VcsLogRaw}
-   :process {:properties StoredProcessResultRaw}
-   :test (s/maybe
-          {:properties StoredTestSummaryRaw})})
+(def StoredBuild
+  {:id s/Str
+   :version VersionInfo
+   :build Build
+   :sys BuildSystem
+   :vcs VcsLog
+   :process StoredProcessResult
+   :test (s/maybe StoredTestSummary)})
+
+(def StoredBuildMapping
+  {DocType
+   {:properties
+    {:id m/not-analyzed
+     :version {:properties
+               {:string m/not-analyzed
+                :hash   m/not-analyzed}}
+     :build {:properties
+             {:org                 m/not-analyzed
+              :project             m/not-analyzed
+              :branch              m/not-analyzed
+              :job-name-extra      m/multi-string
+              :job-name            m/multi-string
+              :org-project-branch  m/not-analyzed
+              :scheduler-type      m/not-analyzed
+              :url                 m/multi-string
+              :console-url         m/multi-string
+              :tags                m/not-analyzed
+              :number              m/not-analyzed
+              :executor            m/not-analyzed
+              :node                m/not-analyzed}}
+     :sys {:properties
+           {:arch           m/not-analyzed
+            :cpu-type       m/not-analyzed
+            :cpus           m/long
+            :cpus-physical  m/long
+            :hostname       m/not-analyzed
+            :ipv4           m/not-analyzed
+            :ipv6           m/not-analyzed
+            :kernel-name    m/not-analyzed
+            :kernel-release m/not-analyzed
+            :kernel-version m/not-analyzed
+            :model          m/not-analyzed
+            :os             m/not-analyzed
+            :os-version     m/not-analyzed
+            :ram-mb         m/double
+            :ram-gb         m/double
+            :timezone       m/not-analyzed
+            :uptime         m/analyzed
+            :uptime-days    m/long
+            :uptime-secs    m/long
+            :virtual        m/boolean}}
+     :vcs {:properties
+           {:author-name   m/multi-string
+            :commit-id     m/not-analyzed
+            :commit-short  m/not-analyzed
+            :commit-time   m/date
+            :message       m/analyzed
+            :type          m/not-analyzed
+            :log-pretty    m/analyzed
+            :project-url   m/not-analyzed
+
+            :branch-url   m/not-analyzed
+            :commit-url   m/not-analyzed
+            :author-email m/multi-string
+            :author-time  m/date
+            :commit-email m/not-analyzed
+            :commit-name  m/multi-string
+            :message-full m/analyzed}}
+     :process {:properties
+               {:cmd             m/not-analyzed
+                :cmd-source      m/multi-string
+                :err-accuracy    m/long
+                :err-bytes       m/long
+                :err-file-bytes  m/long
+                :exit-code       m/long
+                :millis-end      m/long
+                :millis-start    m/long
+                :out-accuracy    m/long
+                :out-bytes       m/long
+                :out-file-bytes  m/long
+                :status          m/not-analyzed
+                :time-end        m/date
+                :time-start      m/date
+                :took            m/long}}
+     :test {:properties
+            {:errors   m/long
+             :failures m/long
+             :tests    m/long
+             :skipped  m/long
+             :failed-testcases
+             {:properties
+              {:error-type m/not-analyzed
+               :class      m/not-analyzed
+               :test       m/not-analyzed
+               :type       m/not-analyzed
+               :summary    m/analyzed
+               :message    m/multi-string}}}}
+     }}})
+
+(def StoredFailureMapping
+  {DocType
+   {:properties
+    {:build-id m/not-analyzed}}})
 
 (def EmailCtx
   {(s/required-key :id     ) s/Str

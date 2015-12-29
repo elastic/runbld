@@ -46,19 +46,14 @@
       env/wrap-env
       system/wrap-system))
 
-(defn set-up [opts]
-  (store/create-mappings opts))
-
 ;; -main :: IO ()
 (defn -main [& args]
   (s/with-fn-validation
     (try+
-     (let [logger #'log
-           _ (logger (version/string))
+     (let [_ (log (version/string))
            opts-init (assoc
                       (opts/parse-args args)
-                      :logger logger)
-           _ (set-up opts-init)
+                      :logger log)
            _ (log ">>>>>>>>>>>> SCRIPT EXECUTION BEGIN >>>>>>>>>>>>")
            {:keys [opts process-result]} (run opts-init)
            _ (log "<<<<<<<<<<<< SCRIPT EXECUTION END   <<<<<<<<<<<<")
@@ -67,15 +62,9 @@
            _ (log (format "STDOUT: %d bytes" out-bytes))
            _ (log (format "STDERR: %d bytes" err-bytes))
            _ (log (format "WRAPPED PROCESS: %s (%d)" status exit-code))
-
            test-report (tests/report (-> opts :process :cwd))
-
            store-result (store/save! opts process-result test-report)
-           _ (log (format "SAVED: %s" (:url store-result)))
-
            email-result (email/maybe-send! opts (:addr store-result))
-           _ (log (format "MAILED: %s" (-> email-result :rcpt)))
-
            ]
 
        (if (environ/env :dev)

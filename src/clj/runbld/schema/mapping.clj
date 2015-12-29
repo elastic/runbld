@@ -72,49 +72,27 @@
 
 (def not-analyzed
   {:type :string
-   :index "not_analyzed"
-   :schema-type s/Str})
+   :index "not_analyzed"})
 
 (def analyzed
-  {:type :string
-   :schema-type s/Str})
+  {:type :string})
 
 (def long
-  {:type :long
-   :schema-type s/Num})
+  {:type :long})
 
 (def double
-  {:type :double
-   :schema-type s/Num})
+  {:type :double})
 
 (def boolean
-  {:type :boolean
-   :schema-type s/Bool})
+  {:type :boolean})
 
 (def date
-  {:type :date
-   :schema-type s/Str})
+  {:type :date})
 
 (def multi-string
   {:type :string
-   :schema-type s/Str
-   ;; Doesn't need Schema, since it's invisible to Clojure
    :fields {:analyzed
             {:type :string
              :index :analyzed}}})
 
-(def opt-not-analyzed
-  (assoc not-analyzed :schema-required false))
-
-(def opt-analyzed
-  (assoc analyzed :schema-required false))
-
-(def opt-multi-string
-  (assoc multi-string :schema-required false))
-
-(def opt-date
-  (assoc date :schema-required false))
-
-(def not-analyzed-string-list
-  (assoc not-analyzed :schema-type [s/Str]))
 
