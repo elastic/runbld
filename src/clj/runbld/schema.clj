@@ -200,26 +200,18 @@
   {(s/required-key :report-has-tests) s/Bool
    (s/optional-key :report) TestSummary})
 
-(def StoredFailure
-  {:error-type s/Str
-   :class      s/Str
-   :test       s/Str
-   :type       s/Str
-   :summary    s/Str
-   :message    s/Str})
-
 (def StoredTestSummary
   {:errors   s/Num
    :failures s/Num
    :tests    s/Num
    :skipped  s/Num
    :failed-testcases
-   {:error-type s/Str
-    :class      s/Str
-    :test       s/Str
-    :type       s/Str
-    :summary    s/Str
-    :message    s/Str}})
+   [{:error-type s/Str
+     :class      s/Str
+     :test       s/Str
+     :type       s/Str
+     :summary    s/Str
+     (s/optional-key :message) s/Str}]})
 
 (def StoredFailure
   (merge
