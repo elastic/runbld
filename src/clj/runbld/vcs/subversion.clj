@@ -43,7 +43,7 @@
 
 (s/defn log-latest :- VcsLog
   ([this]
-   (let [{:keys [commit-id] :as commit} (head-commit (.dir this))]
+   (let [{:keys [commit-id] :as commit} (head-commit this)]
      (merge
       commit
       ;; TODO: ViewSVN support
