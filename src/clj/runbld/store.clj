@@ -96,7 +96,8 @@
         t (name DocType)
         id (:id d)
         es-addr {:index idx :type t :id id}]
-    (doc/index conn (merge es-addr {:body d}))
+    (doc/index conn (merge es-addr {:body d
+                                    :query-params {:refresh true}}))
     {:url (format "%s://%s:%s/%s/%s/%s"
                   (-> opts :es :conn :settings :scheme name)
                   (-> opts :es :conn :settings :server-name)
@@ -122,7 +123,8 @@
           idx (-> opts :es :failure-index-write)
           t (name DocType)
           es-addr {:index idx :type t}]
-      (doc/index conn (merge es-addr {:body d})))))
+      (doc/index conn (merge es-addr {:body d
+                                      :query-params {:refresh true}})))))
 
 (s/defn save! :- {s/Keyword s/Any}
   ([opts        :- OptsFinal
