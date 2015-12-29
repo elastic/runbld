@@ -1,4 +1,5 @@
 (ns runbld.schema.mapping
+  (:refer-clojure :exclude [boolean long double])
   (:require [clojure.walk :as walk]
             [schema.core :as s]))
 
@@ -52,6 +53,7 @@
               (entry
                (make-key x)
                (-> x entry-val :schema-type))
+
               :else x))]
     (walk/postwalk f form)))
 
@@ -62,7 +64,57 @@
               :else x))]
     (walk/postwalk f form)))
 
-(defmacro defmapping [name map]
+(defmacro defmapping [name form]
   `(do
-     (def ~name ~(schema-walk map))
-     (def ~(symbol (str name "Mapping")) ~(mapping-walk map))))
+     (def ~name (schema-walk ~form))
+     (def ~(symbol (str name "Raw")) ~form)
+     (def ~(symbol (str name "Mapping")) (mapping-walk ~form))))
+
+(def not-analyzed
+  {:type :string
+   :index "not_analyzed"
+   :schema-type s/Str})
+
+(def analyzed
+  {:type :string
+   :schema-type s/Str})
+
+(def long
+  {:type :long
+   :schema-type s/Num})
+
+(def double
+  {:type :double
+   :schema-type s/Num})
+
+(def boolean
+  {:type :boolean
+   :schema-type s/Bool})
+
+(def date
+  {:type :date
+   :schema-type s/Str})
+
+(def multi-string
+  {:type :string
+   :schema-type s/Str
+   ;; Doesn't need Schema, since it's invisible to Clojure
+   :fields {:analyzed
+            {:type :string
+             :index :analyzed}}})
+
+(def opt-not-analyzed
+  (assoc not-analyzed :schema-required false))
+
+(def opt-analyzed
+  (assoc analyzed :schema-required false))
+
+(def opt-multi-string
+  (assoc multi-string :schema-required false))
+
+(def opt-date
+  (assoc date :schema-required false))
+
+(def not-analyzed-string-list
+  (assoc not-analyzed :schema-type [s/Str]))
+

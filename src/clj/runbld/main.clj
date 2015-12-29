@@ -46,12 +46,19 @@
       env/wrap-env
       system/wrap-system))
 
+(defn set-up [opts]
+  (store/create-mappings opts))
+
 ;; -main :: IO ()
 (defn -main [& args]
   (s/with-fn-validation
     (try+
-     (log (version/string))
-     (let [opts-init (opts/parse-args args)
+     (let [logger #'log
+           _ (logger (version/string))
+           opts-init (assoc
+                      (opts/parse-args args)
+                      :logger logger)
+           _ (set-up opts-init)
            _ (log ">>>>>>>>>>>> SCRIPT EXECUTION BEGIN >>>>>>>>>>>>")
            {:keys [opts process-result]} (run opts-init)
            _ (log "<<<<<<<<<<<< SCRIPT EXECUTION END   <<<<<<<<<<<<")

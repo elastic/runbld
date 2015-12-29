@@ -3,7 +3,7 @@
             [schema.test]
             [schema.core :as s])
   (:require [clj-time.core :as t]
-            [runbld.schema.mapping :refer [schema-walk mapping-walk]]
+            [runbld.schema.mapping :as m :refer [schema-walk mapping-walk]]
             :reload-all))
 
 (use-fixtures :once schema.test/validate-schemas)
@@ -21,6 +21,18 @@
                 :index "not_analyzed"
                 :schema-type schema.core/Str
                 :schema-required true}})))
+  (is (= {(s/required-key :id) schema.core/Str
+          (s/required-key :foo) (s/maybe {:f schema.core/Str})}
+         (schema-walk
+          {:id {:type "string"
+                :index "not_analyzed"
+                :schema-type schema.core/Str
+                :schema-required true}
+           :foo {:properties
+                 {:f {:type :string
+                      :schema-type schema.core/Str}}
+                 :schema-type (s/maybe {:f schema.core/Str})
+                 :schema-required false}})))
   (is (= {(s/required-key :id) schema.core/Str
           (s/optional-key :bar)
           {(s/optional-key :baz) (schema.core/maybe schema.core/Str)
@@ -42,7 +54,25 @@
                     {:type "long"
                      :index "not_analyzed"
                      :schema-type schema.core/Num}}}}
-                 :schema-required false}}))))
+                 :schema-required false}})))
+  (is (= {:id schema.core/Str}
+         (schema-walk
+          {:id {:type "string"
+                :index "not_analyzed"
+                :fields {:analyzed {:type :string
+                                    :index :analyzed}}
+                :schema-type schema.core/Str
+                :schema-required true}})))
+
+  ;; need to figure out how to error properly when :schema-type is
+  ;; missing
+  #_(is (schema.core/validate
+         (schema-walk
+          {:id {:type "string"
+                :index "not_analyzed"
+                :fields {:analyzed {:type :string
+                                    :index :analyzed}}}})
+         {:id "foo"})))
 
 (deftest t-mapping-walk
   (is (= {:id

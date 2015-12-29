@@ -3,12 +3,27 @@
   (:require [runbld.schema :refer :all]
             [schema.core :as s])
   (:require [elasticsearch.document :as doc]
+            [elasticsearch.indices :as indices]
             [runbld.util.date :as date]
             [runbld.vcs :refer [VcsRepo]]
             [slingshot.slingshot :refer [try+]]))
 
 (def doc-type
   "t")
+
+(defn create-build-mappings [logger conn idx mappings]
+  (let [body {:mappings {doc-type mappings}}]
+    (try+
+      (indices/create conn idx body)
+      (catch [:status 400] e
+        #_(logger idx "already exists")))))
+
+(defn create-mappings [opts]
+  (create-build-mappings
+   (-> opts :logger)
+   (-> opts :es :conn)
+   (-> opts :es :build-index)
+   StoredBuildMapping))
 
 (s/defn create-build-doc :- StoredBuild
   [opts result test-report]
