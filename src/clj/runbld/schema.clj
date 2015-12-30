@@ -64,7 +64,7 @@
    :cpus-physical          s/Num
    :hostname               s/Str
    :ipv4                   s/Str
-   :ipv6                   s/Str
+   (s/optional-key :ipv6)  s/Str
    :kernel-name            s/Str
    :kernel-release         s/Str
    :kernel-version         s/Str
