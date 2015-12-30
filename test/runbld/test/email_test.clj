@@ -5,7 +5,8 @@
             [runbld.email :as email]
             [stencil.core :as mustache]))
 
-(deftest render
+;; This is a waste until we dynamically generate test/context.edn
+#_(deftest render
   (let [f "tmp/runbld-email.html"]
     (spit f
           (mustache/render-string

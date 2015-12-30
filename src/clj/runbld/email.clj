@@ -132,7 +132,14 @@
        (update-in [:version :hash]
                   #(->> % (take 7) (apply str))))))
 
+(s/defn send? :- s/Bool
+  [build :- StoredBuild]
+  (pos?
+   (-> build :process :exit-code)))
+
 (defn maybe-send! [opts {:keys [index type id] :as addr}]
   (let [build-doc (store/get (-> opts :es :conn) addr)
         failure-docs (store/get-failures opts (:id build-doc))]
-    (send opts (make-context opts build-doc) failure-docs)))
+    (if (send? build-doc)
+      (send opts (make-context opts build-doc) failure-docs)
+      ((opts :logger) "NO MAIL GENERATED"))))
