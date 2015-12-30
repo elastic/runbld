@@ -71,7 +71,9 @@
          (assoc process-result
                 :store-result store-result
                 :email-result email-result)
-         (die 0)))
+         (if (-> opts :process :inherit-exit-code)
+           (die (-> store-result :build-doc :process :exit-code))
+           (die 0))))
 
      (catch [:error :runbld.main/errors] {:keys [errors msg]}
        (die 3 msg))
