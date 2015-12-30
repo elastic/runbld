@@ -4,6 +4,7 @@
 <h2><code><a href="{{vcs.project-url}}">{{ build.org }}/{{ build.project }}</a><br/>
 <a href="{{vcs.branch-url}}">{{ build.branch }}</a></code></h2>
 <table>
+<tr><td>Build</td><td>{{ id }}</td></tr>
 <tr><td>Log</td><td>{{ build.console-url }}</td></tr>
 <tr><td>Duration</td><td>{{ process.took-human }} ({{ process.took }}ms)</td></tr>
 <tr><td>Started</td><td>{{ process.time-start }}</td></tr>
@@ -57,7 +58,6 @@ Date: {{ vcs.commit-time }}
 -->
 
 <p>
-<code>{{ id }}</code><br />
 <code>runbld-{{ version.string }}/{{ version.hash }}</code><br />
 </p>
 

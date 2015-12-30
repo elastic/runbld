@@ -4,6 +4,7 @@
 {{ build.org }}/{{ build.project }}
 {{ build.branch }} {{ build.branch-url }}
 
+Build    {{ id }}
 Log      {{ build.console-url }}
 Duration {{ process.took-human }} ({{ process.took }}ms)
 Started  {{ process.time-start }}
@@ -46,5 +47,5 @@ Tests SKIPPED:     {{ test.skipped }}
 {{/test}}
 
 
-{{ id }}
 runbld {{ version.string }}/{{ version.hash }}
+https://github.com/elastic/runbld
