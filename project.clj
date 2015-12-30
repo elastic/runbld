@@ -26,7 +26,7 @@
                    ]]
                  [com.fzakaria/slf4j-timbre "0.2.1"]
                  [com.taoensso/timbre "4.1.4"]
-                 [elastic/elasticsearch-clojure "0.99.1-SNAPSHOT"
+                 [elastic/elasticsearch-clojure "0.99.1"
                   :exclusions [prismatic/schema]]
                  [enlive "1.1.5"]
                  [environ "1.0.1"]
