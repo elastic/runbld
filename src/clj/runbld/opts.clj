@@ -25,6 +25,9 @@
     :access-key "key"
     :secret-key "secret"}
 
+   :process
+   {:inherit-exit-code true}
+
    :email
    {:host "localhost"
     :port 587

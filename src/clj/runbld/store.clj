@@ -103,7 +103,8 @@
                   (-> opts :es :conn :settings :server-name)
                   (-> opts :es :conn :settings :server-port)
                   idx t id)
-     :addr es-addr}))
+     :addr es-addr
+     :build-doc d}))
 
 (s/defn create-failure-docs :- [StoredFailure]
   [opts :- OptsFinal
