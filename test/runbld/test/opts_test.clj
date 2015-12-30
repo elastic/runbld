@@ -9,6 +9,7 @@
 (deftest basic
   (is (= {:program "zsh"
           :args ["-x"]
+          :inherit-exit-code true
           :scriptfile "/path/to/script.zsh"
           :cwd (System/getProperty "user.dir")}
          (:process

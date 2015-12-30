@@ -27,7 +27,8 @@
   {(s/required-key :program   ) s/Str
    (s/required-key :args      ) [s/Str]
    (s/required-key :cwd       ) s/Str
-   (s/required-key :scriptfile) s/Str})
+   (s/required-key :scriptfile) s/Str
+   (s/required-key :inherit-exit-code ) s/Bool})
 
 (def OptsElasticsearch
   {(s/required-key :build-index          ) s/Str
