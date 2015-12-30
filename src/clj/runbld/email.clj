@@ -66,6 +66,12 @@
       :subject subject
       :body body})))
 
+(s/defn obfuscate-addr :- s/Str
+  [addr :- s/Str]
+  (str/replace addr
+               (re-pattern "(.*?)@([^.]+\\.)?(.)[^.]+\\.([^.]+)$")
+               "$1@$3***.$4"))
+
 (s/defn send :- s/Any
   [opts :- OptsFinal
    ctx :- EmailCtx
@@ -75,23 +81,26 @@
           (with-out-str
             (clojure.pprint/pprint
              (into (sorted-map) ctx))))
-  (send* (opts :email)
-         (-> opts :email :from)
-         (split-addr (-> opts :email :to))
-         (-> ctx :email :subject)
-         (mustache/render-string
-          (slurp
-           (io/resolve-resource
-            (-> opts :email :template-txt)))
-          ctx)
-         (when (and (-> opts :email :template-html)
-                    (not (-> opts :email :text-only)))
+  (let [rcpts (split-addr (-> opts :email :to))]
+    ((opts :logger) "MAILING:" (str/join ", "
+                                         (map obfuscate-addr rcpts)))
+    (send* (opts :email)
+           (-> opts :email :from)
+           rcpts
+           (-> ctx :email :subject)
            (mustache/render-string
             (slurp
              (io/resolve-resource
-              (-> opts :email :template-html)))
-            ctx))
-         failures))
+              (-> opts :email :template-txt)))
+            ctx)
+           (when (and (-> opts :email :template-html)
+                      (not (-> opts :email :text-only)))
+             (mustache/render-string
+              (slurp
+               (io/resolve-resource
+                (-> opts :email :template-html)))
+              ctx))
+           failures)))
 
 (defn strip-out-runbld [src]
   (let [runbld-shebang (fn [line]
@@ -125,8 +134,5 @@
 
 (defn maybe-send! [opts {:keys [index type id] :as addr}]
   (let [build-doc (store/get (-> opts :es :conn) addr)
-        failure-docs (store/get-failures
-                      (-> opts :es :conn)
-                      (-> opts :es :failure-index)
-                      (:id build-doc))]
+        failure-docs (store/get-failures opts (:id build-doc))]
     (send opts (make-context opts build-doc) failure-docs)))

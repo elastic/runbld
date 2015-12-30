@@ -1,5 +1,5 @@
 (ns runbld.test.main-test
-  (:require [schema.test])
+  (:require [schema.test :as s])
   (:require [clojure.test :refer :all]
             [runbld.build :as build]
             [runbld.email :as email]
@@ -11,13 +11,11 @@
             [runbld.version :as version])
   (:require [runbld.main :as main] :reload-all))
 
-(use-fixtures :once schema.test/validate-schemas)
-
-(deftest main
+(s/deftest main
   ;; Change root bindings for these Vars, affects any execution no
   ;; matter what thread
   (with-redefs [;; Don't pollute the console
-                main/log (fn [_] :noconsole)
+                main/log (fn [& _] :noconsole)
                 ;; Don't really kill the JVM
                 main/really-die (fn [& args] :dontdie)
                 ;; Don't really execute an external process
@@ -33,8 +31,8 @@
                                    "-j" "elastic+foo+master"
                                    "/path/to/script.bash") "config file ")))))
 
-(deftest unexpected
-  (with-redefs [main/log (fn [_] :noconsole)
+(s/deftest unexpected
+  (with-redefs [main/log (fn [& _] :noconsole)
                 main/really-die (fn [& args] :dontdie)
                 proc/run (fn [& args] (throw
                                        (Exception.
@@ -49,10 +47,10 @@
         (is (= String (type res)))
         (is (.startsWith res "#error {\n :cause boy that was "))))))
 
-(deftest execution
+(s/deftest execution
   (testing "real execution all the way through"
     (let [email (atom [])]
-      (with-redefs [main/log (fn [_] :noconsole)
+      (with-redefs [main/log (fn [& _] :noconsole)
                     email/send* (fn [& args]
                                   (swap! email concat args)
                                   ;; to satisfy schema

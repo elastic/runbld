@@ -1,23 +1,23 @@
 (ns runbld.opts
   (:require [runbld.schema :refer :all]
-            [schema.core :as s])
+            [schema.core :as s]
+            [slingshot.slingshot :refer [throw+]])
   (:require [clj-yaml.core :as yaml]
             [clojure.java.io :as io]
             [clojure.tools.cli :as cli]
-            [elasticsearch.connection.http :as es]
             [environ.core :as environ]
+            [runbld.store :as store]
             [runbld.util.data :refer [deep-merge-with deep-merge]]
             [runbld.util.date :as date]
-            [runbld.version :as version]
-            [schema.core :as s]
-            [slingshot.slingshot :refer [throw+]]))
+            [runbld.version :as version]))
 
 (def defaults
   {:es
    {:url "http://localhost:9200"
-    :build-index "'build'-yyyy-MM"
-    :failure-index "'failure'-yyyy-MM"
-    :http-opts {:insecure? false}}
+    :build-index "build"
+    :failure-index "failure"
+    :http-opts {:insecure? false}
+    :max-index-bytes store/MAX_INDEX_BYTES}
 
    :s3
    {:bucket "test.example.com"
@@ -33,15 +33,6 @@
     :template-html "templates/email.mustache.html"
     :text-only false
     :max-failure-notify 10}})
-
-(defn expand-date-pattern [s]
-  (if (string? s)
-    (if (.contains s "'")
-      (date/expand s)
-      s)
-    (throw+ {:error ::invalid-date
-             :msg "date pattern should be a string"
-             :arg s})))
 
 (s/defn merge-profiles :- java.util.Map
   [job-name :- s/Str
@@ -116,6 +107,27 @@
    ["-a" "--args ARGS" "Args to pass PROGRAM"
     :default ["-x"]]])
 
+(s/defn set-up-es [{:keys [url
+                           build-index
+                           failure-index
+                           max-index-bytes] :as opts}]
+  (let [conn (store/make-connection
+              (select-keys opts [:url :http-opts]))
+        build-index-write (store/set-up-index
+                           conn build-index
+                           {:mappings StoredBuildMapping}
+                           max-index-bytes)
+        failure-index-write (store/set-up-index
+                             conn failure-index
+                             {:mappings StoredFailureMapping}
+                             max-index-bytes)]
+    (-> opts
+        (assoc :build-index-search (format "%s*" build-index))
+        (assoc :failure-index-search (format "%s*" failure-index))
+        (assoc :build-index-write build-index-write)
+        (assoc :failure-index-write failure-index-write)
+        (assoc :conn conn))))
+
 (s/defn parse-args :- Opts
   [args :- [s/Str]]
   (let [{:keys [options arguments summary errors]
@@ -143,10 +155,7 @@
     (let [options (assemble-all-opts
                    (normalize options))]
       (merge options
-             {:es (-> (:es options)
-                      (update :build-index expand-date-pattern)
-                      (update :failure-index expand-date-pattern)
-                      (assoc :conn (es/make (:es options))))
+             {:es (set-up-es (:es options))
               :process (merge
                         ;; Invariant: Jenkins passes it in through arguments
                         {:scriptfile (first arguments)}
