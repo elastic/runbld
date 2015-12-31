@@ -1,7 +1,8 @@
 (ns runbld.util.data
   (:refer-clojure :exclude [bigdec])
   (:require [clojure.string :as str]
-            [clojure.walk]))
+            [clojure.walk]
+            [slingshot.slingshot :refer [throw+]]))
 
 ;; http://dev.clojure.org/jira/browse/CLJ-1468
 (defn deep-merge
@@ -56,3 +57,17 @@
                               (->> s str/trim str/reverse))]
       (str/reverse rst)
       s)))
+
+(defn as-int [value]
+  (when value
+    (cond
+      (integer? value) value
+      (and
+       (string? value)
+       (re-find #"\d+" value)) (Integer/parseInt value)
+      :else (throw+
+             {:type ::error
+              :msg (format
+                    "don't know how to make an integer out of: %s (%s)"
+                    (pr-str value)
+                    (type value))}))))
