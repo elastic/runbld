@@ -15,7 +15,7 @@
     (-> (.facts x) :processorcount))
 
   (cpus-physical [x]
-    (-> (.facts x) :processorphysicalcount))
+    (-> (.facts x) :physicalprocessorcount))
 
   (facter-provider [x]
     "facter")

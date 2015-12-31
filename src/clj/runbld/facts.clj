@@ -1,4 +1,7 @@
-(ns runbld.facts)
+(ns runbld.facts
+  (:require [schema.core :as s]
+            [slingshot.slingshot :refer [throw+]])
+  (:require [runbld.util.io :as io]))
 
 (defprotocol Facter
   (arch            [_])
@@ -24,3 +27,21 @@
   (uptime-secs     [_])
   (uptime          [_])
   (virtual         [_]))
+
+(s/defn ram-mb-from-slash-proc :- s/Num
+  [facts :- {s/Keyword s/Any}]
+  (let [meminfo "/proc/meminfo"]
+    (if (.exists (io/file meminfo))
+      (let [memtotal-raw (:out (io/run "fgrep" "MemTotal" meminfo))
+            [_ kb] (or (re-find #"^MemTotal: +(\d+) kB" memtotal-raw)
+                       (throw+ {:type ::error
+                                :msg (format
+                                      "can't get memtotal from meminfo:\n%s"
+                                      (with-out-str
+                                        (println memtotal-raw)
+                                        (clojure.pprint/pprint facts)))}))]
+        (float (/ (Integer/parseInt kb) 1024)))
+      (throw+ {:type ::error
+               :msg (format "can't get memory info from:\n%s"
+                            (with-out-str
+                              (clojure.pprint/pprint facts)))}))))
