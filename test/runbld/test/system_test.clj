@@ -6,7 +6,7 @@
 
 (use-fixtures :once schema.test/validate-schemas)
 
-(deftest number-inconsistencies
-  (is (= 1 (system/as-int "1")))
-  (is (= 1 (system/as-int 1)))
-  (is (nil? (system/as-int nil))))
+(deftest facter
+  (let [facts (system/inspect-system
+               (system/make-facter))]
+    (is (:os facts))))

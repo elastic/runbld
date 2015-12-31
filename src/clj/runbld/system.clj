@@ -3,107 +3,82 @@
             [schema.core :as s]
             [slingshot.slingshot :refer [throw+]])
   (:require [clj-yaml.core :as yaml]
-            [clojure.java.shell :as sh]
-            [environ.core :as environ]
-            [runbld.opts :as opts]
+            [runbld.facts :as facts]
+            [runbld.facts.facter1]
+            [runbld.facts.facter2]
+            [runbld.facts.facter3]
             [runbld.util.io :as io]))
 
+(def facter-program
+  "facter")
+
 (defn facter-installed? []
-  (let [{:keys [exit]} (sh/sh "which" "facter")]
-    `    (zero? exit)))
+  (let [{:keys [exit]} (io/run "which" facter-program)]
+    (zero? exit)))
+
+(defn facter-version []
+  (when (facter-installed?)
+    (let [version-string (:out (io/run facter-program "--version"))
+          [_ maj minor patch] (re-find #"(\d+)\.(\d+)\.(\d+).*"
+                                       (.trim version-string))]
+      (if (and maj minor patch)
+        (zipmap
+         [:major :minor :patch]
+         (map #(Integer/parseInt %) [maj minor patch]))
+        (throw+ {:error ::facter-version-unknown
+                 :msg (format "don't understand facter version [%s]"
+                              version-string)})))))
 
 (defn facter []
-  ;; costly call, only do it in production
-  (if (environ/env :dev)
-    (assoc (clojure.edn/read-string
-            (slurp "test/facter.edn"))
-           :dev-profile true)
-    (if (facter-installed?)
-      (let [{:keys [out err exit]} (io/run "facter" "--yaml")]
-        (if out
-          (yaml/parse-string out)
-          (throw+ {:error ::empty-factor
-                   :msg (format "facter returned empty (%d): %s" exit err)})))
-      (throw+ {:warning ::no-facter
-               :msg "facter cannot be found in PATH"}))))
-
-(defn find-ram-mb
-  "Hack until we can fix our facter versions, or get it to always
-  return memory info"
-  [facts]
-  (if (:memorysize_mb facts)
-    (Float/parseFloat
-     (:memorysize_mb facts))
-    (let [meminfo "/proc/meminfo"]
-      (if (and (= (:kernel facts) "Linux")
-               (.exists (io/file meminfo)))
-        (let [memtotal-raw (:out
-                            (sh/sh "fgrep" "MemTotal" meminfo))
-              [_ kb] (or (re-find #"^MemTotal: +(\d+) kB" memtotal-raw)
-                         (throw+ {:type ::error
-                                  :msg (format
-                                        "can't get memtotal from meminfo:\n%s"
-                                        (with-out-str
-                                          (println memtotal-raw)
-                                          (clojure.pprint/pprint facts)))}))]
-          (float (/ (Integer/parseInt kb) 1024)))
-        (throw+ {:type ::error
-                 :msg (format "can't get memory info from:\n%s"
-                              (with-out-str
-                                (clojure.pprint/pprint facts)))})))))
-
-(defn memory-details [facts]
-  (let [ram-mb (find-ram-mb facts)
-        ram-gb (.setScale
-                (bigdec (/ ram-mb 1024)) 2
-                java.math.BigDecimal/ROUND_HALF_UP)]
-    {:ram-mb ram-mb
-     :ram-gb ram-gb}))
-
-(defn as-int [value]
-  (when value
-    (cond
-      (integer? value) value
-      (and
-       (string? value)
-       (re-find #"\d+" value)) (Integer/parseInt value)
-      :else (throw+
-             {:type ::error
-              :msg (format
-                    "don't know how to make an integer out of: %s (%s)"
-                    (pr-str value)
-                    (type value))}))))
+  (if (facter-installed?)
+    (let [{:keys [out err exit]} (io/run facter-program "--yaml")]
+      (if out
+        (yaml/parse-string out)
+        (throw+ {:error ::empty-facter
+                 :msg (format "facter returned empty (%d): %s" exit err)})))
+    (throw+ {:warning ::no-facter
+             :msg "facter cannot be found in PATH"})))
 
 (s/defn inspect-system :- BuildSystem
-  ([facter-fn :- clojure.lang.IFn]
-   (let [facts (facter-fn)
-         ipv6 (:ipaddress6 facts)]
+  ([facter]
+   (let [ip6 (facts/ip6 facter)
+         ram-bytes (facts/ram-bytes facter)]
      (merge
-      {:arch           (:architecture            facts)
-       :cpu-type       (:processor0              facts)
-       :cpus           (as-int
-                        (:processorcount         facts))
-       :cpus-physical  (as-int
-                        (:physicalprocessorcount facts))
-       :hostname       (:hostname                facts)
-       :ipv4           (:ipaddress               facts)
-       :kernel-name    (:kernel                  facts)
-       :kernel-release (:kernelrelease           facts)
-       :kernel-version (:kernelversion           facts)
-       :model          (:hardwaremodel           facts)
-       :os             (:operatingsystem         facts)
-       :os-version     (:operatingsystemrelease  facts)
-       :timezone       (:timezone                facts)
-       :uptime-days    (:uptime_days             facts)
-       :uptime-secs    (:uptime_seconds          facts)
-       :uptime         (:uptime                  facts)
-       :virtual        (boolean
-                        (:is_virtual             facts))}
-      (memory-details facts)
-      (when ipv6
-        {:ipv6 ipv6})))))
+      {:arch            (facts/arch            facter)
+       :cpu-type        (facts/cpu-type        facter)
+       :cpus            (facts/cpus            facter)
+       :cpus-physical   (facts/cpus-physical   facter)
+       :facter-provider (facts/facter-provider facter)
+       :facter-version  (facts/facter-version  facter)
+       :hostname        (facts/hostname        facter)
+       :ip4             (facts/ip4             facter)
+       :kernel-name     (facts/kernel-name     facter)
+       :kernel-release  (facts/kernel-release  facter)
+       :kernel-version  (facts/kernel-version  facter)
+       :model           (facts/model           facter)
+       :os              (facts/os              facter)
+       :os-version      (facts/os-version      facter)
+       :ram-mb          (facts/ram-mb          facter)
+       :ram-gb          (facts/ram-gb          facter)
+       :timezone        (facts/timezone        facter)
+       :uptime-days     (facts/uptime-days     facter)
+       :uptime-secs     (facts/uptime-secs     facter)
+       :uptime          (facts/uptime          facter)
+       :virtual         (facts/virtual         facter)}
+      (when ip6
+        {:ip6 ip6})
+      (when ram-bytes
+        {:ram-bytes ram-bytes})))))
+
+(defn make-facter []
+  (if-let [{:keys [major]} (facter-version)]
+    (condp = major
+      3 (runbld.facts.facter3.Facter3. (facter))
+      2 (runbld.facts.facter2.Facter2. (facter))
+      1 (runbld.facts.facter1.Facter1. (facter)))))
 
 (s/defn wrap-system :- OptsStage2
   [proc :- clojure.lang.IFn]
   (fn [opts]
-    (proc (assoc opts :sys (inspect-system facter)))))
+    (proc (assoc opts :sys (inspect-system (make-facter))))))
+

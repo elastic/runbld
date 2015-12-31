@@ -11,7 +11,7 @@
             [runbld.vcs :as vcs :refer [VcsRepo]]
             [slingshot.slingshot :refer [throw+]]))
 
-(def vendor "git")
+(def provider "git")
 
 (defn repo? [dir]
   (when dir
@@ -72,7 +72,7 @@
                         (.getWhen author)))
      :author-name author-name
      :author-email author-email
-     :type vendor
+     :provider provider
      :log-pretty (format
                   "commit %s\nAuthor: %s <%s>\nDate:   %s\n\n%s"
                   commit-id
@@ -146,7 +146,7 @@
 (extend GitRepo
   VcsRepo
   {:log-latest log-latest
-   :vendor (fn [& args] vendor)})
+   :provider (fn [& args] provider)})
 
 (s/defn make-repo :- GitRepo
   [dir org project branch]

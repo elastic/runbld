@@ -7,7 +7,7 @@
             [runbld.vcs :as vcs :refer [VcsRepo]])
   (:import (runbld.vcs.subversion SvnRepository)))
 
-(def vendor "svn")
+(def provider "svn")
 
 (defn head-commit [this]
   (let [url (.url this)
@@ -24,7 +24,7 @@
      :commit-short revstr
      :commit-time date
      :message msg
-     :type vendor
+     :provider provider
      :log-pretty (format "revision: %s\nauthor: %s\ndate: %s\n\n%s"
                          (str (.getRevision log))
                          author
@@ -59,7 +59,7 @@
 (extend SvnRepo
   VcsRepo
   {:log-latest log-latest
-   :vendor (fn [& args] vendor)})
+   :provider (fn [& args] provider)})
 
 (s/defn make-repo :- SvnRepo
   [url org project revision]
