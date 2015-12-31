@@ -92,7 +92,7 @@
    :job-name-extra            s/Str
    :job-name                  s/Str
    :org-project-branch        s/Str
-   :scheduler-type            s/Str
+   :scheduler                 s/Str
    :url                       s/Str
    :console-url               s/Str
    :tags                      [s/Str]
@@ -100,11 +100,6 @@
    (s/optional-key :executor) s/Str
    (s/optional-key :node)     s/Str
    })
-
-(def SchedulerInfo
-  {:type (s/maybe s/Str)
-   :url  (s/maybe s/Str)
-   :node (s/maybe s/Str)})
 
 (def OptsStage2
   (merge Opts {:sys    BuildSystem
@@ -155,7 +150,7 @@
    :commit-short  s/Str
    :commit-time   s/Str
    :message       s/Str
-   :type          s/Str
+   :provider      s/Str
    :log-pretty    s/Str
    :project-url   s/Str
 
@@ -238,7 +233,7 @@
               :job-name-extra      m/multi-string
               :job-name            m/multi-string
               :org-project-branch  m/not-analyzed
-              :scheduler-type      m/not-analyzed
+              :scheduler           m/not-analyzed
               :url                 m/multi-string
               :console-url         m/multi-string
               :tags                m/not-analyzed
@@ -274,7 +269,7 @@
             :commit-short  m/not-analyzed
             :commit-time   m/date
             :message       m/analyzed
-            :type          m/not-analyzed
+            :provider      m/not-analyzed
             :log-pretty    m/analyzed
             :project-url   m/not-analyzed
 

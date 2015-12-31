@@ -20,10 +20,10 @@
       {:number   (get-in opts [:env "BUILD_NUMBER"])
        :executor (get-in opts [:env "EXECUTOR_NUMBER"])
        :node     (get-in opts [:env "NODE_NAME"])}))
-  (vendor [_] :jenkins)
+  (provider [_] :jenkins)
   (as-map [this]
     (merge
-     {:scheduler-type (name (scheduler/vendor this))
+     {:scheduler (name (scheduler/provider this))
       :url (scheduler/build-url this)
       :console-url (scheduler/console-url this)
       :tags (scheduler/tags this)}

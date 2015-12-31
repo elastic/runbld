@@ -2,5 +2,5 @@
 
 (defprotocol VcsRepo
   (log-latest [_] "Log map for latest commit")
-  (vendor [_] "What kind of VCS?"))
+  (provider [_] "What kind of VCS?"))
 
