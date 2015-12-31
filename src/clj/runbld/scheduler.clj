@@ -6,4 +6,4 @@
   (console-url [_] "Log")
   (extra-info [_] "Extra fields to create")
   (tags [_] "Build tags")
-  (vendor [_] "Scheduler type"))
+  (provider [_] "Scheduler type"))

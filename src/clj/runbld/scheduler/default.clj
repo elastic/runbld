@@ -10,10 +10,10 @@
     (format "%s/console" (scheduler/build-url this)))
   (tags [this] [])
   (extra-info [this] {})
-  (vendor [_] :default)
+  (provider [_] :default)
   (as-map [this]
     (merge
-     {:scheduler-type (name (scheduler/vendor this))
+     {:scheduler (name (scheduler/provider this))
       :url (scheduler/build-url this)
       :console-url (scheduler/console-url this)
       :tags (scheduler/tags this)}

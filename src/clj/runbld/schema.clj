@@ -62,9 +62,11 @@
    :cpu-type               s/Str
    :cpus                   s/Num
    :cpus-physical          s/Num
+   :facter-provider        s/Str
+   :facter-version         s/Str
    :hostname               s/Str
-   :ipv4                   s/Str
-   (s/optional-key :ipv6)  s/Str
+   :ip4                    s/Str
+   (s/optional-key :ip6)   s/Str
    :kernel-name            s/Str
    :kernel-release         s/Str
    :kernel-version         s/Str
@@ -73,6 +75,7 @@
    :os-version             s/Str
    :ram-mb                 s/Num
    :ram-gb                 s/Num
+   (s/optional-key :ram-bytes) s/Num
    :timezone               s/Str
    :uptime                 s/Str
    :uptime-days            s/Num
@@ -89,7 +92,7 @@
    :job-name-extra            s/Str
    :job-name                  s/Str
    :org-project-branch        s/Str
-   :scheduler-type            s/Str
+   :scheduler                 s/Str
    :url                       s/Str
    :console-url               s/Str
    :tags                      [s/Str]
@@ -97,11 +100,6 @@
    (s/optional-key :executor) s/Str
    (s/optional-key :node)     s/Str
    })
-
-(def SchedulerInfo
-  {:type (s/maybe s/Str)
-   :url  (s/maybe s/Str)
-   :node (s/maybe s/Str)})
 
 (def OptsStage2
   (merge Opts {:sys    BuildSystem
@@ -152,7 +150,7 @@
    :commit-short  s/Str
    :commit-time   s/Str
    :message       s/Str
-   :type          s/Str
+   :provider      s/Str
    :log-pretty    s/Str
    :project-url   s/Str
 
@@ -235,7 +233,7 @@
               :job-name-extra      m/multi-string
               :job-name            m/multi-string
               :org-project-branch  m/not-analyzed
-              :scheduler-type      m/not-analyzed
+              :scheduler           m/not-analyzed
               :url                 m/multi-string
               :console-url         m/multi-string
               :tags                m/not-analyzed
@@ -243,33 +241,35 @@
               :executor            m/not-analyzed
               :node                m/not-analyzed}}
      :sys {:properties
-           {:arch           m/not-analyzed
-            :cpu-type       m/not-analyzed
-            :cpus           m/long
-            :cpus-physical  m/long
-            :hostname       m/not-analyzed
-            :ipv4           m/not-analyzed
-            :ipv6           m/not-analyzed
-            :kernel-name    m/not-analyzed
-            :kernel-release m/not-analyzed
-            :kernel-version m/not-analyzed
-            :model          m/not-analyzed
-            :os             m/not-analyzed
-            :os-version     m/not-analyzed
-            :ram-mb         m/double
-            :ram-gb         m/double
-            :timezone       m/not-analyzed
-            :uptime         m/analyzed
-            :uptime-days    m/long
-            :uptime-secs    m/long
-            :virtual        m/boolean}}
+           {:arch            m/not-analyzed
+            :cpu-type        m/multi-string
+            :cpus            m/long
+            :cpus-physical   m/long
+            :hostname        m/not-analyzed
+            :facter-provider m/not-analyzed
+            :facter-version  m/not-analyzed
+            :ip4             m/not-analyzed
+            :ip6             m/not-analyzed
+            :kernel-name     m/not-analyzed
+            :kernel-release  m/not-analyzed
+            :kernel-version  m/not-analyzed
+            :model           m/not-analyzed
+            :os              m/not-analyzed
+            :os-version      m/not-analyzed
+            :ram-mb          m/double
+            :ram-gb          m/double
+            :timezone        m/not-analyzed
+            :uptime          m/analyzed
+            :uptime-days     m/long
+            :uptime-secs     m/long
+            :virtual         m/boolean}}
      :vcs {:properties
            {:author-name   m/multi-string
             :commit-id     m/not-analyzed
             :commit-short  m/not-analyzed
             :commit-time   m/date
             :message       m/analyzed
-            :type          m/not-analyzed
+            :provider      m/not-analyzed
             :log-pretty    m/analyzed
             :project-url   m/not-analyzed
 
