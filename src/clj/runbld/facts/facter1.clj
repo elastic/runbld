@@ -52,8 +52,11 @@
     (-> (.facts x) :operatingsystemrelease))
 
   (ram-mb [x]
-    (Float/parseFloat
-     (-> (.facts x) :memorysize_mb)))
+    (if (= (facts/os x) "Amazon")
+      (facts/ram-mb-from-slash-proc (.facts x))
+      (if-let [x (-> (.facts x) :memorysize_mb)]
+        (Float/parseFloat x)
+        0)))
 
   (ram-gb [x]
     (data/bigdec (/ (facts/ram-mb x) 1024) 2))
