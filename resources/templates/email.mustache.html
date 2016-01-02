@@ -4,14 +4,18 @@
 <h2><code><a href="{{vcs.project-url}}">{{ build.org }}/{{ build.project }}</a><br/>
 <a href="{{vcs.branch-url}}">{{ build.branch }}</a></code></h2>
 <table>
-<tr><td>Build</td><td>{{ id }}</td></tr>
-<tr><td>Log</td><td>{{ build.console-url }}</td></tr>
-<tr><td>Duration</td><td>{{ process.took-human }} ({{ process.took }}ms)</td></tr>
-<tr><td>Started</td><td>{{ process.time-start }}</td></tr>
-<tr><td>Ended</td><td>{{ process.time-end }}</td></tr>
+<tr><td>Build</td><td><code>{{ id }}</code></td></tr>
+<tr><td>Log</td><td><code>{{ build.console-url }}</code></td></tr>
+<tr><td>Duration</td><td><code>{{ process.took-human }} ({{ process.took }}ms)</code></td></tr>
+<tr><td>Started</td><td><code>{{ process.time-start }}</code></td></tr>
+<tr><td>Ended</td><td><code>{{ process.time-end }}</code></td></tr>
 <tr><td>Host</td><td><code>{{ sys.hostname }} (up {{ sys.uptime }})</code></td></tr>
 <tr><td>OS</td><td><code>{{ sys.os }} {{ sys.os-version }}, {{ sys.kernel-name }} {{ sys.kernel-release }}</code></td></tr>
 <tr><td>Specs</td><td><code>{{ sys.cpus }} CPUs, {{ sys.ram-gb }}GB RAM</code></td></tr>
+<tr><td><code>java.version</td><td><code>{{ java.version }}</code></td></tr>
+<tr><td><code>java.vm.name</td><td><code>{{ java.vm.name }}</code></td></tr>
+<tr><td><code>java.vm.version</td><td><code>{{ java.vm.version }}</code></td></tr>
+<tr><td><code>java.runtime.version</td><td><code>{{ java.runtime.version }}</code></td></tr>
 </table>
 <p></p>
 <div style="background-color:#eec;padding:1px 15px">
