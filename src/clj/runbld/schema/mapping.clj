@@ -95,4 +95,11 @@
             {:type :string
              :index :analyzed}}})
 
+(def classpath-analyzer
+  {:classpath
+   {:type :pattern
+    :pattern ":|;"}})
 
+(def classpath
+  {:type :string
+   :analyzer "classpath"})

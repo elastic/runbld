@@ -73,7 +73,7 @@
                "$1@$3***.$4"))
 
 (s/defn send :- s/Any
-  [opts :- OptsFinal
+  [opts :- MainOpts
    ctx :- EmailCtx
    failures :- [s/Any]]
   ;; If needing to regenerate for render tests

@@ -20,5 +20,5 @@
      (scheduler/extra-info this))))
 
 (s/defn make :- (s/protocol Scheduler)
-  [opts :- OptsStage3]
+  [opts]
   (DefaultScheduler. opts))

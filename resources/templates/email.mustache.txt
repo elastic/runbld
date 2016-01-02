@@ -4,14 +4,18 @@
 {{ build.org }}/{{ build.project }}
 {{ build.branch }} {{ build.branch-url }}
 
-Build    {{ id }}
-Log      {{ build.console-url }}
-Duration {{ process.took-human }} ({{ process.took }}ms)
-Started  {{ process.time-start }}
-Ended    {{ process.time-end }}
-Host     {{ sys.hostname }} (up {{ sys.uptime }})
-OS       {{ sys.os }} {{ sys.os-version }}, {{ sys.kernel-name }} {{ sys.kernel-release }}
-Specs    {{ sys.cpus }} CPUs, {{ sys.ram-gb }}GB RAM
+Build                {{ id }}
+Log                  {{ build.console-url }}
+Duration             {{ process.took-human }} ({{ process.took }}ms)
+Started              {{ process.time-start }}
+Ended                {{ process.time-end }}
+Host                 {{ sys.hostname }} (up {{ sys.uptime }})
+OS                   {{ sys.os }} {{ sys.os-version }}, {{ sys.kernel-name }} {{ sys.kernel-release }}
+Specs                {{ sys.cpus }} CPUs, {{ sys.ram-gb }}GB RAM
+java.version         {{ java.version }}
+java.vm.name         {{ java.vm.name }}
+java.vm.version      {{ java.vm.version }}
+java.runtime.version {{ java.runtime.version }}
 ===============
 
 

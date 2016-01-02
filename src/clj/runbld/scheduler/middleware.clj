@@ -7,7 +7,7 @@
             [runbld.scheduler.default :as default]))
 
 (s/defn make-scheduler :- (s/protocol scheduler/Scheduler)
-  [opts :- OptsStage3]
+  [opts]
   (cond
     (not
      (nil?
@@ -15,7 +15,7 @@
 
     :else (default/make opts)))
 
-(s/defn wrap-scheduler :- OptsStage4
+(s/defn wrap-scheduler :- OptsWithScheduler
  [proc]
   (fn [opts]
     (proc

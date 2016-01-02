@@ -92,10 +92,13 @@
 (defn normalize
   "Normalize the tools.cli map to the local structure."
   [cli-opts]
-  {:process (select-keys cli-opts [:program :args :cwd])
-   :job-name (:job-name cli-opts)
-   :configfile (:config cli-opts)
-   :version (:version cli-opts)})
+  (merge
+   {:process (select-keys cli-opts [:program :args :cwd])
+    :job-name (:job-name cli-opts)
+    :configfile (:config cli-opts)
+    :version (:version cli-opts)}
+   (when (:java-home cli-opts)
+     {:java-home (:java-home cli-opts)})))
 
 (def opts
   [["-v" "--version" "Print version"]
@@ -105,10 +108,13 @@
    ["-j" "--job-name JOBNAME" (str "Job name: org,project,branch,etc "
                                    "also read from $JOB_NAME")
     :default (environ/env :job-name)]
+   [nil "--java-home PATH" "If different from JAVA_HOME"
+    :default (System/getenv "JAVA_HOME")]
    ["-p" "--program PROGRAM" "Program that will run the scriptfile"
     :default "bash"]
    ["-a" "--args ARGS" "Args to pass PROGRAM"
-    :default ["-x"]]])
+    :default ["-x"]]
+   ["-h" "--help" "Help me"]])
 
 (s/defn set-up-es [{:keys [url
                            build-index
@@ -118,11 +124,11 @@
               (select-keys opts [:url :http-opts]))
         build-index-write (store/set-up-index
                            conn build-index
-                           {:mappings StoredBuildMapping}
+                           StoredBuildIndexSettings
                            max-index-bytes)
         failure-index-write (store/set-up-index
                              conn failure-index
-                             {:mappings StoredFailureMapping}
+                             StoredFailureIndexSettings
                              max-index-bytes)]
     (-> opts
         (assoc :build-index-search (format "%s*" build-index))
@@ -135,6 +141,10 @@
   [args :- [s/Str]]
   (let [{:keys [options arguments summary errors]
          :as parsed-opts} (cli/parse-opts args opts)]
+
+    (when (:help options)
+      (throw+ {:help ::usage
+               :msg summary}))
 
     (when (pos? (count errors))
       (throw+ {:error ::parse-error
