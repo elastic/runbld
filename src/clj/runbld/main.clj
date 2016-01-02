@@ -5,6 +5,7 @@
             [runbld.build :as build]
             [runbld.email :as email]
             [runbld.env :as env]
+            [runbld.java :as java]
             [runbld.opts :as opts]
             [runbld.process :as proc]
             [runbld.scheduler.middleware :as scheduler]
@@ -43,6 +44,7 @@
       vcs/wrap-vcs-info
       build/wrap-build-meta
       scheduler/wrap-scheduler
+      java/wrap-java
       env/wrap-env
       system/wrap-system))
 

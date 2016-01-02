@@ -27,10 +27,16 @@
        :took (- end start)
        })))
 
+(defn add-env! [pbenv newenv]
+  (doseq [[k v] newenv]
+    (.put pbenv (name k) v)))
+
 (s/defn exec :- ProcessResult
   ([program args scriptfile]
    (exec program args scriptfile (System/getProperty "user.dir")))
   ([program args scriptfile cwd]
+   (exec program args scriptfile cwd {}))
+  ([program args scriptfile cwd env]
    (let [scriptfile* (io/abspath scriptfile)
          dir (io/abspath-file cwd)
          stdoutfile (io/file dir ".stdout.log")
@@ -38,6 +44,8 @@
          cmd (flatten [program args scriptfile*])
          pb (doto (ProcessBuilder. cmd)
               (.directory dir))
+         ;; can only alter the env via this mutable map
+         _ (add-env! (.environment pb) env)
          {:keys [out-bytes
                  err-bytes] :as res} (exec* pb stdoutfile stderrfile)
          out-file-bytes (count (slurp stdoutfile))
@@ -55,13 +63,14 @@
        :err-accuracy (data/scaled-percent err-file-bytes err-bytes)
        }))))
 
-(s/defn run :- {(s/required-key :opts) OptsFinal
+(s/defn run :- {(s/required-key :opts) MainOpts
                 (s/required-key :process-result) ProcessResult}
-  [opts :- OptsFinal]
+  [opts :- MainOpts]
   {:opts opts
    :process-result
    (exec
     (-> opts :process :program)
     (-> opts :process :args)
     (-> opts :process :scriptfile)
-    (-> opts :process :cwd))})
+    (-> opts :process :cwd)
+    {"JAVA_HOME" (-> opts :java :home)})})

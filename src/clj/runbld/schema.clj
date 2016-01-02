@@ -50,6 +50,7 @@
 
 (def Opts
   {:job-name   s/Str
+   (s/optional-key :java-home)  (s/maybe s/Str)
    :version    VersionInfo
    :configfile (s/maybe s/Str)
    :email      OptsEmail
@@ -101,22 +102,40 @@
    (s/optional-key :node)     s/Str
    })
 
-(def OptsStage2
+(def JavaProperties
+  {:home     s/Str
+   :vendor   s/Str
+   :version  s/Str
+   :class
+   {:path    s/Str}
+   :runtime
+   {:name    s/Str
+    :version s/Str}
+   :vm
+   {:info    s/Str
+    :name    s/Str
+    :vendor  s/Str
+    :version s/Str}})
+
+(def OptsWithSys
   (merge Opts {:sys    BuildSystem
                :logger clojure.lang.IFn}))
 
-(def OptsStage3
-  (merge OptsStage2 {:env Env}))
+(def OptsWithEnv
+  (merge OptsWithSys {:env Env}))
 
-(def OptsStage4
-  (merge OptsStage3 {:scheduler (s/protocol Scheduler)}))
+(def OptsWithJava
+  (merge OptsWithEnv {:java JavaProperties}))
 
-(def OptsStage5
-  (merge OptsStage4 {:id    s/Str
-                     :build Build}))
+(def OptsWithScheduler
+  (merge OptsWithJava {:scheduler (s/protocol Scheduler)}))
 
-(def OptsFinal
-  (merge OptsStage5 {:vcs {s/Keyword s/Any}}))
+(def OptsWithBuild
+  (merge OptsWithScheduler {:id    s/Str
+                            :build Build}))
+
+(def MainOpts
+  (merge OptsWithBuild {:vcs {s/Keyword s/Any}}))
 
 (def ProcessResult
   {:cmd            [s/Str]
@@ -214,112 +233,137 @@
   {:id      s/Str
    :version VersionInfo
    :build   Build
+   :java    JavaProperties
    :sys     BuildSystem
    :vcs     VcsLog
    :process StoredProcessResult
    :test (s/maybe StoredTestSummary)})
 
-(def StoredBuildMapping
-  {DocType
-   {:properties
-    {:id m/not-analyzed
-     :version {:properties
-               {:string m/not-analyzed
-                :hash   m/not-analyzed}}
-     :build {:properties
-             {:org                 m/not-analyzed
-              :project             m/not-analyzed
-              :branch              m/not-analyzed
-              :job-name-extra      m/multi-string
-              :job-name            m/multi-string
-              :org-project-branch  m/not-analyzed
-              :scheduler           m/not-analyzed
-              :url                 m/multi-string
-              :console-url         m/multi-string
-              :tags                m/not-analyzed
-              :number              m/not-analyzed
-              :executor            m/not-analyzed
-              :node                m/not-analyzed}}
-     :sys {:properties
-           {:arch            m/not-analyzed
-            :cpu-type        m/multi-string
-            :cpus            m/long
-            :cpus-physical   m/long
-            :hostname        m/not-analyzed
-            :facter-provider m/not-analyzed
-            :facter-version  m/not-analyzed
-            :ip4             m/not-analyzed
-            :ip6             m/not-analyzed
-            :kernel-name     m/not-analyzed
-            :kernel-release  m/not-analyzed
-            :kernel-version  m/not-analyzed
-            :model           m/not-analyzed
-            :os              m/not-analyzed
-            :os-version      m/not-analyzed
-            :ram-mb          m/double
-            :ram-gb          m/double
-            :timezone        m/not-analyzed
-            :uptime          m/analyzed
-            :uptime-days     m/long
-            :uptime-secs     m/long
-            :virtual         m/boolean}}
-     :vcs {:properties
-           {:author-name   m/multi-string
-            :commit-id     m/not-analyzed
-            :commit-short  m/not-analyzed
-            :commit-time   m/date
-            :message       m/analyzed
-            :provider      m/not-analyzed
-            :log-pretty    m/analyzed
-            :project-url   m/not-analyzed
+(def StoredBuildIndexSettings
+  {:settings
+   {:analysis
+    {:analyzer m/classpath-analyzer}}
+   :mappings
+   {DocType
+    {:_all {:enabled false}
+     :properties
+     {:id m/not-analyzed
+      :version {:properties
+                {:string m/not-analyzed
+                 :hash   m/not-analyzed}}
+      :build {:properties
+              {:org                 m/not-analyzed
+               :project             m/not-analyzed
+               :branch              m/not-analyzed
+               :job-name-extra      m/multi-string
+               :job-name            m/multi-string
+               :org-project-branch  m/not-analyzed
+               :scheduler           m/not-analyzed
+               :url                 m/multi-string
+               :console-url         m/multi-string
+               :tags                m/not-analyzed
+               :number              m/not-analyzed
+               :executor            m/not-analyzed
+               :node                m/not-analyzed}}
+      :sys {:properties
+            {:arch            m/not-analyzed
+             :cpu-type        m/multi-string
+             :cpus            m/long
+             :cpus-physical   m/long
+             :hostname        m/not-analyzed
+             :facter-provider m/not-analyzed
+             :facter-version  m/not-analyzed
+             :ip4             m/not-analyzed
+             :ip6             m/not-analyzed
+             :kernel-name     m/not-analyzed
+             :kernel-release  m/not-analyzed
+             :kernel-version  m/not-analyzed
+             :model           m/not-analyzed
+             :os              m/not-analyzed
+             :os-version      m/not-analyzed
+             :ram-mb          m/double
+             :ram-gb          m/double
+             :timezone        m/not-analyzed
+             :uptime          m/analyzed
+             :uptime-days     m/long
+             :uptime-secs     m/long
+             :virtual         m/boolean}}
+      :vcs {:properties
+            {:author-name   m/multi-string
+             :commit-id     m/not-analyzed
+             :commit-short  m/not-analyzed
+             :commit-time   m/date
+             :message       m/analyzed
+             :provider      m/not-analyzed
+             :log-pretty    m/analyzed
+             :project-url   m/not-analyzed
 
-            :branch-url   m/not-analyzed
-            :commit-url   m/not-analyzed
-            :author-email m/multi-string
-            :author-time  m/date
-            :commit-email m/not-analyzed
-            :commit-name  m/multi-string
-            :message-full m/analyzed}}
-     :process {:properties
-               {:cmd             m/not-analyzed
-                :cmd-source      m/multi-string
-                :err-accuracy    m/long
-                :err-bytes       m/long
-                :err-file-bytes  m/long
-                :exit-code       m/long
-                :millis-end      m/long
-                :millis-start    m/long
-                :out-accuracy    m/long
-                :out-bytes       m/long
-                :out-file-bytes  m/long
-                :status          m/not-analyzed
-                :time-end        m/date
-                :time-start      m/date
-                :took            m/long}}
-     :test {:properties
-            {:errors   m/long
-             :failures m/long
-             :tests    m/long
-             :skipped  m/long
-             :failed-testcases
-             {:properties
-              {:error-type m/not-analyzed
-               :class      m/not-analyzed
-               :test       m/not-analyzed
-               :type       m/not-analyzed
-               :summary    m/analyzed
-               :message    m/multi-string}}}}
-     }}})
+             :branch-url   m/not-analyzed
+             :commit-url   m/not-analyzed
+             :author-email m/multi-string
+             :author-time  m/date
+             :commit-email m/not-analyzed
+             :commit-name  m/multi-string
+             :message-full m/analyzed}}
+      :process {:properties
+                {:cmd             m/not-analyzed
+                 :cmd-source      m/multi-string
+                 :err-accuracy    m/long
+                 :err-bytes       m/long
+                 :err-file-bytes  m/long
+                 :exit-code       m/long
+                 :millis-end      m/long
+                 :millis-start    m/long
+                 :out-accuracy    m/long
+                 :out-bytes       m/long
+                 :out-file-bytes  m/long
+                 :status          m/not-analyzed
+                 :time-end        m/date
+                 :time-start      m/date
+                 :took            m/long}}
+      :test {:properties
+             {:errors   m/long
+              :failures m/long
+              :tests    m/long
+              :skipped  m/long
+              :failed-testcases
+              {:properties
+               {:error-type m/not-analyzed
+                :class      m/not-analyzed
+                :test       m/not-analyzed
+                :type       m/not-analyzed
+                :summary    m/analyzed
+                :message    m/multi-string}}}}
+      :java {:properties
+             {:home      m/multi-string
+              :vendor    m/multi-string
+              :version   m/multi-string
+              :class
+              {:properties
+               {:path    m/classpath}}
+              :runtime
+              {:properties
+               {:name    m/multi-string
+                :version m/multi-string}}
+              :vm
+              {:properties
+               {:info    m/multi-string
+                :name    m/multi-string
+                :vendor  m/multi-string
+                :version m/multi-string}}}}}}}})
 
-(def StoredFailureMapping
-  {DocType
-   {:properties
-    {:build-id m/not-analyzed}}})
+(def StoredFailureIndexSettings
+  {:mappings
+   {DocType
+    {:_all {:enabled false}
+     :properties
+     {:build-id m/not-analyzed}}}})
 
 (def EmailCtx
   {:id s/Str
    :version VersionInfo
    :build Build
+   :java JavaProperties
    :sys BuildSystem
    :email {:to s/Str
            :subject s/Str}

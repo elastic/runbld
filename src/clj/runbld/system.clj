@@ -77,7 +77,7 @@
       2 (runbld.facts.facter2.Facter2. (facter))
       1 (runbld.facts.facter1.Facter1. (facter)))))
 
-(s/defn wrap-system :- OptsStage2
+(s/defn wrap-system :- OptsWithSys
   [proc :- clojure.lang.IFn]
   (fn [opts]
     (proc (assoc opts :sys (inspect-system (make-facter))))))

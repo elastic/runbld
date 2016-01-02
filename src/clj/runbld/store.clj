@@ -73,7 +73,7 @@
 (s/defn create-build-doc :- StoredBuild
   [opts result test-report]
   (merge
-   (select-keys opts [:id :version :system
+   (select-keys opts [:id :version :system :java
                       :vcs :sys :jenkins :build])
    {:process (dissoc result :err-file :out-file)
     :test (when (:report-has-tests test-report)
@@ -107,7 +107,7 @@
      :build-doc d}))
 
 (s/defn create-failure-docs :- [StoredFailure]
-  [opts :- OptsFinal
+  [opts :- MainOpts
    result :- ProcessResult
    failures :- [FailedTestCase]]
   (map #(assoc %
@@ -128,7 +128,7 @@
                                       :query-params {:refresh true}})))))
 
 (s/defn save! :- {s/Keyword s/Any}
-  ([opts        :- OptsFinal
+  ([opts        :- MainOpts
     result      :- ProcessResult
     test-report :- TestReport]
    (when (:report-has-tests test-report)

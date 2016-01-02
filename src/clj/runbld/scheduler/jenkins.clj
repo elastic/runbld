@@ -30,5 +30,5 @@
      (scheduler/extra-info this))))
 
 (s/defn make :- JenkinsScheduler
-  [opts :- OptsStage3]
+  [opts]
   (JenkinsScheduler. opts))
