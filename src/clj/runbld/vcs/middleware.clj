@@ -8,7 +8,7 @@
             [runbld.vcs.git :as git]))
 
 (s/defn make-repo :- (s/protocol vcs/VcsRepo)
-  [opts :- OptsStage5]
+  [opts :- OptsWithBuild]
   (let [cwd (get-in opts [:process :cwd])]
     (cond
       (.isDirectory
@@ -32,7 +32,7 @@
                        "(only know about git and svn currently)")
                       cwd))))))
 
-(s/defn wrap-vcs-info :- OptsFinal
+(s/defn wrap-vcs-info :- MainOpts
   [proc :- clojure.lang.IFn]
   (fn [opts]
     (proc

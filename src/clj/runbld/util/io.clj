@@ -62,3 +62,17 @@
   [(future (spit-stream *out* out-is out-wtr))
    (future (spit-stream *err* err-is err-wtr))])
 
+(defn which [name]
+  (let [res (sh/sh "which" name)]
+    (when (zero? (:exit res))
+      (.trim (:out res)))))
+
+(defmacro with-tmp-source [bindings body]
+  (let [f (first bindings)
+        src (second bindings)]
+    `(let [~f (java.io.File/createTempFile "runbld-java-" ".clj")]
+       (.deleteOnExit ~f)
+       (spit ~f ~src)
+       (let [res# ~body]
+         (.delete ~f)
+         res#))))
