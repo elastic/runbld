@@ -39,36 +39,37 @@
     (throw+ {:warning ::no-facter
              :msg "facter cannot be found in PATH"})))
 
+(defmacro non-nil-fact-map [ns facter ks]
+  `(apply merge
+          (for [k# ~ks]
+            (if-let [v# ((ns-resolve ~ns (symbol (name k#))) ~facter)]
+              {k# v#}))))
+
 (s/defn inspect-system :- BuildSystem
   ([facter]
-   (let [ip6 (facts/ip6 facter)
-         ram-bytes (facts/ram-bytes facter)]
-     (merge
-      {:arch            (facts/arch            facter)
-       :cpu-type        (facts/cpu-type        facter)
-       :cpus            (facts/cpus            facter)
-       :cpus-physical   (facts/cpus-physical   facter)
-       :facter-provider (facts/facter-provider facter)
-       :facter-version  (facts/facter-version  facter)
-       :hostname        (facts/hostname        facter)
-       :ip4             (facts/ip4             facter)
-       :kernel-name     (facts/kernel-name     facter)
-       :kernel-release  (facts/kernel-release  facter)
-       :kernel-version  (facts/kernel-version  facter)
-       :model           (facts/model           facter)
-       :os              (facts/os              facter)
-       :os-version      (facts/os-version      facter)
-       :ram-mb          (facts/ram-mb          facter)
-       :ram-gb          (facts/ram-gb          facter)
-       :timezone        (facts/timezone        facter)
-       :uptime-days     (facts/uptime-days     facter)
-       :uptime-secs     (facts/uptime-secs     facter)
-       :uptime          (facts/uptime          facter)
-       :virtual         (facts/virtual         facter)}
-      (when ip6
-        {:ip6 ip6})
-      (when ram-bytes
-        {:ram-bytes ram-bytes})))))
+   (non-nil-fact-map
+    'runbld.facts facter
+    [:arch
+     :cpu-type
+     :cpus
+     :cpus-physical
+     :facter-provider
+     :facter-version
+     :hostname
+     :ip4
+     :kernel-name
+     :kernel-release
+     :kernel-version
+     :model
+     :os
+     :os-version
+     :ram-mb
+     :ram-gb
+     :timezone
+     :uptime-days
+     :uptime-secs
+     :uptime
+     :virtual])))
 
 (defn make-facter []
   (if-let [{:keys [major]} (facter-version)]
@@ -81,4 +82,3 @@
   [proc :- clojure.lang.IFn]
   (fn [opts]
     (proc (assoc opts :sys (inspect-system (make-facter))))))
-
