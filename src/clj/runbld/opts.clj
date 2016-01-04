@@ -3,15 +3,15 @@
             [schema.core :as s]
             [slingshot.slingshot :refer [throw+]])
   (:require [clj-yaml.core :as yaml]
-            [clojure.java.io :as io]
             [clojure.tools.cli :as cli]
             [environ.core :as environ]
             [runbld.store :as store]
             [runbld.util.data :refer [deep-merge-with deep-merge]]
             [runbld.util.date :as date]
+            [runbld.util.io :as io]
             [runbld.version :as version]))
 
-(def defaults
+(def config-file-defaults
   {:es
    {:url "http://localhost:9200"
     :build-index "build"
@@ -26,7 +26,8 @@
     :secret-key "secret"}
 
    :process
-   {:inherit-exit-code true}
+   {:inherit-exit-code true
+    :cwd (System/getProperty "user.dir")}
 
    :email
    {:host "localhost"
@@ -77,7 +78,7 @@
   [{:keys [job-name] :as opts} :- {(s/required-key :job-name) s/Str
                                    s/Keyword s/Any}]
   (deep-merge-with deep-merge
-                   defaults
+                   config-file-defaults
                    (if (environ/env :dev)
                      {}
                      (let [sys (system-config)]
@@ -103,8 +104,7 @@
 (def opts
   [["-v" "--version" "Print version"]
    ["-c" "--config FILE" "Config file"]
-   ["-d" "--cwd DIR" "Set CWD for the process"
-    :default (System/getProperty "user.dir")]
+   ["-d" "--cwd DIR" "Set CWD for the process"]
    ["-j" "--job-name JOBNAME" (str "Job name: org,project,branch,etc "
                                    "also read from $JOB_NAME")
     :default (environ/env :job-name)]
@@ -140,7 +140,7 @@
 (s/defn parse-args :- Opts
   [args :- [s/Str]]
   (let [{:keys [options arguments summary errors]
-         :as parsed-opts} (cli/parse-opts args opts)]
+         :as parsed-opts} (cli/parse-opts args opts :nodefault true)]
 
     (when (:help options)
       (throw+ {:help ::usage
@@ -169,9 +169,10 @@
                    (normalize options))]
       (merge options
              {:es (set-up-es (:es options))
-              :process (merge
-                        ;; Invariant: Jenkins passes it in through arguments
-                        {:scriptfile (first arguments)}
-                        (:process options))
+              :process (-> (:process options)
+                           ;; Invariant: Jenkins passes it in through arguments
+                           (assoc :scriptfile (first arguments))
+                           ;; Go ahead and resolve
+                           (update :cwd (comp str io/abspath-file)))
               :version {:string (version/version)
                         :hash (version/build)}}))))
