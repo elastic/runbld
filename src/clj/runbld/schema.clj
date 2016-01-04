@@ -60,9 +60,9 @@
 
 (def BuildSystem
   {:arch                   s/Str
-   :cpu-type               s/Str
+   (s/optional-key :cpu-type) s/Str
    :cpus                   s/Num
-   :cpus-physical          s/Num
+   (s/optional-key :cpus-physical) s/Num
    :facter-provider        s/Str
    :facter-version         s/Str
    :hostname               s/Str
@@ -81,7 +81,7 @@
    :uptime                 s/Str
    :uptime-days            s/Num
    :uptime-secs            s/Num
-   :virtual                s/Bool})
+   (s/optional-key :virtual) s/Bool})
 
 (def Env
   {s/Str s/Any})
