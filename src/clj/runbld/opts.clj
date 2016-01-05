@@ -25,6 +25,10 @@
     :access-key "key"
     :secret-key "secret"}
 
+   :java
+   {;; java.home property always shows ".../jre", this forces JDK
+    :allow-jre false}
+
    :process
    {:inherit-exit-code true
     :cwd (System/getProperty "user.dir")}
