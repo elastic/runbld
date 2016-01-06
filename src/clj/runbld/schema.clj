@@ -23,6 +23,9 @@
    :to                 (s/cond-pre s/Str [s/Str])
    :user               s/Str})
 
+(def OptsJava
+  {:allow-jre          s/Bool})
+
 (def OptsProcess
   {:program           s/Str
    :args              [s/Str]
@@ -56,7 +59,8 @@
    :email      OptsEmail
    :es         OptsElasticsearch
    :process    OptsProcess
-   :s3         OptsS3})
+   :s3         OptsS3
+   :java       OptsJava})
 
 (def BuildSystem
   {:arch                   s/Str

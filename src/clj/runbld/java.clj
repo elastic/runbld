@@ -36,20 +36,28 @@
       (str/replace path #"^(.*)/jre$" "$1")
       path)))
 
-(defn java-home-java [{:keys [java-home]}]
-  (when java-home
-    (str (io/file (no-jre-path java-home) "bin/java"))))
+(defn java-home-java [java-home allow-jre]
+  (when-let [jh (if allow-jre java-home (no-jre-path java-home))]
+    (str (io/file jh "bin/java"))))
+
+(defn find-java [opts]
+  (or (java-home-java (:java-home opts) (-> opts :java :allow-jre))
+      (io/which "java")
+      (throw+ {:error ::no-java
+               :msg "can't find a java binary"})))
 
 (defn jvm-facts [opts]
   (io/with-tmp-source [clj (source)]
     (let [classpath (System/getProperty "java.class.path")
-          java-bin (or (java-home-java opts)
-                       (io/which "java")
-                       (throw+ {:error ::no-java
-                                :msg "can't find a java binary"}))
-          cmd [java-bin "-cp" classpath "clojure.main" (str clj)]]
-      (clojure.edn/read-string
-       (:out (apply io/run cmd))))))
+          java-bin (find-java opts)
+          cmd [java-bin "-cp" classpath "clojure.main" (str clj)]
+          facts (clojure.edn/read-string
+                 (:out (apply io/run cmd)))]
+      ;; have to check jre again because of what actually gets
+      ;; returned in the java.home property
+      (if (-> opts :java :allow-jre)
+        facts
+        (update-in facts [:java :home] no-jre-path)))))
 
 (s/defn wrap-java :- OptsWithJava
   [proc]
