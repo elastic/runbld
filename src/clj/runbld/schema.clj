@@ -42,6 +42,9 @@
    :failure-index        s/Str
    :failure-index-search s/Str
    :failure-index-write  s/Str
+   :log-index            s/Str
+   :log-index-search     s/Str
+   :log-index-write      s/Str
    :max-index-bytes      s/Num
    :conn                 Connection
    (s/optional-key :http-opts) {s/Keyword s/Any}
@@ -376,6 +379,19 @@
     {:_all {:enabled false}
      :properties
      {:build-id m/not-analyzed}}}})
+
+(def StoredLogIndexSettings
+  {:mappings
+   {DocType
+    {:_all {:enabled false}
+     :properties
+     {:build-id m/not-analyzed
+      :stream   m/not-analyzed
+      :time     m/date
+      :line
+      {:properties
+       {:text    m/analyzed
+        :ordinal m/long}}}}}})
 
 (def EmailCtx
   {:id s/Str

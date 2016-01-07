@@ -20,15 +20,19 @@
 
 (s/defn newest-index-matching-pattern :- (s/maybe s/Keyword)
   [conn pat]
-  (->> (indices/get-settings conn pat)
-       (map #(vector
-              (key %)
-              (Long/parseLong
-               (get-in (val %) [:settings :index :creation_date]))))
-       (sort-by second)
-       reverse
-       first
-       first))
+  (try+
+   (->> (indices/get-settings conn pat)
+        (map #(vector
+               (key %)
+               (Long/parseLong
+                (get-in (val %) [:settings :index :creation_date]))))
+        (sort-by second)
+        reverse
+        first
+        first)
+   (catch [:status 404] _
+     ;; index doesn't exist
+     )))
 
 (s/defn index-size-bytes :- s/Num
   [conn :- Connection
@@ -163,3 +167,35 @@
            (map :_source))
       (catch [:status 404] e
         [])))))
+
+(s/defn save-log!
+  ([opts         :- OptsElasticsearch
+    id           :- s/Str
+    log-type     :- s/Keyword
+    log-line     :- s/Str
+    line-ordinal :- s/Num]
+   (let [doc {:build-id id
+              :stream (name log-type)
+              :line {:text log-line
+                     :ordinal line-ordinal}
+              :time (date/ms-to-iso)}]
+     (doc/index (:conn opts) {:index (opts :log-index-write)
+                              :type (name DocType)
+                              :body doc}))))
+
+(s/defn after-log
+  ([opts :- OptsElasticsearch]
+   (indices/refresh (:conn opts) (opts :log-index-write))))
+
+(s/defn count-logs :- s/Num
+  ([opts log-type id]
+   (-> (-> opts :es :conn)
+       (indices/count
+        (-> opts :es :log-index-write)
+        {:body
+         {:query
+          {:bool
+           {:must
+            [{:match {:build-id id}}
+             {:match {:stream log-type}}]}}}})
+       :count)))

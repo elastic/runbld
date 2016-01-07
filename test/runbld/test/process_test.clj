@@ -4,6 +4,7 @@
   (:require [runbld.java :as java]
             [runbld.opts :as opts]
             [runbld.process :as proc]
+            [runbld.store :as store]
             [runbld.util.data :as data]
             [runbld.util.io :as io] :reload-all))
 
@@ -13,18 +14,27 @@
   (io/with-tmp-dir [dir ["tmp" (str *ns* "-")]]
     (let [master (io/file dir "master.log")
           stdout (io/file dir ".stdout.log")
-          stderr (io/file dir ".stderr.log")]
+          stderr (io/file dir ".stderr.log")
+          args ["-c" "test/config/main.yml"
+                "-j" "elastic+foo+master"
+                "-d" (str dir)
+                "--java-home" (java/java-home)
+                "test/output.bash"]
+          opts (opts/parse-args args)
+          build-id (str (java.util.UUID/randomUUID))]
       (with-open [out (java.io.PrintWriter. master)]
         (let [res (binding [*out* out
                             *err* (java.io.StringWriter.)]
-                    (let [args ["-c" "test/config/main.yml"
-                                "-j" "elastic+foo+master"
-                                "-d" (str dir)
-                                "test/output.bash"]
-                          opts (opts/parse-args args)]
-                      ((-> #'proc/output-capturing-run
-                           java/wrap-java)
-                       (select-keys opts [:process :es :java]))))]
+                    (proc/exec-with-capture
+                     build-id
+                     (-> opts :process :program)
+                     (-> opts :process :args)
+                     (-> opts :process :scriptfile)
+                     (-> opts :process :cwd)
+                     (-> opts :process :stdout)
+                     (-> opts :process :stderr)
+                     (-> opts :es)
+                     {"JAVA_HOME" (opts :java-home)}))]
           ;; (println "ls -l" (str dir))
           ;; (println (:out (io/run "ls" "-la" (str dir))))
           ;; (println "master:")
@@ -46,7 +56,8 @@
             (is (= (:out-bytes res) (count (slurp stdout))))
             (is (= 10 (count
                        (line-seq
-                        (clojure.java.io/reader stdout))))))
+                        (clojure.java.io/reader stdout)))))
+            (is (= 10 (store/count-logs opts "stdout" build-id))))
           (testing "stderr"
             (is (= (:err-bytes res) (count (slurp stderr))))
             (is (= 12 (count

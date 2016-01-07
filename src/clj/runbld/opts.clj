@@ -14,8 +14,9 @@
 (def config-file-defaults
   {:es
    {:url "http://localhost:9200"
-    :build-index "build"
+    :build-index   "build"
     :failure-index "failure"
+    :log-index     "log"
     :http-opts {:insecure? false}
     :max-index-bytes store/MAX_INDEX_BYTES}
 
@@ -125,6 +126,7 @@
 (s/defn set-up-es [{:keys [url
                            build-index
                            failure-index
+                           log-index
                            max-index-bytes] :as opts}]
   (let [conn (store/make-connection
               (select-keys opts [:url :http-opts]))
@@ -135,50 +137,56 @@
         failure-index-write (store/set-up-index
                              conn failure-index
                              StoredFailureIndexSettings
-                             max-index-bytes)]
+                             max-index-bytes)
+        log-index-write (store/set-up-index
+                         conn log-index
+                         StoredLogIndexSettings
+                         max-index-bytes)]
     (-> opts
         (assoc :build-index-search (format "%s*" build-index))
         (assoc :failure-index-search (format "%s*" failure-index))
+        (assoc :log-index-search (format "%s*" log-index))
         (assoc :build-index-write build-index-write)
         (assoc :failure-index-write failure-index-write)
+        (assoc :log-index-write log-index-write)
         (assoc :conn conn))))
 
 (s/defn parse-args :- Opts
-  [args :- [s/Str]]
-  (let [{:keys [options arguments summary errors]
-         :as parsed-opts} (cli/parse-opts args opts :nodefault true)]
+  ([args :- [s/Str]]
+   (let [{:keys [options arguments summary errors]
+          :as parsed-opts} (cli/parse-opts args opts :nodefault true)]
 
-    (when (:help options)
-      (throw+ {:help ::usage
-               :msg summary}))
+     (when (:help options)
+       (throw+ {:help ::usage
+                :msg summary}))
 
-    (when (pos? (count errors))
-      (throw+ {:error ::parse-error
-               :msg (with-out-str
-                      (doseq [err errors]
-                        (println err)))}))
+     (when (pos? (count errors))
+       (throw+ {:error ::parse-error
+                :msg (with-out-str
+                       (doseq [err errors]
+                         (println err)))}))
 
-    (when (:version options)
-      (throw+ {:help ::version
-               :msg (version/string)}))
+     (when (:version options)
+       (throw+ {:help ::version
+                :msg (version/string)}))
 
-    (when (not (= 1 (count arguments)))
-      (throw+ {:help ::usage
-               :msg (format "runbld %s\nusage: runbld /path/to/script.bash"
-                            (version/string))}))
+     (when (not (= 1 (count arguments)))
+       (throw+ {:help ::usage
+                :msg (format "runbld %s\nusage: runbld /path/to/script.bash"
+                             (version/string))}))
 
-    (when (not (:job-name options))
-      (throw+ {:help ::usage
-               :msg "must set -j or $JOB_NAME"}))
+     (when (not (:job-name options))
+       (throw+ {:help ::usage
+                :msg "must set -j or $JOB_NAME"}))
 
-    (let [options (assemble-all-opts
-                   (normalize options))]
-      (merge options
-             {:es (set-up-es (:es options))
-              :process (-> (:process options)
-                           ;; Invariant: Jenkins passes it in through arguments
-                           (assoc :scriptfile (first arguments))
-                           ;; Go ahead and resolve
-                           (update :cwd (comp str io/abspath-file)))
-              :version {:string (version/version)
-                        :hash (version/build)}}))))
+     (let [options (assemble-all-opts
+                    (normalize options))]
+       (merge options
+              {:es (set-up-es (:es options))
+               :process (-> (:process options)
+                            ;; Invariant: Jenkins passes it in through arguments
+                            (assoc :scriptfile (first arguments))
+                            ;; Go ahead and resolve
+                            (update :cwd (comp str io/abspath-file)))
+               :version {:string (version/version)
+                         :hash (version/build)}})))))
