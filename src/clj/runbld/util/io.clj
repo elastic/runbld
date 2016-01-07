@@ -29,6 +29,23 @@
 (defn file [& args]
   (apply jio/file args))
 
+(defn prepend-path
+  "An absolute path-safe combinator.
+
+    runbld.util.io> (prepend-path \"/tmp\" \"foo\")
+    \"/tmp/foo\"
+    runbld.util.io> (prepend-path \"/tmp\" \"/foo\")
+    \"/foo\"
+    runbld.util.io>
+  "
+  [dir basename]
+  (if (.isAbsolute (file basename))
+    basename
+    (str (file dir basename))))
+
+(defn reader [& args]
+  (apply jio/reader args))
+
 (defn resolve-resource [path]
   (if-let [tmpl (jio/resource path)]
     tmpl
@@ -36,33 +53,6 @@
       path
       (throw+ {:error ::resource-not-found
                :msg (format "cannot find %s" path)}))))
-
-(defn capture-to-writer [wtr]
-  (fn [line]
-    (binding [*out* wtr]
-      (println line)
-      (flush))))
-
-(defn spit-stream [^java.io.InputStream input
-                   processors]
-  (let [bs (atom 0)]
-    (doseq [line (line-seq (jio/reader input))]
-      (doseq [processor processors]
-        (processor line))
-      (swap! bs + (inc ;; for the newline
-                   (count (.getBytes line)))))
-    @bs))
-
-(defn spit-process [out-is out-wtr
-                    err-is err-wtr]
-  [(future
-     (spit-stream out-is
-                  [(capture-to-writer *out*)
-                   (capture-to-writer out-wtr)]))
-   (future
-     (spit-stream err-is
-                  [(capture-to-writer *err*)
-                   (capture-to-writer err-wtr)]))])
 
 (defn which [name]
   (let [res (sh/sh "which" name)]
@@ -78,3 +68,21 @@
        (let [res# ~body]
          (.delete ~f)
          res#))))
+
+(defn tmp-dir [dir prefix]
+  (.toFile
+   (java.nio.file.Files/createTempDirectory
+    (.toPath (file dir))
+    prefix
+    (into-array
+     java.nio.file.attribute.FileAttribute []))))
+
+(defmacro with-tmp-dir [bindings & body]
+  `(let [d# ~((bindings 1) 0)
+         pre# ~((bindings 1) 1)
+         ~(bindings 0) (tmp-dir d# pre#)]
+     (try
+       ~@body
+       (finally
+         #_(rmdir-r
+            ~(bindings 0))))))

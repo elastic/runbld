@@ -31,7 +31,9 @@
 
    :process
    {:inherit-exit-code true
-    :cwd (System/getProperty "user.dir")}
+    :cwd (System/getProperty "user.dir")
+    :stdout ".stdout.log"
+    :stderr ".stderr.log"}
 
    :email
    {:host "localhost"

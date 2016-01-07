@@ -11,7 +11,9 @@
           :args ["-x"]
           :inherit-exit-code true
           :scriptfile "/path/to/script.zsh"
-          :cwd (System/getProperty "user.dir")}
+          :cwd (System/getProperty "user.dir")
+          :stdout ".stdout.log"
+          :stderr ".stderr.log"}
          (:process
           (opts/parse-args ["-c" "test/config/opts.yml"
                             "-j" "test,foo,master"

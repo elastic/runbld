@@ -59,7 +59,7 @@
         facts
         (update-in facts [:java :home] no-jre-path)))))
 
-(s/defn wrap-java :- OptsWithJava
+(s/defn wrap-java
   [proc]
   (fn [opts]
     (proc (merge opts (jvm-facts opts)))))
