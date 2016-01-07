@@ -1,4 +1,5 @@
 (ns runbld.util.io
+  (:require [schema.core :as s])
   (:require [clojure.java.io :as jio]
             [clojure.java.shell :as sh]
             [slingshot.slingshot :refer [throw+]]))
@@ -54,10 +55,34 @@
       (throw+ {:error ::resource-not-found
                :msg (format "cannot find %s" path)}))))
 
+(defn os []
+  (-> (System/getProperties)
+      (get "os.name")
+      .toUpperCase
+      symbol))
+
+(defn which-bin []
+  (case (os)
+    LINUX "which"
+    WINDOWS "where.exe"))
+
 (defn which [name]
-  (let [res (sh/sh "which" name)]
+  (let [res (sh/sh (which-bin) name)]
     (when (zero? (:exit res))
       (.trim (:out res)))))
+
+(s/defn readlink
+  [path :- s/Str]
+  (-> path
+      file
+      .toPath
+      (.toRealPath
+       (into-array java.nio.file.LinkOption []))
+      str))
+
+(s/defn resolve-binary :- s/Str
+  [name :- s/Str]
+  (readlink (which name)))
 
 (defmacro with-tmp-source [bindings body]
   (let [f (first bindings)
