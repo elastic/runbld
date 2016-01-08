@@ -1,4 +1,5 @@
 (ns runbld.util.io
+  (:require [schema.core :as s])
   (:require [clojure.java.io :as jio]
             [clojure.java.shell :as sh]
             [slingshot.slingshot :refer [throw+]]))
@@ -29,6 +30,23 @@
 (defn file [& args]
   (apply jio/file args))
 
+(defn prepend-path
+  "An absolute path-safe combinator.
+
+    runbld.util.io> (prepend-path \"/tmp\" \"foo\")
+    \"/tmp/foo\"
+    runbld.util.io> (prepend-path \"/tmp\" \"/foo\")
+    \"/foo\"
+    runbld.util.io>
+  "
+  [dir basename]
+  (if (.isAbsolute (file basename))
+    basename
+    (str (file dir basename))))
+
+(defn reader [& args]
+  (apply jio/reader args))
+
 (defn resolve-resource [path]
   (if-let [tmpl (jio/resource path)]
     tmpl
@@ -37,35 +55,34 @@
       (throw+ {:error ::resource-not-found
                :msg (format "cannot find %s" path)}))))
 
-(defn spit-stream [^java.io.PrintWriter viewer
-                   ^java.io.InputStream input
-                   ^java.io.PrintWriter logfile]
-  (let [bs (atom 0)]
-    (doseq [line (line-seq (jio/reader input))]
-      ;; write to the wrapper's inherited IO
-      (binding [*out* viewer]
-        (println line)
-        (flush))
+(defn os []
+  (-> (System/getProperties)
+      (get "os.name")
+      .toUpperCase
+      symbol))
 
-      ;; write to the logfile
-      (binding [*out* logfile]
-        (println line)
-        (flush))
-
-      ;; update the stats
-      (swap! bs + (inc ;; for the newline
-                   (count (.getBytes line)))))
-    @bs))
-
-(defn spit-process [out-is out-wtr
-                    err-is err-wtr]
-  [(future (spit-stream *out* out-is out-wtr))
-   (future (spit-stream *err* err-is err-wtr))])
+(defn which-bin []
+  (case (os)
+    LINUX "which"
+    WINDOWS "where.exe"))
 
 (defn which [name]
-  (let [res (sh/sh "which" name)]
+  (let [res (sh/sh (which-bin) name)]
     (when (zero? (:exit res))
       (.trim (:out res)))))
+
+(s/defn readlink
+  [path :- s/Str]
+  (-> path
+      file
+      .toPath
+      (.toRealPath
+       (into-array java.nio.file.LinkOption []))
+      str))
+
+(s/defn resolve-binary :- s/Str
+  [name :- s/Str]
+  (readlink (which name)))
 
 (defmacro with-tmp-source [bindings body]
   (let [f (first bindings)
@@ -76,3 +93,21 @@
        (let [res# ~body]
          (.delete ~f)
          res#))))
+
+(defn tmp-dir [dir prefix]
+  (.toFile
+   (java.nio.file.Files/createTempDirectory
+    (.toPath (file dir))
+    prefix
+    (into-array
+     java.nio.file.attribute.FileAttribute []))))
+
+(defmacro with-tmp-dir [bindings & body]
+  `(let [d# ~((bindings 1) 0)
+         pre# ~((bindings 1) 1)
+         ~(bindings 0) (tmp-dir d# pre#)]
+     (try
+       ~@body
+       (finally
+         (rmdir-r
+          ~(bindings 0))))))

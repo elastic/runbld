@@ -36,6 +36,17 @@
       (str/replace path #"^(.*)/jre$" "$1")
       path)))
 
+(defn java-home
+  ([]
+   (java-home "java"))
+  ([java-bin]
+   (-> (io/resolve-binary java-bin)
+       io/file
+       .getParent
+       io/file
+       .getParent
+       no-jre-path)))
+
 (defn java-home-java [java-home allow-jre]
   (when-let [jh (if allow-jre java-home (no-jre-path java-home))]
     (str (io/file jh "bin/java"))))
@@ -59,7 +70,7 @@
         facts
         (update-in facts [:java :home] no-jre-path)))))
 
-(s/defn wrap-java :- OptsWithJava
+(s/defn wrap-java
   [proc]
   (fn [opts]
     (proc (merge opts (jvm-facts opts)))))
