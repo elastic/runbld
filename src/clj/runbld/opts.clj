@@ -3,6 +3,7 @@
             [schema.core :as s]
             [slingshot.slingshot :refer [throw+]])
   (:require [clj-yaml.core :as yaml]
+            [clojure.string :as str]
             [clojure.tools.cli :as cli]
             [environ.core :as environ]
             [runbld.store :as store]
@@ -120,7 +121,8 @@
    ["-p" "--program PROGRAM" "Program that will run the scriptfile"
     :default "bash"]
    ["-a" "--args ARGS" "Args to pass PROGRAM"
-    :default ["-x"]]
+    :default ["-x"]
+    :parse-fn #(str/split % #" ")]
    ["-h" "--help" "Help me"]])
 
 (s/defn set-up-es [{:keys [url

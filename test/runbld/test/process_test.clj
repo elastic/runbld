@@ -18,6 +18,7 @@
           args ["-c" "test/config/main.yml"
                 "-j" "elastic+foo+master"
                 "-d" (str dir)
+                "-a" "-e"
                 "--java-home" (java/java-home)
                 "test/output.bash"]
           opts (opts/parse-args args)
@@ -28,7 +29,7 @@
                     (proc/exec-with-capture
                      build-id
                      (-> opts :process :program)
-                     ["-e"] #_(-> opts :process :args)
+                     (-> opts :process :args)
                      (-> opts :process :scriptfile)
                      (-> opts :process :cwd)
                      (-> opts :process :stdout)
