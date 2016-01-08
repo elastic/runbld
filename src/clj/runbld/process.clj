@@ -53,6 +53,7 @@
                 :stream (name stream)
                 :time (date/ms-to-iso)
                 :log line
+                :size (inc (count (.getBytes line)))
                 :ordinal {:global (get-in @metrics [:ordinal :global])
                           :stream (get-in @metrics [:ordinal stream])}}]
        (store/save-log! opts doc)))))

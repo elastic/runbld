@@ -375,6 +375,7 @@
   {:build-id s/Str
    :stream   s/Str
    :time     s/Str
+   :size     s/Num
    :ordinal
    {:stream  s/Num
     :global  s/Num}
@@ -389,6 +390,7 @@
       :stream   m/not-analyzed
       :time     m/date
       :log      m/analyzed
+      :size     m/long
       :ordinal
       {:properties
        {:global m/long
