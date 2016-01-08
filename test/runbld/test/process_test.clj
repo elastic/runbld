@@ -28,7 +28,7 @@
                     (proc/exec-with-capture
                      build-id
                      (-> opts :process :program)
-                     (-> opts :process :args)
+                     ["-e"] #_(-> opts :process :args)
                      (-> opts :process :scriptfile)
                      (-> opts :process :cwd)
                      (-> opts :process :stdout)
@@ -48,18 +48,20 @@
             (is (= (bigdec 100)
                    (data/unscaled-percent
                     (:out-accuracy res))))
-            (is (= (:out-bytes res) (count (slurp master))))
             (is (= 10 (count
                        (line-seq
                         (clojure.java.io/reader master))))))
           (testing "stdout"
-            (is (= (:out-bytes res) (count (slurp stdout))))
+            (is (= (:out-bytes res) (count (slurp stdout)))
+                (str "the number bytes counted from the stream "
+                     "differs from the number in "
+                     stdout))
             (is (= 10 (count
                        (line-seq
                         (clojure.java.io/reader stdout)))))
             (is (= 10 (store/count-logs opts "stdout" build-id))))
           (testing "stderr"
             (is (= (:err-bytes res) (count (slurp stderr))))
-            (is (= 12 (count
+            (is (= 1 (count
                        (line-seq
                         (clojure.java.io/reader stderr)))))))))))

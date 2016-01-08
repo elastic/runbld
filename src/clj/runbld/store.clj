@@ -169,19 +169,11 @@
         [])))))
 
 (s/defn save-log!
-  ([opts         :- OptsElasticsearch
-    id           :- s/Str
-    log-type     :- s/Keyword
-    log-line     :- s/Str
-    line-ordinal :- s/Num]
-   (let [doc {:build-id id
-              :stream (name log-type)
-              :line {:text log-line
-                     :ordinal line-ordinal}
-              :time (date/ms-to-iso)}]
-     (doc/index (:conn opts) {:index (opts :log-index-write)
-                              :type (name DocType)
-                              :body doc}))))
+  ([opts :- OptsElasticsearch
+    line :- StoredLogLine]
+   (doc/index (:conn opts) {:index (opts :log-index-write)
+                            :type (name DocType)
+                            :body line})))
 
 (s/defn after-log
   ([opts :- OptsElasticsearch]

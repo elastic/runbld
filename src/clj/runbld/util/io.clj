@@ -109,5 +109,5 @@
      (try
        ~@body
        (finally
-         #_(rmdir-r
-            ~(bindings 0))))))
+         (rmdir-r
+          ~(bindings 0))))))

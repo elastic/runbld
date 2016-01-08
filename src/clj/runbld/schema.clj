@@ -146,36 +146,27 @@
 (def MainOpts
   (merge OptsWithBuild {:vcs {s/Keyword s/Any}}))
 
-(def RawProcess
-  {
-   :err-bytes      s/Num
-   :exit-code      s/Num
-   :millis-end     s/Num
-   :millis-start   s/Num
-   :out-bytes      s/Num
-   :status         s/Str
-   :time-end       s/Str
-   :time-start     s/Str
-   :took           s/Num
-   })
-
-(def ProcessResultStage1
-  (merge
-   RawProcess
-   {:cmd            [s/Str]
-    :cmd-source     s/Str
-    }))
-
 (def ProcessResult
   (merge
-   ProcessResultStage1
-   {:err-accuracy   s/Int
+   {:exit-code      s/Num
+    :millis-end     s/Num
+    :millis-start   s/Num
+    :status         s/Str
+    :time-end       s/Str
+    :time-start     s/Str
+    :took           s/Num
+
+    :cmd            [s/Str]
+    :cmd-source     s/Str
+
+    :err-accuracy   s/Int
     :err-file       s/Str
+    :err-bytes      s/Int
     :err-file-bytes s/Int
     :out-accuracy   s/Int
+    :out-bytes      s/Int
     :out-file       s/Str
-    :out-file-bytes s/Int
-    }))
+    :out-file-bytes s/Int}))
 
 (def StoredProcessResult
   (assoc
@@ -380,6 +371,15 @@
      :properties
      {:build-id m/not-analyzed}}}})
 
+(def StoredLogLine
+  {:build-id s/Str
+   :stream   s/Str
+   :time     s/Str
+   :ordinal
+   {:stream  s/Num
+    :global  s/Num}
+   :log      s/Str})
+
 (def StoredLogIndexSettings
   {:mappings
    {DocType
@@ -388,10 +388,11 @@
      {:build-id m/not-analyzed
       :stream   m/not-analyzed
       :time     m/date
-      :line
+      :log      m/analyzed
+      :ordinal
       {:properties
-       {:text    m/analyzed
-        :ordinal m/long}}}}}})
+       {:global m/long
+        :stream m/long}}}}}})
 
 (def EmailCtx
   {:id s/Str

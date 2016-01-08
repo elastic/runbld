@@ -6,6 +6,17 @@
             [runbld.util.date :as date]
             [runbld.util.io :as io]))
 
+(s/defn capture-ordinal
+  [ord :- clojure.lang.Atom]
+  (fn [line]
+    (swap! ord inc)))
+
+(s/defn capture-bytes
+  [bytes :- clojure.lang.Atom]
+  (fn [line]
+    ;; inc here to add back the newline stripped off by line-seq
+    (swap! bytes + (inc (count (.getBytes line))))))
+
 (defn capture-to-writer [wtr]
   (fn [line]
     (binding [*out* wtr]
@@ -13,66 +24,66 @@
       (flush))))
 
 (s/defn capture-to-es
-  ([opts    :- OptsElasticsearch
-    id      :- s/Str
-    type    :- s/Keyword
-    ordinal :- clojure.lang.Atom]
+  ([opts           :- OptsElasticsearch
+    id             :- s/Str
+    type           :- s/Keyword
+    global-ordinal :- clojure.lang.Atom
+    stream-ordinal :- clojure.lang.Atom]
    (fn [line]
-     (store/save-log! opts id type line @ordinal))))
+     (let [doc {:build-id id
+                :stream (name type)
+                :time (date/ms-to-iso)
+                :log line
+                :ordinal {:global @global-ordinal
+                          :stream @stream-ordinal}}]
+       (store/save-log! opts doc)))))
 
-(s/defn spit-stream :- s/Num
+(s/defn spit-stream :- s/Keyword
   [input        :- java.io.InputStream
-   line-ordinal :- clojure.lang.Atom
    processors   :- [clojure.lang.IFn]]
-  (let [bs (atom 0)]
-    (doseq [line (line-seq (io/reader input))]
-      (doseq [processor processors]
-        (processor line))
-      (swap! line-ordinal inc)
-      (swap! bs + (inc ;; for the newline that gets stripped with
-                   ;; line-seq
-                   (count (.getBytes line)))))
-    @bs))
+  (doseq [line (line-seq (io/reader input))]
+    (doseq [processor processors]
+      (processor line)))
+  :done)
 
-(defn spit-process [stdout stderr processors]
-  [(future
-     (spit-stream stdout (:out-ordinal processors) (:out processors)))
-   (future
-     (spit-stream stderr (:err-ordinal processors) (:err processors)))])
-
-(s/defn process-output :- {:out-bytes java.util.concurrent.Future
-                           :err-bytes java.util.concurrent.Future}
-  [proc :- Process
-   processors :- {:out-ordinal clojure.lang.Atom
-                  :err-ordinal clojure.lang.Atom
-                  :out [clojure.lang.IFn]
+(s/defn spit-process :- [java.util.concurrent.Future]
+  [stdout :- java.io.InputStream
+   stderr :- java.io.InputStream
+   processors :- {:out [clojure.lang.IFn]
                   :err [clojure.lang.IFn]}]
-  (let [[out-bytes err-bytes] (spit-process
-                               (.getInputStream proc)
-                               (.getErrorStream proc)
-                               processors)]
-    {:out-bytes out-bytes
-     :err-bytes err-bytes}))
+  [(future (spit-stream stdout (:out processors)))
+   (future (spit-stream stderr (:err processors)))])
 
-(s/defn exec* :- RawProcess
+(s/defn exec* :-
+  {:exit-code      s/Num
+   :millis-end     s/Num
+   :millis-start   s/Num
+   :status         s/Str
+   :time-end       s/Str
+   :time-start     s/Str
+   :took           s/Num}
   ([pb]
    (exec* pb []))
-  ([pb output-processors]
+  ([pb :- ProcessBuilder
+    output-processors :- {:out [clojure.lang.IFn]
+                          :err [clojure.lang.IFn]}]
    (let [start (System/currentTimeMillis)
          proc (.start pb)
-         {:keys [out-bytes err-bytes]} (process-output
-                                        proc output-processors)
+         output-futs (spit-process
+                      (.getInputStream proc)
+                      (.getErrorStream proc)
+                      output-processors)
          exit-code (.waitFor proc)
          end (System/currentTimeMillis)
-         took (- end start)]
+         took (- end start)
+         ]
      ;; deref after the timing, to make sure a slow processor doesn't
      ;; skew the process metric
+     (doall (map deref output-futs))
      {
-      :err-bytes @err-bytes
       :exit-code exit-code
       :millis-end end
       :millis-start start
-      :out-bytes @out-bytes
       :status (if (pos? exit-code) "FAILURE" "SUCCESS")
       :time-end (date/ms-to-iso end)
       :time-start (date/ms-to-iso start)
@@ -84,7 +95,16 @@
   (doseq [[k v] newenv]
     (.put pbenv (name k) v)))
 
-(s/defn exec :- ProcessResultStage1
+(s/defn exec :-
+  {:exit-code      s/Num
+   :millis-end     s/Num
+   :millis-start   s/Num
+   :status         s/Str
+   :time-end       s/Str
+   :time-start     s/Str
+   :took           s/Num
+   :cmd            [s/Str]
+   :cmd-source     s/Str}
   ([program args scriptfile]
    (exec program args scriptfile (System/getProperty "user.dir")))
   ([program args scriptfile cwd]
@@ -107,7 +127,7 @@
        :cmd-source (slurp scriptfile)
        }))))
 
-(s/defn exec-with-capture
+(s/defn exec-with-capture :- ProcessResult
   ([build-id   :- s/Str
     program    :- s/Str
     args       :- [s/Str]
@@ -118,75 +138,53 @@
     es-opts    :- OptsElasticsearch
     env        :- {s/Str s/Str}]
    (let [dir (io/abspath-file cwd)
+         global-ordinal (atom 0)
          out-file (io/prepend-path dir stdout)
          out-ordinal (atom 0)
+         out-bytes (atom 0)
          err-file (io/prepend-path dir stderr)
          err-ordinal (atom 0)
+         err-bytes (atom 0)
          result
          (with-open [outw (java.io.PrintWriter. out-file)
                      errw (java.io.PrintWriter. err-file)]
            (let [processors
-                 {:out-ordinal out-ordinal
-                  :err-ordinal err-ordinal
-                  :out [(capture-to-writer *out*)
+                 {:out [(capture-ordinal global-ordinal)
+                        (capture-ordinal out-ordinal)
+                        (capture-bytes out-bytes)
+                        (capture-to-writer *out*)
                         (capture-to-writer outw)
-                        (capture-to-es es-opts build-id :stdout out-ordinal)]
-                  :err [(capture-to-writer *err*)
+                        (capture-to-es es-opts
+                                       build-id
+                                       :stdout
+                                       global-ordinal
+                                       out-ordinal)]
+                  :err [(capture-ordinal global-ordinal)
+                        (capture-ordinal err-ordinal)
+                        (capture-bytes err-bytes)
+                        (capture-to-writer *err*)
                         (capture-to-writer errw)
-                        (capture-to-es es-opts build-id :stderr err-ordinal)]}]
+                        (capture-to-es es-opts
+                                       build-id
+                                       :stderr
+                                       global-ordinal
+                                       err-ordinal)]}]
              (exec program args scriptfile cwd env processors)))
          out-file-bytes (count (slurp out-file))
          err-file-bytes (count (slurp err-file))]
      (store/after-log es-opts)
      (merge
       result
-      {:out-file (str out-file)
+      {:out-bytes @out-bytes
+       :err-bytes @err-bytes
+       :out-file (str out-file)
        :err-file (str err-file)
        :out-file-bytes out-file-bytes
        :err-file-bytes err-file-bytes
        :out-accuracy (data/scaled-percent
-                      out-file-bytes (:out-bytes result))
+                      out-file-bytes @out-bytes)
        :err-accuracy (data/scaled-percent
-                      err-file-bytes (:err-bytes result))}))))
-
-#_(s/defn output-capturing-run :- ProcessResult
-    [opts :- MainOpts]
-    (let [dir (io/abspath-file (-> opts :process :cwd))
-          out-file (io/prepend-path dir (-> opts :process :stdout))
-          out-ordinal (atom 0)
-          err-file (io/prepend-path dir (-> opts :process :stderr))
-          err-ordinal (atom 0)
-          result
-          (with-open [outw (java.io.PrintWriter. out-file)
-                      errw (java.io.PrintWriter. err-file)]
-            (let [processors
-                  {:out-ordinal out-ordinal
-                   :err-ordinal err-ordinal
-                   :out [(capture-to-writer *out*)
-                         (capture-to-writer outw)
-                         (capture-to-es (:es opts) :stdout out-ordinal)]
-                   :err [(capture-to-writer *err*)
-                         (capture-to-writer errw)
-                         (capture-to-es (:es opts) :stderr err-ordinal)]}]
-              (exec
-               (-> opts :process :program)
-               (-> opts :process :args)
-               (-> opts :process :scriptfile)
-               (-> opts :process :cwd)
-               {"JAVA_HOME" (-> opts :java :home)}
-               processors)))
-          out-file-bytes (count (slurp out-file))
-          err-file-bytes (count (slurp err-file))]
-      (merge
-       result
-       {:out-file (str out-file)
-        :err-file (str err-file)
-        :out-file-bytes out-file-bytes
-        :err-file-bytes err-file-bytes
-        :out-accuracy (data/scaled-percent
-                       out-file-bytes (:out-bytes result))
-        :err-accuracy (data/scaled-percent
-                       err-file-bytes (:err-bytes result))})))
+                      err-file-bytes @err-bytes)}))))
 
 (s/defn run :- {(s/required-key :opts) MainOpts
                 (s/required-key :process-result) ProcessResult}
