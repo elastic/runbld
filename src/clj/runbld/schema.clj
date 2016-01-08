@@ -31,7 +31,9 @@
    :args              [s/Str]
    :cwd               s/Str
    :scriptfile        s/Str
-   :inherit-exit-code s/Bool})
+   :inherit-exit-code s/Bool
+   :stdout            s/Str
+   :stderr            s/Str})
 
 (def OptsElasticsearch
   {:build-index          s/Str
@@ -40,6 +42,9 @@
    :failure-index        s/Str
    :failure-index-search s/Str
    :failure-index-write  s/Str
+   :log-index            s/Str
+   :log-index-search     s/Str
+   :log-index-write      s/Str
    :max-index-bytes      s/Num
    :conn                 Connection
    (s/optional-key :http-opts) {s/Keyword s/Any}
@@ -142,23 +147,26 @@
   (merge OptsWithBuild {:vcs {s/Keyword s/Any}}))
 
 (def ProcessResult
-  {:cmd            [s/Str]
-   :cmd-source     s/Str
-   :err-accuracy   s/Int
-   :err-bytes      s/Num
-   :err-file       s/Str
-   :err-file-bytes s/Int
-   :exit-code      s/Num
-   :millis-end     s/Num
-   :millis-start   s/Num
-   :out-accuracy   s/Int
-   :out-bytes      s/Num
-   :out-file       s/Str
-   :out-file-bytes s/Int
-   :status         s/Str
-   :time-end       s/Str
-   :time-start     s/Str
-   :took           s/Num})
+  (merge
+   {:exit-code      s/Num
+    :millis-end     s/Num
+    :millis-start   s/Num
+    :status         s/Str
+    :time-end       s/Str
+    :time-start     s/Str
+    :took           s/Num
+
+    :cmd            [s/Str]
+    :cmd-source     s/Str
+
+    :err-accuracy   s/Int
+    :err-file       s/Str
+    :err-bytes      s/Int
+    :err-file-bytes s/Int
+    :out-accuracy   s/Int
+    :out-bytes      s/Int
+    :out-file       s/Str
+    :out-file-bytes s/Int}))
 
 (def StoredProcessResult
   (assoc
@@ -362,6 +370,31 @@
     {:_all {:enabled false}
      :properties
      {:build-id m/not-analyzed}}}})
+
+(def StoredLogLine
+  {:build-id s/Str
+   :stream   s/Str
+   :time     s/Str
+   :size     s/Num
+   :ordinal
+   {:stream  s/Num
+    :global  s/Num}
+   :log      s/Str})
+
+(def StoredLogIndexSettings
+  {:mappings
+   {DocType
+    {:_all {:enabled false}
+     :properties
+     {:build-id m/not-analyzed
+      :stream   m/not-analyzed
+      :time     m/date
+      :log      m/analyzed
+      :size     m/long
+      :ordinal
+      {:properties
+       {:global m/long
+        :stream m/long}}}}}})
 
 (def EmailCtx
   {:id s/Str

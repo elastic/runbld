@@ -1,6 +1,7 @@
 es:
   build-index: runbld-build
   failure-index: runbld-failure
+  log-index: runbld-log
 
 email:
   host: smtp.example.com
