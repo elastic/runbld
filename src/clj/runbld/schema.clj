@@ -33,7 +33,8 @@
    :scriptfile        s/Str
    :inherit-exit-code s/Bool
    :stdout            s/Str
-   :stderr            s/Str})
+   :stderr            s/Str
+   :output            s/Str})
 
 (def OptsElasticsearch
   {:build-index          s/Str
@@ -159,20 +160,13 @@
     :cmd            [s/Str]
     :cmd-source     s/Str
 
-    :err-accuracy   s/Int
-    :err-file       s/Str
     :err-bytes      s/Int
-    :err-file-bytes s/Int
-    :out-accuracy   s/Int
     :out-bytes      s/Int
-    :out-file       s/Str
-    :out-file-bytes s/Int}))
+    :total-bytes    s/Num
+    }))
 
 (def StoredProcessResult
-  (assoc
-   (dissoc ProcessResult :err-file :out-file)
-   :err-accuracy    s/Num
-   :out-accuracy    s/Num))
+  ProcessResult)
 
 (def VcsLog
   {

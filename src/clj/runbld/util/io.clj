@@ -1,8 +1,21 @@
 (ns runbld.util.io
+  (:refer-clojure :exclude [spit])
   (:require [schema.core :as s])
   (:require [clojure.java.io :as jio]
             [clojure.java.shell :as sh]
             [slingshot.slingshot :refer [throw+]]))
+
+(def logger (agent nil))
+
+(def file-logger (agent nil))
+
+(defn log [& x]
+  (send-off logger (fn [_] (apply prn x))))
+
+(defn spit [f x & opts]
+  (send-off file-logger
+            (fn [_]
+              (apply clojure.core/spit f x opts))))
 
 (defn run [& args]
   (let [cmd (map str args)
@@ -111,3 +124,9 @@
        (finally
          (rmdir-r
           ~(bindings 0))))))
+
+(s/defn same-file? :- s/Bool
+  ([f1 :- java.io.File
+    f2 :- java.io.File]
+   (= (abspath-file f1)
+      (abspath-file f2))))
