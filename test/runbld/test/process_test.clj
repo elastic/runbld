@@ -25,19 +25,21 @@
           output (io/file dir (-> opts :process :output))]
       (with-open [out (java.io.PrintWriter. master)]
         (let [res (binding [*out* out
-                            *err* out]
+                            *err* (java.io.StringWriter.)]
                     (proc/exec-with-capture
-                     build-id
                      (-> opts :process :program)
                      (-> opts :process :args)
                      (-> opts :process :scriptfile)
                      (-> opts :process :cwd)
                      (-> opts :process :output)
                      (-> opts :es)
-                     {"JAVA_HOME" (opts :java-home)}))]
-          ;;(println (slurp output))
-          (testing "test should not produce output"
-            (is (= "" (slurp master))))
+                     {"JAVA_HOME" (opts :java-home)}
+                     {:build-id build-id}))]
+          #_(println (slurp output))
+          (testing "test should produce output"
+            (is (= 10
+                   (count
+                    (line-seq (io/reader master))))))
           (testing "check output.log"
             (let [lines (->> output io/reader line-seq (map json/decode))]
               (is (= 11 (count lines)))
@@ -45,5 +47,4 @@
                      (->> lines
                           (map #(get-in % ["ord" "total"]))
                           sort)))))
-          ;; (is (= 10 (store/count-logs opts "stdout" build-id)))
-          )))))
+          (is (= 10 (store/count-logs opts "stdout" build-id))))))))

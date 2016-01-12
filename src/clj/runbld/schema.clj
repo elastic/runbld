@@ -370,10 +370,10 @@
    :stream   s/Str
    :time     s/Str
    :size     s/Num
-   :ordinal
+   :log      s/Str
+   :ord
    {:stream  s/Num
-    :global  s/Num}
-   :log      s/Str})
+    :total  s/Num}})
 
 (def StoredLogIndexSettings
   {:mappings
@@ -385,9 +385,9 @@
       :time     m/date
       :log      m/analyzed
       :size     m/long
-      :ordinal
+      :ord
       {:properties
-       {:global m/long
+       {:total  m/long
         :stream m/long}}}}}})
 
 (def EmailCtx
