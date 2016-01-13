@@ -7,7 +7,7 @@
             [runbld.facts.facter1]
             [runbld.facts.facter2]
             [runbld.facts.facter3]
-            [runbld.util.io :as io]))
+            [runbld.io :as io]))
 
 (def facter-program
   "facter")

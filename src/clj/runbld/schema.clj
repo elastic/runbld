@@ -33,7 +33,8 @@
    :scriptfile        s/Str
    :inherit-exit-code s/Bool
    :stdout            s/Str
-   :stderr            s/Str})
+   :stderr            s/Str
+   :output            s/Str})
 
 (def OptsElasticsearch
   {:build-index          s/Str
@@ -46,6 +47,8 @@
    :log-index-search     s/Str
    :log-index-write      s/Str
    :max-index-bytes      s/Num
+   :bulk-timeout-ms      s/Num
+   :bulk-size            s/Num
    :conn                 Connection
    (s/optional-key :http-opts) {s/Keyword s/Any}
    (s/optional-key :url)       s/Str})
@@ -159,20 +162,13 @@
     :cmd            [s/Str]
     :cmd-source     s/Str
 
-    :err-accuracy   s/Int
-    :err-file       s/Str
     :err-bytes      s/Int
-    :err-file-bytes s/Int
-    :out-accuracy   s/Int
     :out-bytes      s/Int
-    :out-file       s/Str
-    :out-file-bytes s/Int}))
+    :total-bytes    s/Num
+    }))
 
 (def StoredProcessResult
-  (assoc
-   (dissoc ProcessResult :err-file :out-file)
-   :err-accuracy    s/Num
-   :out-accuracy    s/Num))
+  ProcessResult)
 
 (def VcsLog
   {
@@ -376,10 +372,10 @@
    :stream   s/Str
    :time     s/Str
    :size     s/Num
-   :ordinal
+   :log      s/Str
+   :ord
    {:stream  s/Num
-    :global  s/Num}
-   :log      s/Str})
+    :total  s/Num}})
 
 (def StoredLogIndexSettings
   {:mappings
@@ -391,9 +387,9 @@
       :time     m/date
       :log      m/analyzed
       :size     m/long
-      :ordinal
+      :ord
       {:properties
-       {:global m/long
+       {:total  m/long
         :stream m/long}}}}}})
 
 (def EmailCtx

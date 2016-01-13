@@ -6,7 +6,7 @@
             [postal.core :as mail]
             [runbld.store :as store]
             [runbld.util.date :as date]
-            [runbld.util.io :as io]
+            [runbld.io :as io]
             [runbld.vcs :as vcs]
             [schema.core :as s]
             [stencil.core :as mustache]))

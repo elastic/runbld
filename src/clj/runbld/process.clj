@@ -1,123 +1,135 @@
 (ns runbld.process
   (:require [runbld.schema :refer :all]
             [schema.core :as s])
-  (:require [runbld.store :as store]
+  (:require [cheshire.core :as json]
+            [clojure.core.async :as async
+             :refer [thread go go-loop chan
+                     >! <! >!! <!! alts! alts!! close!]]
+            [runbld.store :as store]
             [runbld.util.data :as data]
             [runbld.util.date :as date]
-            [runbld.util.io :as io]))
+            [runbld.io :as io])
+  (:import (clojure.core.async.impl.channels ManyToManyChannel)
+           (clojure.lang Atom Ref)
+           (java.io File InputStream)
+           (java.util UUID)))
 
-(def empty-metrics
-  {:ordinal
-   {:global 0
-    :stdout 0
-    :stderr 0}
-   :bytes
-   {:global 0
-    :stdout 0
-    :stderr 0}})
+(s/defn inc-ordinals
+  [m :- clojure.lang.Ref
+   label   :- s/Keyword]
+  (alter m update :total (fnil inc 0))
+  (alter m update label (fnil inc 0)))
 
-(s/defn capture-metrics
-  [stream :- s/Keyword
-   metrics :- clojure.lang.Ref]
-  (fn [line]
-    (let [line-bytes (inc (count (.getBytes line)))]
-      (alter metrics update-in [:ordinal :global] inc)
-      (alter metrics update-in [:ordinal stream] inc)
-      (alter metrics update-in [:bytes :global] + line-bytes)
-      (alter metrics update-in [:bytes stream] + line-bytes))))
+(s/defn inc-bytes
+  [m       :- clojure.lang.Ref
+   line    :- s/Str
+   label   :- s/Keyword]
+  (let [line-bytes (inc (count (.getBytes line)))]
+    (alter m update :total (fnil + 0) line-bytes)
+    (alter m update label (fnil + 0) line-bytes)))
 
-(s/defn capture-ordinal
-  [ord :- clojure.lang.Atom]
-  (fn [line]
-    (swap! ord inc)))
+(s/defn make-structured-log
+  ([line    :- s/Str
+    label   :- s/Keyword
+    ords    :- Ref
+    extra   :- {s/Any s/Any}]
+   (merge
+    {:time (date/ms-to-iso)
+     :stream (name label)
+     :log line
+     :size (inc (count (.getBytes line)))
+     :ord {:total (@ords :total)
+           :stream (@ords label)}}
+    extra)))
 
-(s/defn capture-bytes
-  [bytes :- clojure.lang.Atom]
-  (fn [line]
-    ;; inc here to add back the newline stripped off by line-seq
-    (swap! bytes + (inc (count (.getBytes line))))))
+(s/defn start-input-reader! :- ManyToManyChannel
+  ([is        :- InputStream
+    ch        :- ManyToManyChannel
+    label     :- s/Keyword
+    ords      :- Ref
+    bytes     :- Ref
+    log-extra :- {s/Any s/Any}]
+   (thread
+     (doseq [line (line-seq (io/reader is))]
+       (dosync
+        (inc-ordinals ords label)
+        (inc-bytes bytes line label)
+        (>!! ch (make-structured-log line label ords log-extra))))
+     (close! ch)
+     (keyword (str (name label) "-done")))))
 
-(defn capture-to-writer [wtr]
-  (fn [line]
-    (binding [*out* wtr]
-      (println line)
-      (flush))))
+(s/defn add-env! :- nil
+  [pbenv newenv]
+  (doseq [[k v] newenv]
+    (.put pbenv (name k) v)))
 
-(s/defn capture-to-es
-  ([opts    :- OptsElasticsearch
-    id      :- s/Str
-    stream  :- s/Keyword
-    metrics :- clojure.lang.Ref]
-   (fn [line]
-     (let [doc {:build-id id
-                :stream (name stream)
-                :time (date/ms-to-iso)
-                :log line
-                :size (inc (count (.getBytes line)))
-                :ordinal {:global (get-in @metrics [:ordinal :global])
-                          :stream (get-in @metrics [:ordinal stream])}}]
-       (store/save-log! opts doc)))))
+(s/defn start :-
+  {:start s/Num
+   :proc  Process
+   :out   ManyToManyChannel
+   :bytes Ref
+   :threads [ManyToManyChannel]}
+  ([pb :- ProcessBuilder]
+   (start pb {}))
+  ([pb        :- ProcessBuilder
+    log-extra :- {s/Any s/Any}]
+   (let [start-ms    (System/currentTimeMillis)
+         ords        (ref {:total 0 :stderr 0 :stdout 0})
+         bytes       (ref {:total 0 :stderr 0 :stdout 0})
+         out-ch      (chan)
+         err-ch      (chan)
+         proc        (.start pb)
+         stdout (start-input-reader!
+                 (.getInputStream proc) out-ch :stdout ords bytes log-extra)
+         stderr (start-input-reader!
+                 (.getErrorStream proc) err-ch :stderr ords bytes log-extra)
+         combined-ch (async/merge [out-ch err-ch])]
+     {:start start-ms
+      :proc proc
+      :out combined-ch
+      :bytes bytes
+      :threads [stdout stderr]})))
 
-(s/defn spit-stream :- s/Keyword
-  [input        :- java.io.InputStream
-   processors   :- [clojure.lang.IFn]]
-  (doseq [line (line-seq (io/reader input))]
-    ;; dosync: in order for the global ordinal to order in accordance
-    ;; with time, metrics calculation can only happen one stream at a
-    ;; time
-    (dosync
-     (doseq [processor processors]
-       (processor line))))
-  :done)
+(s/defn start-input-multiplexer!
+  ([in-ch   :- ManyToManyChannel
+    out-chs :- [ManyToManyChannel]]
+   (go-loop [x (<! in-ch)]
+     (if x
+       (do (doseq [ch out-chs]
+             (>! ch x))
+           (recur (<! in-ch)))
+       (doseq [c out-chs]
+         (close! c))))))
 
-(s/defn spit-process :- [java.util.concurrent.Future]
-  [stdout :- java.io.InputStream
-   stderr :- java.io.InputStream
-   processors :- {:out [clojure.lang.IFn]
-                  :err [clojure.lang.IFn]}]
-  [(future (spit-stream stdout (:out processors)))
-   (future (spit-stream stderr (:err processors)))])
-
-(s/defn exec* :-
+(s/defn exec-pb :-
   {:exit-code      s/Num
    :millis-end     s/Num
    :millis-start   s/Num
    :status         s/Str
    :time-end       s/Str
    :time-start     s/Str
-   :took           s/Num}
+   :took           s/Num
+   :bytes          Ref}
   ([pb]
-   (exec* pb []))
-  ([pb :- ProcessBuilder
-    output-processors :- {:out [clojure.lang.IFn]
-                          :err [clojure.lang.IFn]}]
-   (let [start (System/currentTimeMillis)
-         proc (.start pb)
-         output-futs (spit-process
-                      (.getInputStream proc)
-                      (.getErrorStream proc)
-                      output-processors)
+   (exec-pb pb []))
+  ([pb listeners]
+   (exec-pb pb [] {}))
+  ([pb        :- ProcessBuilder
+    listeners :- [ManyToManyChannel]
+    log-extra :- {s/Any s/Any}]
+   (let [{:keys [start proc out bytes threads]} (start pb log-extra)
+         multi (start-input-multiplexer! out listeners)
          exit-code (.waitFor proc)
          end (System/currentTimeMillis)
-         took (- end start)
-         ]
-     ;; deref after the timing, to make sure a slow processor doesn't
-     ;; skew the process metric
-     (doall (map deref output-futs))
-     {
-      :exit-code exit-code
+         took (- end start)]
+     {:exit-code exit-code
       :millis-end end
       :millis-start start
       :status (if (pos? exit-code) "FAILURE" "SUCCESS")
       :time-end (date/ms-to-iso end)
       :time-start (date/ms-to-iso start)
       :took took
-      })))
-
-(s/defn add-env! :- nil
-  [pbenv newenv]
-  (doseq [[k v] newenv]
-    (.put pbenv (name k) v)))
+      :bytes bytes})))
 
 (s/defn exec :-
   {:exit-code      s/Num
@@ -128,14 +140,17 @@
    :time-start     s/Str
    :took           s/Num
    :cmd            [s/Str]
-   :cmd-source     s/Str}
+   :cmd-source     s/Str
+   :bytes          Ref}
   ([program args scriptfile]
    (exec program args scriptfile (System/getProperty "user.dir")))
   ([program args scriptfile cwd]
    (exec program args scriptfile cwd {}))
   ([program args scriptfile cwd env]
-   (exec program args scriptfile cwd {} {:out [] :err []}))
-  ([program args scriptfile cwd env processors]
+   (exec program args scriptfile cwd {} []))
+  ([program args scriptfile cwd env listeners]
+   (exec program args scriptfile cwd {} [] {}))
+  ([program args scriptfile cwd env listeners log-extra]
    (let [scriptfile* (io/abspath scriptfile)
          dir (io/abspath-file cwd)
          cmd (flatten [program args scriptfile*])
@@ -143,64 +158,67 @@
               (.directory dir))
          ;; can only alter the env via this mutable map
          _ (add-env! (.environment pb) env)
-         res (exec* pb processors)]
+         res (exec-pb pb listeners log-extra)]
      (flush)
      (merge
       res
       {:cmd cmd
        :cmd-source (slurp scriptfile)
-       }))))
+       :bytes (:bytes res)}))))
+
+(s/defn start-file-listener! :- [ManyToManyChannel]
+  ([file]
+   (let [ch (chan 10)]
+     [ch (go-loop []
+           (when-let [x (<! ch)]
+             (io/spit file (str (json/encode x) "\n") :append true)
+             (recur)))])))
+
+(s/defn start-es-listener! :- [ManyToManyChannel]
+  ([es-opts]
+   (store/make-bulk-logger es-opts)))
+
+(s/defn start-writer-listener! :- [ManyToManyChannel]
+  ([wtr stream]
+   (let [ch (chan 10)]
+     [ch (go-loop []
+           (when-let [x (<! ch)]
+             (when (= (name stream) (:stream x))
+               (binding [*out* wtr]
+                 (println (:log x))))
+             (recur)))])))
 
 (s/defn exec-with-capture :- ProcessResult
-  ([build-id   :- s/Str
-    program    :- s/Str
+  ([program    :- s/Str
     args       :- [s/Str]
     scriptfile :- s/Str
     cwd        :- s/Str
-    stdout     :- s/Str
-    stderr     :- s/Str
+    outputfile :- s/Str
     es-opts    :- OptsElasticsearch
-    env        :- {s/Str s/Str}]
+    env        :- {s/Str s/Str}
+    log-extra  :- {s/Any s/Any}]
    (let [dir (io/abspath-file cwd)
-         metrics (ref empty-metrics)
-         out-file (io/prepend-path dir stdout)
-         err-file (io/prepend-path dir stderr)
-         result
-         (with-open [outw (java.io.PrintWriter. out-file)
-                     errw (java.io.PrintWriter. err-file)]
-           (let [processors
-                 {:out [(capture-metrics :stdout metrics)
-                        (capture-to-writer *out*)
-                        (capture-to-writer outw)
-                        (capture-to-es es-opts
-                                       build-id
-                                       :stdout
-                                       metrics)]
-                  :err [(capture-metrics :stderr metrics)
-                        (capture-to-writer *err*)
-                        (capture-to-writer errw)
-                        (capture-to-es es-opts
-                                       build-id
-                                       :stderr
-                                       metrics)]}]
-             (exec program args scriptfile cwd env processors)))
-         out-bytes (get-in @metrics [:bytes :stdout])
-         err-bytes (get-in @metrics [:bytes :stderr])
-         out-file-bytes (count (slurp out-file))
-         err-file-bytes (count (slurp err-file))]
+         outputfile* (io/prepend-path dir outputfile)
+         [file-ch file-process] (start-file-listener! outputfile*)
+         [es-ch es-process] (start-es-listener! es-opts)
+         [stdout-ch stdout-process] (start-writer-listener! *out* :stdout)
+         [stderr-ch stderr-process] (start-writer-listener! *err* :stderr)
+         listeners [file-ch es-ch stdout-ch stderr-ch]
+         result (exec program args scriptfile cwd env listeners log-extra)
+         listeners-done (doall
+                         (map <!! [file-process
+                                   es-process
+                                   stdout-process
+                                   stderr-process]))
+         out-bytes (@(:bytes result) :stdout)
+         err-bytes (@(:bytes result) :stderr)
+         total-bytes (@(:bytes result) :total)]
      (store/after-log es-opts)
      (merge
-      result
+      (dissoc result :bytes)
       {:out-bytes out-bytes
        :err-bytes err-bytes
-       :out-file (str out-file)
-       :err-file (str err-file)
-       :out-file-bytes out-file-bytes
-       :err-file-bytes err-file-bytes
-       :out-accuracy (data/scaled-percent
-                      out-file-bytes out-bytes)
-       :err-accuracy (data/scaled-percent
-                      err-file-bytes err-bytes)}))))
+       :total-bytes total-bytes}))))
 
 (s/defn run :- {(s/required-key :opts) MainOpts
                 (s/required-key :process-result) ProcessResult}
@@ -208,12 +226,11 @@
   {:opts opts
    :process-result
    (exec-with-capture
-    (-> opts :id)
     (-> opts :process :program)
     (-> opts :process :args)
     (-> opts :process :scriptfile)
     (-> opts :process :cwd)
-    (-> opts :process :stdout)
-    (-> opts :process :stderr)
+    (-> opts :process :output)
     (-> opts :es)
-    {"JAVA_HOME" (-> opts :java :home)})})
+    {"JAVA_HOME" (-> opts :java :home)}
+    {:build-id (-> opts :id)})})

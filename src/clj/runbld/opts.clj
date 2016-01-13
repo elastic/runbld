@@ -9,7 +9,7 @@
             [runbld.store :as store]
             [runbld.util.data :refer [deep-merge-with deep-merge]]
             [runbld.util.date :as date]
-            [runbld.util.io :as io]
+            [runbld.io :as io]
             [runbld.version :as version]))
 
 (def config-file-defaults
@@ -19,7 +19,9 @@
     :failure-index "failure"
     :log-index     "log"
     :http-opts {:insecure? false}
-    :max-index-bytes store/MAX_INDEX_BYTES}
+    :max-index-bytes store/MAX_INDEX_BYTES
+    :bulk-timeout-ms 2000
+    :bulk-size 500}
 
    :s3
    {:bucket "test.example.com"
@@ -35,7 +37,8 @@
    {:inherit-exit-code true
     :cwd (System/getProperty "user.dir")
     :stdout ".stdout.log"
-    :stderr ".stderr.log"}
+    :stderr ".stderr.log"
+    :output ".output.log"}
 
    :email
    {:host "localhost"
