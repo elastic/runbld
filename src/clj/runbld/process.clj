@@ -144,9 +144,7 @@
    :took           s/Num
    :cmd            [s/Str]
    :cmd-source     s/Str
-   :bytes          {:total  s/Num
-                    :stdout s/Num
-                    :stderr s/Num}}
+   :bytes          Ref}
   ([program args scriptfile]
    (exec program args scriptfile (System/getProperty "user.dir")))
   ([program args scriptfile cwd]
@@ -169,7 +167,7 @@
       res
       {:cmd cmd
        :cmd-source (slurp scriptfile)
-       :bytes @(:bytes res)}))))
+       :bytes (:bytes res)}))))
 
 (s/defn start-file-listener! :- [ManyToManyChannel]
   ([file]
@@ -219,9 +217,9 @@
                                    es-process
                                    stdout-process
                                    stderr-process]))
-         out-bytes (get-in result [:bytes :stdout])
-         err-bytes (get-in result [:bytes :stderr])
-         total-bytes (get-in result [:bytes :total])]
+         out-bytes (@(:bytes result) :stdout)
+         err-bytes (@(:bytes result) :stderr)
+         total-bytes (@(:bytes result) :total)]
      (store/after-log es-opts)
      (merge
       (dissoc result :bytes)
