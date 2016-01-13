@@ -10,3 +10,5 @@ echo 'heartier'
 echo 'hearties'
 
 echo done >&2
+
+echo $RUNBLD_TEST

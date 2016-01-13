@@ -10,6 +10,9 @@
   {:string s/Str
    :hash   s/Str})
 
+(def Env
+  {(s/cond-pre s/Keyword s/Str) s/Str})
+
 (def OptsEmail
   {:from               s/Str
    :host               s/Str
@@ -34,7 +37,8 @@
    :inherit-exit-code s/Bool
    :stdout            s/Str
    :stderr            s/Str
-   :output            s/Str})
+   :output            s/Str
+   :env               Env})
 
 (def OptsElasticsearch
   {:build-index          s/Str
@@ -94,9 +98,6 @@
    :uptime-days            s/Num
    :uptime-secs            s/Num
    (s/optional-key :virtual) s/Bool})
-
-(def Env
-  {s/Str s/Any})
 
 (def Build
   {:org                       s/Str

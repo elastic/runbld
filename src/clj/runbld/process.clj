@@ -199,7 +199,7 @@
     cwd        :- s/Str
     outputfile :- s/Str
     es-opts    :- OptsElasticsearch
-    env        :- {s/Str s/Str}
+    env        :- Env
     log-extra  :- {s/Any s/Any}]
    (let [dir (io/abspath-file cwd)
          outputfile* (io/prepend-path dir outputfile)
@@ -236,5 +236,7 @@
     (-> opts :process :cwd)
     (-> opts :process :output)
     (-> opts :es)
-    {"JAVA_HOME" (-> opts :java :home)}
+    (merge
+     (-> opts :process :env)
+     {"JAVA_HOME" (-> opts :java :home)})
     {:build-id (-> opts :id)})})

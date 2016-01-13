@@ -38,7 +38,8 @@
     :cwd (System/getProperty "user.dir")
     :stdout ".stdout.log"
     :stderr ".stderr.log"
-    :output ".output.log"}
+    :output ".output.log"
+    :env {}}
 
    :email
    {:host "localhost"
