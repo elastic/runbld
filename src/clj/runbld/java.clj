@@ -44,8 +44,7 @@
        io/file
        .getParent
        io/file
-       .getParent
-       no-jre-path)))
+       .getParent)))
 
 (defn java-home-java [java-home allow-jre]
   (when-let [jh (if allow-jre java-home (no-jre-path java-home))]
