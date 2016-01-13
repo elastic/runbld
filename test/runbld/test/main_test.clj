@@ -7,6 +7,7 @@
             [runbld.opts :as opts]
             [runbld.process :as proc]
             [runbld.store :as store]
+            [runbld.io :as io]
             [runbld.vcs.git :as git]
             [runbld.version :as version])
   (:require [runbld.main :as main] :reload-all))
@@ -15,7 +16,7 @@
   ;; Change root bindings for these Vars, affects any execution no
   ;; matter what thread
   (with-redefs [;; Don't pollute the console
-                main/log (fn [& _] :noconsole)
+                io/log (fn [& _] :noconsole)
                 ;; Don't really kill the JVM
                 main/really-die (fn [& args] :dontdie)
                 ;; Don't really execute an external process
@@ -32,7 +33,7 @@
                                    "/path/to/script.bash") "config file ")))))
 
 (s/deftest unexpected
-  (with-redefs [main/log (fn [& _] :noconsole)
+  (with-redefs [io/log (fn [& _] :noconsole)
                 main/really-die (fn [& args] :dontdie)
                 proc/run (fn [& args] (throw
                                        (Exception.
@@ -50,7 +51,7 @@
 (s/deftest execution
   (testing "real execution all the way through"
     (let [email (atom [])]
-      (with-redefs [main/log (fn [& _] :noconsole)
+      (with-redefs [io/log (fn [& _] :noconsole)
                     email/send* (fn [& args]
                                   (swap! email concat args)
                                   ;; to satisfy schema

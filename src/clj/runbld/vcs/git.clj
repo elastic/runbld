@@ -7,7 +7,7 @@
             [environ.core :as environ]
             [runbld.util.data :refer [strip-trailing-slashes]]
             [runbld.util.date :as date]
-            [runbld.util.io :as io]
+            [runbld.io :as io]
             [runbld.vcs :as vcs :refer [VcsRepo]]
             [slingshot.slingshot :refer [throw+]]))
 
