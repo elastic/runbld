@@ -12,6 +12,7 @@
             [runbld.store :as store]
             [runbld.system :as system]
             [runbld.tests :as tests]
+            [runbld.util.io :as io]
             [runbld.vcs.middleware :as vcs]
             [runbld.version :as version]
             [schema.core :as s]
@@ -36,9 +37,6 @@
      ;; for tests when #'really-die is redefed
      msg*)))
 
-(defn log [& s]
-  (apply println s))
-
 (def run
   (-> #'proc/run
       vcs/wrap-vcs-info
@@ -52,18 +50,18 @@
 (defn -main [& args]
   (s/with-fn-validation
     (try+
-     (let [_ (log (version/string))
+     (let [_ (io/log (version/string))
            opts-init (assoc
                       (opts/parse-args args)
-                      :logger log)
-           _ (log ">>>>>>>>>>>> SCRIPT EXECUTION BEGIN >>>>>>>>>>>>")
+                      :logger io/log)
+           _ (io/log ">>>>>>>>>>>> SCRIPT EXECUTION BEGIN >>>>>>>>>>>>")
            {:keys [opts process-result]} (run opts-init)
-           _ (log "<<<<<<<<<<<< SCRIPT EXECUTION END   <<<<<<<<<<<<")
+           _ (io/log "<<<<<<<<<<<< SCRIPT EXECUTION END   <<<<<<<<<<<<")
            {:keys [took status exit-code out-bytes err-bytes]} process-result
-           _ (log (format "DURATION: %sms" took))
-           _ (log (format "STDOUT: %d bytes" out-bytes))
-           _ (log (format "STDERR: %d bytes" err-bytes))
-           _ (log (format "WRAPPED PROCESS: %s (%d)" status exit-code))
+           _ (io/log (format "DURATION: %sms" took))
+           _ (io/log (format "STDOUT: %d bytes" out-bytes))
+           _ (io/log (format "STDERR: %d bytes" err-bytes))
+           _ (io/log (format "WRAPPED PROCESS: %s (%d)" status exit-code))
            test-report (tests/report (-> opts :process :cwd))
            store-result (store/save! opts process-result test-report)
            email-result (email/maybe-send! opts (:addr store-result))

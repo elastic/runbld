@@ -10,7 +10,7 @@
 (def file-logger (agent nil))
 
 (defn log [& x]
-  (send-off logger (fn [_] (apply prn x))))
+  (send-off logger (fn [_] (apply println x))))
 
 (defn spit [f x & opts]
   (send-off file-logger
