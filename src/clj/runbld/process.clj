@@ -168,7 +168,9 @@
 
 (s/defn start-file-listener! :- [ManyToManyChannel]
   ([file]
-   (let [ch (chan 10)]
+   (start-file-listener! file 100))
+  ([file bufsize]
+   (let [ch (chan bufsize)]
      [ch (go-loop []
            (when-let [x (<! ch)]
              (io/spit file (str (json/encode x) "\n") :append true)
@@ -180,7 +182,9 @@
 
 (s/defn start-writer-listener! :- [ManyToManyChannel]
   ([wtr stream]
-   (let [ch (chan 10)]
+   (start-writer-listener! wtr stream 100))
+  ([wtr stream bufsize]
+   (let [ch (chan bufsize)]
      [ch (go-loop []
            (when-let [x (<! ch)]
              (when (= (name stream) (:stream x))
