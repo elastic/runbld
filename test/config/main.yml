@@ -3,6 +3,10 @@ es:
   failure-index: runbld-failure
   log-index: runbld-log
 
+process:
+  env:
+    RUNBLD_TEST: RUNBLD_TEST
+
 email:
   host: smtp.example.com
   port: 587

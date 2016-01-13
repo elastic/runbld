@@ -168,7 +168,9 @@
 
 (s/defn start-file-listener! :- [ManyToManyChannel]
   ([file]
-   (let [ch (chan 10)]
+   (start-file-listener! file 100))
+  ([file bufsize]
+   (let [ch (chan bufsize)]
      [ch (go-loop []
            (when-let [x (<! ch)]
              (io/spit file (str (json/encode x) "\n") :append true)
@@ -180,7 +182,9 @@
 
 (s/defn start-writer-listener! :- [ManyToManyChannel]
   ([wtr stream]
-   (let [ch (chan 10)]
+   (start-writer-listener! wtr stream 100))
+  ([wtr stream bufsize]
+   (let [ch (chan bufsize)]
      [ch (go-loop []
            (when-let [x (<! ch)]
              (when (= (name stream) (:stream x))
@@ -195,7 +199,7 @@
     cwd        :- s/Str
     outputfile :- s/Str
     es-opts    :- OptsElasticsearch
-    env        :- {s/Str s/Str}
+    env        :- Env
     log-extra  :- {s/Any s/Any}]
    (let [dir (io/abspath-file cwd)
          outputfile* (io/prepend-path dir outputfile)
@@ -232,5 +236,7 @@
     (-> opts :process :cwd)
     (-> opts :process :output)
     (-> opts :es)
-    {"JAVA_HOME" (-> opts :java :home)}
+    (merge
+     (-> opts :process :env)
+     {"JAVA_HOME" (-> opts :java :home)})
     {:build-id (-> opts :id)})})

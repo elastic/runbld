@@ -35,19 +35,23 @@
                      (-> (-> opts :es)
                          (assoc :bulk-timeout-ms 50)
                          (assoc :bulk-size 5))
-                     {"JAVA_HOME" (opts :java-home)}
+                     (merge
+                      (-> opts :process :env)
+                      {"JAVA_HOME" (opts :java-home)})
                      {:build-id build-id}))]
           #_(println (slurp output))
           #_(println (slurp master))
           (testing "test should produce output"
-            (is (= 10
+            (is (= 11
                    (count
                     (line-seq (io/reader master))))))
           (testing "check output.log"
             (let [lines (->> output io/reader line-seq (map json/decode))]
-              (is (= 11 (count lines)))
-              (is (= (range 1 12)
+              (is (= 12 (count lines)))
+              (is (= (range 1 13)
                      (->> lines
                           (map #(get-in % ["ord" "total"]))
                           sort)))))
-          (is (= 10 (store/count-logs opts "stdout" build-id))))))))
+          (is (= 11 (store/count-logs opts "stdout" build-id)))
+          (testing "env threading"
+            (is (.contains (slurp master) "RUNBLD_TEST"))))))))
