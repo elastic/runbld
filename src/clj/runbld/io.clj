@@ -1,4 +1,4 @@
-(ns runbld.util.io
+(ns runbld.io
   (:refer-clojure :exclude [spit])
   (:require [schema.core :as s])
   (:require [clojure.java.io :as jio]
@@ -46,11 +46,11 @@
 (defn prepend-path
   "An absolute path-safe combinator.
 
-    runbld.util.io> (prepend-path \"/tmp\" \"foo\")
+    runbld.io> (prepend-path \"/tmp\" \"foo\")
     \"/tmp/foo\"
-    runbld.util.io> (prepend-path \"/tmp\" \"/foo\")
+    runbld.io> (prepend-path \"/tmp\" \"/foo\")
     \"/foo\"
-    runbld.util.io>
+    runbld.io>
   "
   [dir basename]
   (if (.isAbsolute (file basename))

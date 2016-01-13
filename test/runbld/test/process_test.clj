@@ -7,7 +7,7 @@
             [runbld.process :as proc]
             [runbld.store :as store]
             [runbld.util.data :as data]
-            [runbld.util.io :as io] :reload-all))
+            [runbld.io :as io] :reload-all))
 
 (use-fixtures :once schema.test/validate-schemas)
 

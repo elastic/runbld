@@ -7,7 +7,7 @@
             [runbld.opts :as opts]
             [runbld.process :as proc]
             [runbld.store :as store]
-            [runbld.util.io :as io]
+            [runbld.io :as io]
             [runbld.vcs.git :as git]
             [runbld.version :as version])
   (:require [runbld.main :as main] :reload-all))

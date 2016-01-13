@@ -9,7 +9,7 @@
             [runbld.store :as store]
             [runbld.util.data :refer [deep-merge-with deep-merge]]
             [runbld.util.date :as date]
-            [runbld.util.io :as io]
+            [runbld.io :as io]
             [runbld.version :as version]))
 
 (def config-file-defaults

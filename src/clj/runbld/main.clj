@@ -12,7 +12,7 @@
             [runbld.store :as store]
             [runbld.system :as system]
             [runbld.tests :as tests]
-            [runbld.util.io :as io]
+            [runbld.io :as io]
             [runbld.vcs.middleware :as vcs]
             [runbld.version :as version]
             [schema.core :as s]

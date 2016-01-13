@@ -8,7 +8,7 @@
             [runbld.store :as store]
             [runbld.util.data :as data]
             [runbld.util.date :as date]
-            [runbld.util.io :as io])
+            [runbld.io :as io])
   (:import (clojure.core.async.impl.channels ManyToManyChannel)
            (clojure.lang Atom Ref)
            (java.io File InputStream)

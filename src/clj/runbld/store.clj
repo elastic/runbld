@@ -10,7 +10,7 @@
             [elasticsearch.connection :as conn]
             [elasticsearch.connection.http :as http]
             [runbld.util.date :as date]
-            [runbld.util.io :as io]
+            [runbld.io :as io]
             [runbld.vcs :refer [VcsRepo]]
             [slingshot.slingshot :refer [try+ throw+]])
   (:import (elasticsearch.connection Connection)))
