@@ -19,7 +19,9 @@
     :failure-index "failure"
     :log-index     "log"
     :http-opts {:insecure? false}
-    :max-index-bytes store/MAX_INDEX_BYTES}
+    :max-index-bytes store/MAX_INDEX_BYTES
+    :bulk-timeout-ms 2000
+    :bulk-size 500}
 
    :s3
    {:bucket "test.example.com"

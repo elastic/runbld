@@ -47,6 +47,8 @@
    :log-index-search     s/Str
    :log-index-write      s/Str
    :max-index-bytes      s/Num
+   :bulk-timeout-ms      s/Num
+   :bulk-size            s/Num
    :conn                 Connection
    (s/optional-key :http-opts) {s/Keyword s/Any}
    (s/optional-key :url)       s/Str})

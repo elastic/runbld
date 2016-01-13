@@ -2,12 +2,15 @@
   (:refer-clojure :exclude [get])
   (:require [runbld.schema :refer :all]
             [schema.core :as s])
-  (:require [clojure.string :as str]
+  (:require [clojure.core.async :as async
+             :refer [go go-loop chan >! <! alts! close!]]
+            [clojure.string :as str]
             [elasticsearch.document :as doc]
             [elasticsearch.indices :as indices]
             [elasticsearch.connection :as conn]
             [elasticsearch.connection.http :as http]
             [runbld.util.date :as date]
+            [runbld.util.io :as io]
             [runbld.vcs :refer [VcsRepo]]
             [slingshot.slingshot :refer [try+ throw+]])
   (:import (elasticsearch.connection Connection)))
@@ -175,6 +178,17 @@
                             :type (name DocType)
                             :body line})))
 
+(s/defn save-logs!
+  ([opts :- OptsElasticsearch
+    docs :- [StoredLogLine]]
+   (when (seq docs)
+     (let [make (fn [doc]
+                  {:index {:source doc}})
+           actions (map make docs)]
+       (doc/bulk (:conn opts) {:index (opts :log-index-write)
+                               :type (name DocType)
+                               :body actions})))))
+
 (s/defn after-log
   ([opts :- OptsElasticsearch]
    (indices/refresh (:conn opts) (opts :log-index-write))))
@@ -191,3 +205,44 @@
             [{:match {:build-id id}}
              {:match {:stream log-type}}]}}}})
        :count)))
+
+(s/defn make-bulk-logger
+  ([opts :- OptsElasticsearch]
+   (let [BUFSIZE (-> opts :bulk-size)
+         TIMEOUT_MS (-> opts :bulk-timeout-ms)
+         ch (chan BUFSIZE)
+         proc (go-loop [buf []]
+                (let [timed-out (async/timeout TIMEOUT_MS)
+                      [x select] (alts! [ch timed-out])
+                      newbuf
+                      (cond
+                        ;; got nil from the message chan, index buf,
+                        ;; then exit
+                        (and (nil? x) (= select ch))
+                        (do
+                          (save-logs! opts buf)
+                          :die)
+
+                        ;; have a value, and makes buf full
+                        (and (not (nil? x))
+                             (>= (inc (count buf)) BUFSIZE))
+                        (do (save-logs! opts (conj buf x))
+                            [])
+
+                        ;; have a value, buf still not full
+                        (and (not (nil? x))
+                             (< (inc (count buf)) BUFSIZE))
+                        (conj buf x)
+
+                        ;; timer expired, index what's there
+                        (and (= select timed-out)
+                             (seq buf))
+                        (do (save-logs! opts buf)
+                            [])
+
+                        ;; keep waiting
+                        :else
+                        buf)]
+                  (when (not= newbuf :die)
+                    (recur newbuf))))]
+     [ch proc])))

@@ -32,10 +32,13 @@
                      (-> opts :process :scriptfile)
                      (-> opts :process :cwd)
                      (-> opts :process :output)
-                     (-> opts :es)
+                     (-> (-> opts :es)
+                         (assoc :bulk-timeout-ms 50)
+                         (assoc :bulk-size 5))
                      {"JAVA_HOME" (opts :java-home)}
                      {:build-id build-id}))]
           #_(println (slurp output))
+          #_(println (slurp master))
           (testing "test should produce output"
             (is (= 10
                    (count

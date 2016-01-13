@@ -121,10 +121,7 @@
          multi (start-input-multiplexer! out listeners)
          exit-code (.waitFor proc)
          end (System/currentTimeMillis)
-         took (- end start)
-         ;; stop reader threads
-         ;; output-threads-done (doall (map <!! threads))
-         ]
+         took (- end start)]
      {:exit-code exit-code
       :millis-end end
       :millis-start start
@@ -171,7 +168,7 @@
 
 (s/defn start-file-listener! :- [ManyToManyChannel]
   ([file]
-   (let [ch (chan)]
+   (let [ch (chan 10)]
      [ch (go-loop []
            (when-let [x (<! ch)]
              (io/spit file (str (json/encode x) "\n") :append true)
@@ -179,15 +176,11 @@
 
 (s/defn start-es-listener! :- [ManyToManyChannel]
   ([es-opts]
-   (let [ch (chan)]
-     [ch (go-loop []
-           (when-let [x (<! ch)]
-             (store/save-log! es-opts x)
-             (recur)))])))
+   (store/make-bulk-logger es-opts)))
 
 (s/defn start-writer-listener! :- [ManyToManyChannel]
   ([wtr stream]
-   (let [ch (chan)]
+   (let [ch (chan 10)]
      [ch (go-loop []
            (when-let [x (<! ch)]
              (when (= (name stream) (:stream x))
