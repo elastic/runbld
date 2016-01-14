@@ -139,10 +139,11 @@
     result      :- ProcessResult
     test-report :- TestReport]
    (when (:report-has-tests test-report)
-     ((opts :logger) (format "SAVE %d FAILURES" (count
-                                                 (-> test-report
-                                                     :report
-                                                     :failed-testcases))))
+     ((opts :logger) (format "FAILURES: %d"
+                             (count
+                              (-> test-report
+                                  :report
+                                  :failed-testcases))))
      (save-failures! opts
                      (create-failure-docs opts result
                                           (-> test-report

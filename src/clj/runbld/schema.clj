@@ -406,5 +406,6 @@
    :process (merge StoredProcessResult
                    {:cmd s/Str
                     :args s/Str
-                    :took-human s/Str})
+                    :took-human s/Str
+                    :failed s/Bool})
    :test (s/maybe StoredTestSummary)})

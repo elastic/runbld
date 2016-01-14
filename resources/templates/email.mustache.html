@@ -3,12 +3,54 @@
 <h1>{{ process.status }}</h1>
 <h2><code><a href="{{vcs.project-url}}">{{ build.org }}/{{ build.project }}</a><br/>
 <a href="{{vcs.branch-url}}">{{ build.branch }}</a></code></h2>
+
+<h3>SUMMARY</h3>
+
+{{#process.failed}}
+
+{{^test.failed-testcases}}
+  <em>This build failed, but it did not produce any test output. This
+  likely means that an unknown error occurred in the harness or within
+  the build itself. Please visit
+  the <a href="{{build.console-url}}">console log</a> to see what
+  happened.</em>
+{{/test.failed-testcases}}
+
+{{#test.failed-testcases}}
+<p>Please direct your attention to the attached stacktraces associated
+  with some or all of these tests:</p>
+{{/test.failed-testcases}}
+
+{{#test.failed-testcases}}
+<code>{{class}} <b>{{test}}</b></code><br/>
+{{/test.failed-testcases}}
+
+{{/process.failed}}
+
+{{#test}}
+<p><code>
+{{#process.failed}}
+    <b>FAILED:  {{ test.failures }}</b><br/>
+    <b>ERROR:   {{ test.errors }}</b><br/>
+{{/process.failed}}
+{{^process.failed}}
+    FAILED:  {{ test.failures }}<br/>
+    ERROR:   {{ test.errors }}<br/>
+{{/process.failed}}
+    SKIPPED:    {{ test.skipped }}<br/>
+    TOTAL:      {{ test.tests }}
+</code></p>
+{{/test}}
+
+<h3>BUILD INFO</h3>
+
 <table>
 <tr><td><code>Build</code></td><td><code>{{ id }}</code></td></tr>
 <tr><td><code>Log</code></td><td><code>{{ build.console-url }}</code></td></tr>
 <tr><td><code>Duration</code></td><td><code>{{ process.took-human }} ({{ process.took }}ms)</code></td></tr>
 <tr><td><code>Started</code></td><td><code>{{ process.time-start }}</code></td></tr>
 <tr><td><code>Ended</code></td><td><code>{{ process.time-end }}</code></td></tr>
+<tr><td><code>Exit Code</code></td><td><code>{{ process.exit-code }}</code></td></tr>
 <tr><td><code>Host</code></td><td><code>{{ sys.hostname }} (up {{ sys.uptime }})</code></td></tr>
 <tr><td><code>OS</code></td><td><code>{{ sys.os }} {{ sys.os-version }}, {{ sys.kernel-name }} {{ sys.kernel-release }}</code></td></tr>
 <tr><td><code>Specs</code></td><td><code>{{ sys.cpus }} CPUs, {{ sys.ram-gb }}GB RAM</code></td></tr>
@@ -18,6 +60,8 @@
 <tr><td><code>java.runtime.version</td><td><code>{{ java.runtime.version }}</code></td></tr>
 <tr><td><code>java.home</td><td><code>{{ java.home }}</code></td></tr>
 </table>
+
+
 <p></p>
 <div style="background-color:#eec;padding:1px 15px">
 <pre>branch <a href="{{vcs.branch-url}}">{{ build.branch }}</a>
@@ -28,27 +72,11 @@ Date: {{ vcs.commit-time }}
 {{ vcs.message }}</pre>
 </div>
 
-<h3>BUILD (<a href="{{ build.console-url }}">log</a>)</h3>
-<p><code>Exited: {{ process.exit-code }}</code></p>
+<h3>PROCESS SOURCE</h3>
 <div style="background-color:#cee;padding:1px 15px">
 <pre>{{ process.cmd-source }}</pre>
 </div>
 
-{{#test}}
-<h3>SUMMARY</h3>
-<table>
-<tr><td>Tests RUN</td><td>{{ test.tests }}</td></tr>
-<tr><td>Tests FAILED</td><td>{{ test.failures }}</td></tr>
-<tr><td>Tests with ERRORs</td><td>{{ test.errors }}</td></tr>
-<tr><td>Tests SKIPPED</td><td>{{ test.skipped }}</td></tr>
-</table>
-
-<ul>
-{{#test.failed-testcases}}
-<li>{{summary}}</li>
-{{/test.failed-testcases}}
-</ul>
-{{/test}}
 
 <!--
 <h3>STDERR</h3>
