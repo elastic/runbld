@@ -25,6 +25,7 @@
                    commons-codec
                    ]]
                  [com.fzakaria/slf4j-timbre "0.2.1"]
+                 [com.palletops/thread-expr "1.3.0"]
                  [com.taoensso/timbre "4.1.4"]
                  [elastic/elasticsearch-clojure "0.99.1"
                   :exclusions [prismatic/schema]]

@@ -16,6 +16,7 @@ java.version         {{ java.version }}
 java.vm.name         {{ java.vm.name }}
 java.vm.version      {{ java.vm.version }}
 java.runtime.version {{ java.runtime.version }}
+java.home            {{ java.home }}
 ===============
 
 
