@@ -26,19 +26,11 @@
       (with-open [out (java.io.PrintWriter. master)]
         (let [res (binding [*out* out
                             *err* (java.io.StringWriter.)]
-                    (proc/exec-with-capture
-                     (-> opts :process :program)
-                     (-> opts :process :args)
-                     (-> opts :process :scriptfile)
-                     (-> opts :process :cwd)
-                     (-> opts :process :output)
-                     (-> (-> opts :es)
-                         (assoc :bulk-timeout-ms 50)
-                         (assoc :bulk-size 5))
-                     (merge
-                      (-> opts :process :env)
-                      {"JAVA_HOME" (opts :java-home)})
-                     {:build-id build-id}))]
+                    (proc/run
+                      (-> opts
+                          (assoc-in [:id] build-id)
+                          (assoc-in [:es :bulk-timeout-ms] 50)
+                          (assoc-in [:es :bulk-size] 5))))]
           #_(println (slurp output))
           #_(println (slurp master))
           (testing "test should produce output"

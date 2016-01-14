@@ -11,7 +11,7 @@
    :hash   s/Str})
 
 (def Env
-  {(s/cond-pre s/Keyword s/Str) s/Str})
+  {s/Keyword s/Str})
 
 (def OptsEmail
   {:from               s/Str
@@ -35,6 +35,7 @@
    :cwd               s/Str
    :scriptfile        s/Str
    :inherit-exit-code s/Bool
+   :inherit-env       s/Bool
    :stdout            s/Str
    :stderr            s/Str
    :output            s/Str
@@ -65,14 +66,14 @@
 
 (def Opts
   {:job-name   s/Str
-   (s/optional-key :java-home)  (s/maybe s/Str)
    :version    VersionInfo
    :configfile (s/maybe s/Str)
    :email      OptsEmail
    :es         OptsElasticsearch
    :process    OptsProcess
    :s3         OptsS3
-   :java       OptsJava})
+   :java       OptsJava
+   :env        Env})
 
 (def BuildSystem
   {:arch                   s/Str

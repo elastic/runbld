@@ -6,6 +6,8 @@
             [clojure.string :as str]
             [clojure.tools.cli :as cli]
             [environ.core :as environ]
+            [runbld.env :as env]
+            [runbld.java :as java]
             [runbld.store :as store]
             [runbld.util.data :refer [deep-merge-with deep-merge]]
             [runbld.util.date :as date]
@@ -35,6 +37,7 @@
 
    :process
    {:inherit-exit-code true
+    :inherit-env       false
     :cwd (System/getProperty "user.dir")
     :stdout ".stdout.log"
     :stderr ".stderr.log"
@@ -120,8 +123,7 @@
    ["-j" "--job-name JOBNAME" (str "Job name: org,project,branch,etc "
                                    "also read from $JOB_NAME")
     :default (environ/env :job-name)]
-   [nil "--java-home PATH" "If different from JAVA_HOME"
-    :default (System/getenv "JAVA_HOME")]
+   [nil "--java-home PATH" "If different from JAVA_HOME"]
    ["-p" "--program PROGRAM" "Program that will run the scriptfile"
     :default "bash"]
    ["-a" "--args ARGS" "Args to pass PROGRAM"
@@ -186,13 +188,25 @@
                 :msg "must set -j or $JOB_NAME"}))
 
      (let [options (assemble-all-opts
-                    (normalize options))]
-       (merge options
+                    (normalize options))
+           process-env (merge
+                        (when (-> options :process :inherit-env)
+                          (env/get-env))
+                        (-> options :process :env)
+                        (when-let [home (or
+                                         (options :java-home)
+                                         (env/get-env "JAVA_HOME")
+                                         (-> options :process :env :JAVA_HOME)
+                                         (java/java-home))]
+                          {:JAVA_HOME home}))]
+       (merge (dissoc options :java-home)
               {:es (set-up-es (:es options))
+               :env (env/get-env)
                :process (-> (:process options)
                             ;; Invariant: Jenkins passes it in through arguments
                             (assoc :scriptfile (first arguments))
                             ;; Go ahead and resolve
-                            (update :cwd (comp str io/abspath-file)))
+                            (update :cwd (comp str io/abspath-file))
+                            (assoc :env process-env))
                :version {:string (version/version)
                          :hash (version/build)}})))))
