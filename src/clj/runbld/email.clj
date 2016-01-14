@@ -3,12 +3,12 @@
   (:require [runbld.schema :refer :all]
             [schema.core :as s])
   (:require [clojure.string :as str]
+            [pallet.thread-expr :refer [when->]]
             [postal.core :as mail]
             [runbld.store :as store]
             [runbld.util.date :as date]
             [runbld.io :as io]
             [runbld.vcs :as vcs]
-            [schema.core :as s]
             [stencil.core :as mustache]))
 
 (defn split-addr [s]
@@ -130,7 +130,13 @@
                          (-> build :build :org-project-branch)
                          (-> build :vcs :commit-short)))
        (update-in [:version :hash]
-                  #(->> % (take 7) (apply str))))))
+                  #(->> % (take 7) (apply str)))
+       (assoc-in [:process :failed]
+                 (= "FAILURE" (-> build :process :status)))
+       (when-> (:test build)
+         (update-in [:test :failed-testcases] (partial take 10))
+         (update-in [:test :failed-testcases] (partial sort-by :class))
+         (update-in [:test :failed-testcases] (partial sort-by :test))))))
 
 (s/defn send? :- s/Bool
   [build :- StoredBuild]
@@ -141,5 +147,6 @@
   (let [build-doc (store/get (-> opts :es :conn) addr)
         failure-docs (store/get-failures opts (:id build-doc))]
     (if (send? build-doc)
-      (send opts (make-context opts build-doc) failure-docs)
+      (let [ctx (make-context opts build-doc)]
+        (send opts ctx failure-docs))
       ((opts :logger) "NO MAIL GENERATED"))))
