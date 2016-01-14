@@ -86,12 +86,13 @@
 
 (s/defn readlink
   [path :- s/Str]
-  (-> path
-      file
-      .toPath
-      (.toRealPath
-       (into-array java.nio.file.LinkOption []))
-      str))
+  (when path
+    (-> path
+        file
+        .toPath
+        (.toRealPath
+         (into-array java.nio.file.LinkOption []))
+        str)))
 
 (s/defn resolve-binary :- s/Str
   [name :- s/Str]

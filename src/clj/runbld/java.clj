@@ -13,7 +13,6 @@
         (require 'clojure.pprint)
         (require '[clojure.string :as str])
         (let [ks ["java.class.path"
-                  "java.home"
                   "java.runtime.name"
                   "java.runtime.version"
                   "java.vendor"
@@ -30,15 +29,17 @@
             f {} (select-keys
                   (into (sorted-map) (System/getProperties)) ks))))))))
 
-(defn no-jre-path [path]
+(defn remove-jre [path]
   (when path
-    (if (.endsWith path "/jre")
-      (str/replace path #"^(.*)/jre$" "$1")
+    (if (or (.endsWith path "/jre")
+            (.contains path "/jre/"))
+      (str/replace path #"^(.*)/jre(/.+)?$" "$1$2")
       path)))
 
 (defn java-home
   ([]
-   (java-home "java"))
+   (or (java-home "javac") ;; for JDK
+       (java-home "java")))
   ([java-bin]
    (-> (io/resolve-binary java-bin)
        io/file
@@ -46,28 +47,23 @@
        io/file
        .getParent)))
 
-(defn java-home-java [java-home allow-jre]
-  (when-let [jh (if allow-jre java-home (no-jre-path java-home))]
-    (str (io/file jh "bin/java"))))
-
-(defn find-java [opts]
-  (or (java-home-java (:java-home opts) (-> opts :java :allow-jre))
-      (io/which "java")
-      (throw+ {:error ::no-java
-               :msg "can't find a java binary"})))
+(defn java-home-java
+  ([]
+   (java-home-java (java-home)))
+  ([path]
+   (when path
+     (str (io/file path "bin/java")))))
 
 (defn jvm-facts [opts]
   (io/with-tmp-source [clj (source)]
     (let [classpath (System/getProperty "java.class.path")
-          java-bin (find-java opts)
-          cmd [java-bin "-cp" classpath "clojure.main" (str clj)]
-          facts (clojure.edn/read-string
-                 (:out (apply io/run cmd)))]
-      ;; have to check jre again because of what actually gets
-      ;; returned in the java.home property
-      (if (-> opts :java :allow-jre)
-        facts
-        (update-in facts [:java :home] no-jre-path)))))
+          java-home (-> opts :process :env :JAVA_HOME)
+          java-bin (java-home-java java-home)
+          cmd [java-bin "-cp" classpath "clojure.main" (str clj)]]
+      (when (io/resolve-binary java-bin)
+        (let [facts (clojure.edn/read-string
+                     (:out (apply io/run cmd)))]
+          (assoc-in facts [:java :home] java-home))))))
 
 (s/defn wrap-java
   [proc]
