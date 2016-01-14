@@ -1,8 +1,14 @@
 (ns runbld.env
-  (:require [runbld.schema :refer :all]
+  (:require [clojure.walk]
+            [runbld.schema :refer :all]
             [schema.core :as s]))
 
-(s/defn wrap-env :- OptsWithEnv
-  [proc :- clojure.lang.IFn]
-  (fn [opts]
-    (proc (assoc opts :env (into {} (System/getenv))))))
+(def get-env
+  (memoize
+   (fn
+     ([]
+      (clojure.walk/keywordize-keys
+       (into {} (System/getenv))))
+     ([k]
+      ((get-env) k)))))
+

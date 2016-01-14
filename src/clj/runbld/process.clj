@@ -5,6 +5,7 @@
             [clojure.core.async :as async
              :refer [thread go go-loop chan
                      >! <! >!! <!! alts! alts!! close!]]
+            [runbld.env :as env]
             [runbld.store :as store]
             [runbld.util.data :as data]
             [runbld.util.date :as date]
@@ -60,6 +61,7 @@
 
 (s/defn add-env! :- nil
   [pbenv newenv]
+  (.clear pbenv)
   (doseq [[k v] newenv]
     (.put pbenv (name k) v)))
 
@@ -224,9 +226,15 @@
        :err-bytes err-bytes
        :total-bytes total-bytes}))))
 
-(s/defn run :- {(s/required-key :opts) MainOpts
-                (s/required-key :process-result) ProcessResult}
-  [opts :- MainOpts]
+(def RunOpts
+  {:process OptsProcess
+   :es      OptsElasticsearch
+   :id      s/Str
+   s/Any    s/Any})
+
+(s/defn run :- {:opts RunOpts
+                :process-result ProcessResult}
+  [opts :- RunOpts]
   {:opts opts
    :process-result
    (exec-with-capture
@@ -236,7 +244,5 @@
     (-> opts :process :cwd)
     (-> opts :process :output)
     (-> opts :es)
-    (merge
-     (-> opts :process :env)
-     {"JAVA_HOME" (-> opts :java :home)})
+    (-> opts :process :env)
     {:build-id (-> opts :id)})})

@@ -13,6 +13,10 @@ email:
   template-txt: test/templates/default.mustache
   template-html: templates/email.mustache.html
 
+process:
+  env:
+    JAVA_HOME: /path/to/jdk/from/config.yml
+
 # any matches will be merged in order with top-level sections
 profiles:
   - "^test,.*":
