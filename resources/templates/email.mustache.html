@@ -4,14 +4,14 @@
 <h2><code><a href="{{vcs.project-url}}">{{ build.org }}/{{ build.project }}</a><br/>
 <a href="{{vcs.branch-url}}">{{ build.branch }}</a></code></h2>
 <table>
-<tr><td>Build</td><td><code>{{ id }}</code></td></tr>
-<tr><td>Log</td><td><code>{{ build.console-url }}</code></td></tr>
-<tr><td>Duration</td><td><code>{{ process.took-human }} ({{ process.took }}ms)</code></td></tr>
-<tr><td>Started</td><td><code>{{ process.time-start }}</code></td></tr>
-<tr><td>Ended</td><td><code>{{ process.time-end }}</code></td></tr>
-<tr><td>Host</td><td><code>{{ sys.hostname }} (up {{ sys.uptime }})</code></td></tr>
-<tr><td>OS</td><td><code>{{ sys.os }} {{ sys.os-version }}, {{ sys.kernel-name }} {{ sys.kernel-release }}</code></td></tr>
-<tr><td>Specs</td><td><code>{{ sys.cpus }} CPUs, {{ sys.ram-gb }}GB RAM</code></td></tr>
+<tr><td><code>Build</code></td><td><code>{{ id }}</code></td></tr>
+<tr><td><code>Log</code></td><td><code>{{ build.console-url }}</code></td></tr>
+<tr><td><code>Duration</code></td><td><code>{{ process.took-human }} ({{ process.took }}ms)</code></td></tr>
+<tr><td><code>Started</code></td><td><code>{{ process.time-start }}</code></td></tr>
+<tr><td><code>Ended</code></td><td><code>{{ process.time-end }}</code></td></tr>
+<tr><td><code>Host</code></td><td><code>{{ sys.hostname }} (up {{ sys.uptime }})</code></td></tr>
+<tr><td><code>OS</code></td><td><code>{{ sys.os }} {{ sys.os-version }}, {{ sys.kernel-name }} {{ sys.kernel-release }}</code></td></tr>
+<tr><td><code>Specs</code></td><td><code>{{ sys.cpus }} CPUs, {{ sys.ram-gb }}GB RAM</code></td></tr>
 <tr><td><code>java.version</td><td><code>{{ java.version }}</code></td></tr>
 <tr><td><code>java.vm.name</td><td><code>{{ java.vm.name }}</code></td></tr>
 <tr><td><code>java.vm.version</td><td><code>{{ java.vm.version }}</code></td></tr>
