@@ -8,18 +8,18 @@
 (defrecord JenkinsScheduler [opts]
   Scheduler
   (build-url [this]
-    (get-in (.opts this) [:env "BUILD_URL"]))
+    (get-in (.opts this) [:env :BUILD_URL]))
   (console-url [this]
     (format "%s/console" (strip-trailing-slashes
                           (scheduler/build-url this))))
   (tags [this]
     (str/split
-     (get-in (.opts this) [:env "NODE_LABELS"]) #" "))
+     (get-in (.opts this) [:env :NODE_LABELS]) #" "))
   (extra-info [this]
     (let [opts (.opts this)]
-      {:number   (get-in opts [:env "BUILD_NUMBER"])
-       :executor (get-in opts [:env "EXECUTOR_NUMBER"])
-       :node     (get-in opts [:env "NODE_NAME"])}))
+      {:number   (get-in opts [:env :BUILD_NUMBER])
+       :executor (get-in opts [:env :EXECUTOR_NUMBER])
+       :node     (get-in opts [:env :NODE_NAME])}))
   (provider [_] :jenkins)
   (as-map [this]
     (merge

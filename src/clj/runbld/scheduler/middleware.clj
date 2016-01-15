@@ -11,12 +11,12 @@
   (cond
     (not
      (nil?
-      (get-in opts [:env "JENKINS_HOME"]))) (jenkins/make opts)
+      (get-in opts [:env :JENKINS_HOME]))) (jenkins/make opts)
 
     :else (default/make opts)))
 
 (s/defn wrap-scheduler :- OptsWithScheduler
- [proc]
+  [proc]
   (fn [opts]
     (proc
      (assoc opts :scheduler (make-scheduler opts)))))
