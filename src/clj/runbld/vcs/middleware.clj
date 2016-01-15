@@ -20,10 +20,10 @@
 
       (.isDirectory
        (io/file cwd ".svn")) (svn/make-repo
-                              (get-in opts [:env "SVN_URL"])
+                              (get-in opts [:env :SVN_URL])
                               (get-in opts [:build :org])
                               (get-in opts [:build :project])
-                              (get-in opts [:env "SVN_REVISION"]))
+                              (get-in opts [:env :SVN_REVISION]))
 
       :else (throw
              (Exception.
