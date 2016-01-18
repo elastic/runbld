@@ -46,47 +46,46 @@
 
 ;; -main :: IO ()
 (defn -main [& args]
-  (s/with-fn-validation
-    (try+
-     (let [_ (io/log (version/string))
-           opts-init (assoc
-                      (opts/parse-args args)
-                      :logger io/log)
-           _ (io/log ">>>>>>>>>>>> SCRIPT EXECUTION BEGIN >>>>>>>>>>>>")
-           {:keys [opts process-result]} (run opts-init)
-           _ (io/log "<<<<<<<<<<<< SCRIPT EXECUTION END   <<<<<<<<<<<<")
-           {:keys [took status exit-code out-bytes err-bytes]} process-result
-           _ (io/log (format "DURATION: %sms" took))
-           _ (io/log (format "STDOUT: %d bytes" out-bytes))
-           _ (io/log (format "STDERR: %d bytes" err-bytes))
-           _ (io/log (format "WRAPPED PROCESS: %s (%d)" status exit-code))
-           test-report (tests/report (-> opts :process :cwd))
-           store-result (store/save! opts process-result test-report)
-           email-result (email/maybe-send! opts (:addr store-result))
-           ]
+  (try+
+   (let [_ (io/log (version/string))
+         opts-init (assoc
+                    (opts/parse-args args)
+                    :logger io/log)
+         _ (io/log ">>>>>>>>>>>> SCRIPT EXECUTION BEGIN >>>>>>>>>>>>")
+         {:keys [opts process-result]} (run opts-init)
+         _ (io/log "<<<<<<<<<<<< SCRIPT EXECUTION END   <<<<<<<<<<<<")
+         {:keys [took status exit-code out-bytes err-bytes]} process-result
+         _ (io/log (format "DURATION: %sms" took))
+         _ (io/log (format "STDOUT: %d bytes" out-bytes))
+         _ (io/log (format "STDERR: %d bytes" err-bytes))
+         _ (io/log (format "WRAPPED PROCESS: %s (%d)" status exit-code))
+         test-report (tests/report (-> opts :process :cwd))
+         store-result (store/save! opts process-result test-report)
+         email-result (email/maybe-send! opts (:addr store-result))
+         ]
 
-       (if (environ/env :dev)
-         (assoc process-result
-                :store-result store-result
-                :email-result email-result)
-         (if (-> opts :process :inherit-exit-code)
-           (die (-> store-result :build-doc :process :exit-code))
-           (die 0))))
+     (if (environ/env :dev)
+       (assoc process-result
+              :store-result store-result
+              :email-result email-result)
+       (if (-> opts :process :inherit-exit-code)
+         (die (-> store-result :build-doc :process :exit-code))
+         (die 0))))
 
-     (catch [:error :runbld.main/errors] {:keys [errors msg]}
-       (die 3 msg))
+   (catch [:error :runbld.main/errors] {:keys [errors msg]}
+     (die 3 msg))
 
-     (catch [:error :runbld.opts/parse-error] {:keys [msg]}
-       (die 2 msg))
+   (catch [:error :runbld.opts/parse-error] {:keys [msg]}
+     (die 2 msg))
 
-     (catch [:error :runbld.opts/file-not-found] {:keys [msg]}
-       (die 2 msg))
+   (catch [:error :runbld.opts/file-not-found] {:keys [msg]}
+     (die 2 msg))
 
-     (catch [:help :runbld.opts/version] {:keys [msg]}
-       (die 0 msg))
+   (catch [:help :runbld.opts/version] {:keys [msg]}
+     (die 0 msg))
 
-     (catch [:help :runbld.opts/usage] {:keys [msg]}
-       (die 0 msg))
+   (catch [:help :runbld.opts/usage] {:keys [msg]}
+     (die 0 msg))
 
-     (catch Exception e
-       (die 1 e)))))
+   (catch Exception e
+     (die 1 e))))
