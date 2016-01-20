@@ -90,7 +90,7 @@
    :fs-bytes-used          s/Num
    :fs-percent-free        s/Num
    :fs-percent-used        s/Num
-   :hosting-provider       s/Str
+   :provider               s/Str
    :hostname               s/Str
    (s/optional-key :image-id) s/Str
    (s/optional-key :instance-id) s/Str
@@ -294,7 +294,7 @@
              :cpus            m/long
              :cpus-physical   m/long
              :datacenter      m/not-analyzed
-             :hosting-provider m/not-analyzed
+             :provider        m/not-analyzed
              :hostname        m/not-analyzed
              :facter-provider m/not-analyzed
              :facter-version  m/not-analyzed

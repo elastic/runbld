@@ -47,13 +47,13 @@
 ;; -main :: IO ()
 (defn -main [& args]
   (try+
-   (let [_ (io/log (version/string))
-         opts-init (assoc
+   (let [opts-init (assoc
                     (opts/parse-args args)
                     :logger io/log)
+         _ (io/log (version/string))
          _ (io/log ">>>>>>>>>>>> SCRIPT EXECUTION BEGIN >>>>>>>>>>>>")
          {:keys [opts process-result]} (run opts-init)
-         _ (io/log "<<<<<<<<<<<< SCRIPT EXECUTION END   <<<<<<<<<<<<")
+         _ (io/log "<<<<<<<<<<<< SCRIPT EXECUTION END <<<<<<<<<<<<")
          {:keys [took status exit-code out-bytes err-bytes]} process-result
          _ (io/log (format "DURATION: %sms" took))
          _ (io/log (format "STDOUT: %d bytes" out-bytes))
@@ -86,6 +86,12 @@
 
    (catch [:help :runbld.opts/usage] {:keys [msg]}
      (die 0 msg))
+
+   (catch [:help :runbld.opts/system] {:keys [msg]}
+     (die 0 (with-out-str
+              (clojure.pprint/pprint
+               (into (sorted-map)
+                     (system/inspect-system "."))))))
 
    (catch Exception e
      (die 1 e))))

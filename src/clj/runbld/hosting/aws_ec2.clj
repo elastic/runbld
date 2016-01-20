@@ -5,37 +5,43 @@
   (:require [clj-http.client :as http]
             [runbld.hosting :refer [HostingProvider] :as hosting]))
 
-(s/defn region-name
+(s/defn region-name :- s/Str
   "Given us-east-1c, we want us-east-1."
-  ([az]
-   (when-let [[_ reg _] (re-find #"(.+-.+-[0-9]+)([a-z]+)" az)]
-     reg)))
+  ([az :- s/Str]
+   (when az
+     (when-let [[_ reg _] (re-find #"(.+-.+-[0-9]+)([a-z]+)" az)]
+       reg))))
 
-(s/defn this-host?
+(s/defn ec2-meta
+  ([]
+   (ec2-meta "/"))
+  ([postfix]
+   (try+
+    (:body
+     (http/get (str "http://169.254.169.254/latest/meta-data" postfix)
+               {:socket-timeout 500 :conn-timeout 500}))
+    (catch org.apache.http.conn.ConnectTimeoutException e))))
+
+(s/defn this-host? :- s/Bool
   "Is this host in AWS EC2?"
   ([]
-   (if-let [res (try+
-                 (http/get "http://169.254.169.254/latest/meta-data/"
-                           {:socket-timeout 500 :conn-timeout 500})
-                 (catch org.apache.http.conn.ConnectTimeoutException e
-                   false))]
-     (boolean res))))
+   (boolean (ec2-meta))))
 
 (defrecord AwsEc2Hosting [facts]
   HostingProvider
   (datacenter    [x]
-    (-> x .facts :ec2_metadata :placement :availability-zone))
+    (ec2-meta "/placement/availability-zone"))
 
   (image-id      [x]
-    (-> x .facts :ec2_metadata :image-id))
+    (ec2-meta "/ami-id"))
 
   (instance-id   [x]
-    (-> x .facts :ec2_metadata :instance-id))
+    (ec2-meta "/instance-id"))
 
   (instance-type [x]
-    (-> x .facts :ec2_metadata :instance-type))
+    (ec2-meta "/instance-type"))
 
-  (hosting-provider [x]
+  (provider [x]
     "aws-ec2")
 
   (region        [x]

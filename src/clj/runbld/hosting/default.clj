@@ -14,7 +14,7 @@
 
   (instance-type [_])
 
-  (hosting-provider [_]
+  (provider [_]
     "default")
 
   (region        [_]))

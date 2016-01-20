@@ -3,7 +3,8 @@
 
 (defn build []
   (if-let [b (io/resource "build.txt")]
-    (.trim (slurp b))))
+    (.trim (slurp b))
+    "NOBUILD" #_"For fresh tests"))
 
 (defn version []
   (.trim (slurp (io/resource "version.txt"))))

@@ -40,7 +40,7 @@
 
   (instance-type [_])
 
-  (hosting-provider [_]
+  (provider [_]
     "hetzner")
 
   (region [_]))
