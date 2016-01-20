@@ -36,7 +36,8 @@
           (testing "test should produce output"
             (is (= 11
                    (count
-                    (line-seq (io/reader master))))))
+                    (line-seq (io/reader master))))
+                (slurp master)))
           (testing "check output.log"
             (let [lines (->> output io/reader line-seq (map json/decode))]
               (is (= 12 (count lines)))

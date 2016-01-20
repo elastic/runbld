@@ -80,6 +80,7 @@
    (s/optional-key :cpu-type) s/Str
    :cpus                   s/Num
    (s/optional-key :cpus-physical) s/Num
+   (s/optional-key :datacenter) s/Str
    :facter-provider        s/Str
    :facter-version         s/Str
    :fs-mountpoint          s/Str
@@ -89,7 +90,11 @@
    :fs-bytes-used          s/Num
    :fs-percent-free        s/Num
    :fs-percent-used        s/Num
+   :hosting-provider       s/Str
    :hostname               s/Str
+   (s/optional-key :image-id) s/Str
+   (s/optional-key :instance-id) s/Str
+   (s/optional-key :instance-type) s/Str
    :ip4                    s/Str
    (s/optional-key :ip6)   s/Str
    :kernel-name            s/Str
@@ -101,6 +106,7 @@
    :ram-mb                 s/Num
    :ram-gb                 s/Num
    (s/optional-key :ram-bytes) s/Num
+   (s/optional-key :region) s/Str
    :timezone               s/Str
    :uptime                 s/Str
    :uptime-days            s/Num
@@ -287,9 +293,21 @@
              :cpu-type        m/multi-string
              :cpus            m/long
              :cpus-physical   m/long
+             :datacenter      m/not-analyzed
+             :hosting-provider m/not-analyzed
              :hostname        m/not-analyzed
              :facter-provider m/not-analyzed
              :facter-version  m/not-analyzed
+             :fs-mountpoint   m/not-analyzed
+             :fs-type         m/not-analyzed
+             :fs-bytes-total  m/long
+             :fs-bytes-free   m/long
+             :fs-bytes-used   m/long
+             :fs-percent-free m/double
+             :fs-percent-used m/double
+             :image-id        m/not-analyzed
+             :instance-id     m/not-analyzed
+             :instance-type   m/not-analyzed
              :ip4             m/not-analyzed
              :ip6             m/not-analyzed
              :kernel-name     m/not-analyzed
@@ -300,6 +318,7 @@
              :os-version      m/not-analyzed
              :ram-mb          m/double
              :ram-gb          m/double
+             :region          m/not-analyzed
              :timezone        m/not-analyzed
              :uptime          m/analyzed
              :uptime-days     m/long

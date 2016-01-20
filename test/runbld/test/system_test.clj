@@ -11,6 +11,4 @@
 (deftest basic
   ;; schema does most of the work here, just want to see if it returns
   ;; a map that matches it
-  (is (system/inspect-system
-       (facter/make-facter)
-       (fs/make-fs "."))))
+  (is (system/inspect-system {:process {:cwd "."}})))
