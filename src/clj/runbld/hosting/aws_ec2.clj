@@ -17,8 +17,9 @@
    (ec2-meta "/"))
   ([postfix]
    (try+
-    (http/get (str "http://169.254.169.254/latest/meta-data" postfix)
-              {:socket-timeout 500 :conn-timeout 500})
+    (:body
+     (http/get (str "http://169.254.169.254/latest/meta-data" postfix)
+               {:socket-timeout 500 :conn-timeout 500}))
     (catch org.apache.http.conn.ConnectTimeoutException e))))
 
 (s/defn this-host? :- s/Bool
