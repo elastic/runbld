@@ -26,7 +26,9 @@
   (uptime-days     [_])
   (uptime-secs     [_])
   (uptime          [_])
-  (virtual         [_]))
+  (virtual         [_])
+
+  (raw             [_]))
 
 (s/defn ram-mb-from-slash-proc :- s/Num
   [facts :- {s/Keyword s/Any}]
