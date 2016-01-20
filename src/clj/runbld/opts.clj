@@ -129,6 +129,7 @@
    ["-a" "--args ARGS" "Args to pass PROGRAM"
     :default ["-x"]
     :parse-fn #(str/split % #" ")]
+   [nil "--system-info" "Just dump facts output"]
    ["-h" "--help" "Help me"]])
 
 (s/defn set-up-es [{:keys [url
@@ -167,6 +168,9 @@
      (when (:help options)
        (throw+ {:help ::usage
                 :msg summary}))
+
+     (when (:system-info options)
+       (throw+ {:help ::system}))
 
      (when (pos? (count errors))
        (throw+ {:error ::parse-error

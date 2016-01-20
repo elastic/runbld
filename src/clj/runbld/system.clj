@@ -66,18 +66,19 @@
      :image-id
      :instance-id
      :instance-type
-     :hosting-provider
+     :provider
      :region])))
 
 (s/defn inspect-system :- BuildSystem
-  ([opts]
+  ([cwd]
    (let [facter (facter/make-facter)]
      (merge
       (make-facts facter)
-      (make-fs (-> opts :process :cwd))
+      (make-fs cwd)
       (make-hosting facter)))))
 
 (s/defn wrap-system :- OptsWithSys
   [proc :- clojure.lang.IFn]
   (fn [opts]
-    (proc (assoc opts :sys (inspect-system opts)))))
+    (proc (assoc opts :sys (inspect-system
+                            (-> opts :process :cwd))))))
