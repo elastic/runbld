@@ -72,7 +72,7 @@
 
 (def not-analyzed
   {:type :string
-   :index "not_analyzed"})
+   :index :not_analyzed})
 
 (def analyzed
   {:type :string})
@@ -90,10 +90,11 @@
   {:type :date})
 
 (def multi-string
-  {:type :string
-   :fields {:analyzed
-            {:type :string
-             :index :analyzed}}})
+  (merge
+   not-analyzed
+   {:fields {:analyzed
+             {:type :string
+              :index :analyzed}}}))
 
 (def classpath-analyzer
   {:classpath
