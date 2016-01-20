@@ -3,51 +3,24 @@
             [schema.core :as s]
             [slingshot.slingshot :refer [throw+]])
   (:require [clj-yaml.core :as yaml]
-            [runbld.facts :as facts]
-            [runbld.facts.facter1]
-            [runbld.facts.facter2]
-            [runbld.facts.facter3]
+            [runbld.facts.factory :as facter]
+            [runbld.fs.factory :as fs]
+            [runbld.hosting.factory :as hosting]
             [runbld.io :as io]))
 
-(def facter-program
-  "facter")
-
-(defn facter-installed? []
-  (let [{:keys [exit]} (io/run "which" facter-program)]
-    (zero? exit)))
-
-(defn facter-version []
-  (when (facter-installed?)
-    (let [version-string (:out (io/run facter-program "--version"))
-          [_ maj minor patch] (re-find #"(\d+)\.(\d+)\.(\d+).*"
-                                       (.trim version-string))]
-      (if (and maj minor patch)
-        (zipmap
-         [:major :minor :patch]
-         (map #(Integer/parseInt %) [maj minor patch]))
-        (throw+ {:error ::facter-version-unknown
-                 :msg (format "don't understand facter version [%s]"
-                              version-string)})))))
-
-(defn facter []
-  (if (facter-installed?)
-    (let [{:keys [out err exit]} (io/run facter-program "--yaml")]
-      (if out
-        (yaml/parse-string out)
-        (throw+ {:error ::empty-facter
-                 :msg (format "facter returned empty (%d): %s" exit err)})))
-    (throw+ {:warning ::no-facter
-             :msg "facter cannot be found in PATH"})))
-
-(defmacro non-nil-fact-map [ns facter ks]
+(defmacro non-nil-proto-map
+  "Walk through and execute the given protocol fns, dropping if nil"
+  [ns obj ks]
   `(apply merge
           (for [k# ~ks]
-            (if-let [v# ((ns-resolve ~ns (symbol (name k#))) ~facter)]
+            (if-let [v# ((ns-resolve ~ns (symbol (name k#))) ~obj)]
               {k# v#}))))
 
-(s/defn inspect-system :- BuildSystem
+(s/defn make-facts
+  ([]
+   (make-facts (facter/make-facter)))
   ([facter]
-   (non-nil-fact-map
+   (non-nil-proto-map
     'runbld.facts facter
     [:arch
      :cpu-type
@@ -57,6 +30,7 @@
      :facter-version
      :hostname
      :ip4
+     :ip6
      :kernel-name
      :kernel-release
      :kernel-version
@@ -71,14 +45,38 @@
      :uptime
      :virtual])))
 
-(defn make-facter []
-  (if-let [{:keys [major]} (facter-version)]
-    (condp = major
-      3 (runbld.facts.facter3.Facter3. (facter))
-      2 (runbld.facts.facter2.Facter2. (facter))
-      1 (runbld.facts.facter1.Facter1. (facter)))))
+(s/defn make-fs
+  ([dir]
+   (non-nil-proto-map
+    'runbld.fs (fs/make-fs dir)
+    [:fs-mountpoint
+     :fs-type
+     :fs-bytes-total
+     :fs-bytes-free
+     :fs-bytes-used
+     :fs-percent-free
+     :fs-percent-used])))
+
+(s/defn make-hosting
+  ([facts]
+   (non-nil-proto-map
+    'runbld.hosting (hosting/make-hosting facts)
+    [:datacenter
+     :image-id
+     :instance-id
+     :instance-type
+     :hosting-provider
+     :region])))
+
+(s/defn inspect-system :- BuildSystem
+  ([opts]
+   (let [raw-facts (facter/make-facter)]
+     (merge
+      (make-facts raw-facts)
+      (make-fs (-> opts :process :cwd))
+      (make-hosting raw-facts)))))
 
 (s/defn wrap-system :- OptsWithSys
   [proc :- clojure.lang.IFn]
   (fn [opts]
-    (proc (assoc opts :sys (inspect-system (make-facter))))))
+    (proc (assoc opts :sys (inspect-system opts)))))

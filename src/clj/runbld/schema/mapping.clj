@@ -1,5 +1,5 @@
 (ns runbld.schema.mapping
-  (:refer-clojure :exclude [boolean long double])
+  (:refer-clojure :exclude [boolean long double map-entry?])
   (:require [clojure.walk :as walk]
             [schema.core :as s]))
 

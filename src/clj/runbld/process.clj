@@ -52,10 +52,11 @@
     log-extra :- {s/Any s/Any}]
    (thread
      (doseq [line (line-seq (io/reader is))]
-       (dosync
-        (inc-ordinals ords label)
-        (inc-bytes bytes line label)
-        (>!! ch (make-structured-log line label ords log-extra))))
+       (let [log (dosync
+                  (inc-ordinals ords label)
+                  (inc-bytes bytes line label)
+                  (make-structured-log line label ords log-extra))]
+         (>!! ch log)))
      (close! ch)
      (keyword (str (name label) "-done")))))
 

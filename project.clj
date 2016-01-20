@@ -31,7 +31,7 @@
                   :exclusions [prismatic/schema]]
                  [enlive "1.1.5"]
                  [environ "1.0.1"]
-                 [org.clojure/clojure "1.7.0"]
+                 [org.clojure/clojure "1.8.0"]
                  [org.clojure/core.async "0.2.374"]
                  [org.clojure/tools.cli "0.3.3"]
                  ;; Use 1.7 because the Jenkins plugin is pinned to 1.7
