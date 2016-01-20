@@ -82,6 +82,13 @@
    (s/optional-key :cpus-physical) s/Num
    :facter-provider        s/Str
    :facter-version         s/Str
+   :fs-mountpoint          s/Str
+   :fs-type                s/Str
+   :fs-bytes-total         s/Num
+   :fs-bytes-free          s/Num
+   :fs-bytes-used          s/Num
+   :fs-percent-free        s/Num
+   :fs-percent-used        s/Num
    :hostname               s/Str
    :ip4                    s/Str
    (s/optional-key :ip6)   s/Str
