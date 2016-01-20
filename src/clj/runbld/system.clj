@@ -5,55 +5,78 @@
   (:require [clj-yaml.core :as yaml]
             [runbld.facts.factory :as facter]
             [runbld.fs.factory :as fs]
+            [runbld.hosting.factory :as hosting]
             [runbld.io :as io]))
 
-(defmacro non-nil-proto-map [ns obj ks]
+(defmacro non-nil-proto-map
+  "Walk through and execute the given protocol fns, dropping if nil"
+  [ns obj ks]
   `(apply merge
           (for [k# ~ks]
             (if-let [v# ((ns-resolve ~ns (symbol (name k#))) ~obj)]
               {k# v#}))))
 
+(s/defn make-facts
+  ([]
+   (make-facts (facter/make-facter)))
+  ([facter]
+   (non-nil-proto-map
+    'runbld.facts facter
+    [:arch
+     :cpu-type
+     :cpus
+     :cpus-physical
+     :facter-provider
+     :facter-version
+     :hostname
+     :ip4
+     :ip6
+     :kernel-name
+     :kernel-release
+     :kernel-version
+     :model
+     :os
+     :os-version
+     :ram-mb
+     :ram-gb
+     :timezone
+     :uptime-days
+     :uptime-secs
+     :uptime
+     :virtual])))
+
+(s/defn make-fs
+  ([dir]
+   (non-nil-proto-map
+    'runbld.fs (fs/make-fs dir)
+    [:fs-mountpoint
+     :fs-type
+     :fs-bytes-total
+     :fs-bytes-free
+     :fs-bytes-used
+     :fs-percent-free
+     :fs-percent-used])))
+
+(s/defn make-hosting
+  ([facts]
+   (non-nil-proto-map
+    'runbld.hosting (hosting/make-hosting facts)
+    [:datacenter
+     :image-id
+     :instance-id
+     :instance-type
+     :hosting-provider
+     :region])))
+
 (s/defn inspect-system :- BuildSystem
-  ([facter fs]
-   (merge
-    (non-nil-proto-map
-     'runbld.facts facter
-     [:arch
-      :cpu-type
-      :cpus
-      :cpus-physical
-      :facter-provider
-      :facter-version
-      :hostname
-      :ip4
-      :ip6
-      :kernel-name
-      :kernel-release
-      :kernel-version
-      :model
-      :os
-      :os-version
-      :ram-mb
-      :ram-gb
-      :timezone
-      :uptime-days
-      :uptime-secs
-      :uptime
-      :virtual])
-    (non-nil-proto-map
-     'runbld.fs fs
-     [:fs-mountpoint
-      :fs-type
-      :fs-bytes-total
-      :fs-bytes-free
-      :fs-bytes-used
-      :fs-percent-free
-      :fs-percent-used])
-    {})))
+  ([opts]
+   (let [raw-facts (facter/make-facter)]
+     (merge
+      (make-facts raw-facts)
+      (make-fs (-> opts :process :cwd))
+      (make-hosting raw-facts)))))
 
 (s/defn wrap-system :- OptsWithSys
   [proc :- clojure.lang.IFn]
   (fn [opts]
-    (proc (assoc opts :sys (inspect-system
-                            (facter/make-facter)
-                            (fs/make-fs (-> opts :process :cwd)))))))
+    (proc (assoc opts :sys (inspect-system opts)))))
