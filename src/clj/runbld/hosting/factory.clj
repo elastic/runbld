@@ -10,11 +10,12 @@
             [runbld.util.data :as data]))
 
 (s/defn make-hosting
-  ([facts]
+  ([facter]
    (cond
      (hetz/this-host?
-      (facts/ip4 facts))             (hetz/make facts)
+      (facts/ip4 facter))   (hetz/make facter)
 
-     (:ec2_metadata facts)           (ec2/make facts)
+     (:ec2_metadata
+      (facts/raw facter))   (ec2/make facter)
 
-     :else                           (default/make facts))))
+     :else                  (default/make facter))))
