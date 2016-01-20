@@ -5,6 +5,9 @@
 (defrecord Facter2 [facts]
   Facter
 
+  (raw [x]
+    (.facts x))
+
   (arch [x]
     (-> (.facts x) :architecture))
 

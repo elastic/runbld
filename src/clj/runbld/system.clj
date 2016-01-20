@@ -3,6 +3,7 @@
             [schema.core :as s]
             [slingshot.slingshot :refer [throw+]])
   (:require [clj-yaml.core :as yaml]
+            [runbld.facts :as facts]
             [runbld.facts.factory :as facter]
             [runbld.fs.factory :as fs]
             [runbld.hosting.factory :as hosting]
@@ -70,11 +71,11 @@
 
 (s/defn inspect-system :- BuildSystem
   ([opts]
-   (let [raw-facts (facter/make-facter)]
+   (let [facter (facter/make-facter)]
      (merge
-      (make-facts raw-facts)
+      (make-facts facter)
       (make-fs (-> opts :process :cwd))
-      (make-hosting raw-facts)))))
+      (make-hosting facter)))))
 
 (s/defn wrap-system :- OptsWithSys
   [proc :- clojure.lang.IFn]
