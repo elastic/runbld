@@ -24,9 +24,13 @@
                   [;; Newer one comes from clj-http
                    commons-codec
                    ]]
+
+                 ;; logging
                  [com.fzakaria/slf4j-timbre "0.2.1"]
-                 [com.palletops/thread-expr "1.3.0"]
+                 [log4j/log4j "1.2.17"]
                  [com.taoensso/timbre "4.1.4"]
+
+                 [com.palletops/thread-expr "1.3.0"]
                  [elastic/elasticsearch-clojure "0.99.1"
                   :exclusions [prismatic/schema]]
                  [enlive "1.1.5"]
@@ -34,6 +38,7 @@
                  [org.clojure/clojure "1.8.0"]
                  [org.clojure/core.async "0.2.374"]
                  [org.clojure/tools.cli "0.3.3"]
+
                  ;; Use 1.7 because the Jenkins plugin is pinned to 1.7
                  [org.tmatesoft.svnkit/svnkit "1.7.8"]
                  [prismatic/schema "1.0.3"]
