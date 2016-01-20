@@ -66,7 +66,7 @@
      :image-id
      :instance-id
      :instance-type
-     :hosting-provider
+     :provider
      :region])))
 
 (s/defn inspect-system :- BuildSystem

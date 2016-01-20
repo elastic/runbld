@@ -41,7 +41,7 @@
   (instance-type [x]
     (ec2-meta "/instance-type"))
 
-  (hosting-provider [x]
+  (provider [x]
     "aws-ec2")
 
   (region        [x]
