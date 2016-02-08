@@ -3,7 +3,7 @@
   (:require [clojure.pprint :refer [pprint]]
             [environ.core :as environ]
             [runbld.build :as build]
-            [runbld.email :as email]
+            [runbld.notifications.email :as email]
             [runbld.java :as java]
             [runbld.opts :as opts]
             [runbld.process :as proc]
