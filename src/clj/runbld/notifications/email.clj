@@ -1,4 +1,4 @@
-(ns runbld.email
+(ns runbld.notifications.email
   (:refer-clojure :exclude [send])
   (:require [runbld.schema :refer :all]
             [schema.core :as s])
