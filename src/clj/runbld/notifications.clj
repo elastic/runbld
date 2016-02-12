@@ -6,16 +6,12 @@
             [schema.core :as s]))
 
 (defn strip-out-runbld [src]
-  (let [runbld-shebang (fn [line]
-                         (not
-                          (re-find #"^#!.*runbld" line)))]
-    (->> src
-         java.io.StringReader.
-         clojure.java.io/reader
-         line-seq
-         (filter runbld-shebang)
-         (interpose "\n")
-         (apply str))))
+  (->> src
+       java.io.StringReader.
+       clojure.java.io/reader
+       line-seq
+       (remove #(re-find #"^#!.*runbld" %))
+       (str/join "\n")))
 
 
 (s/defn make-context :- NotifyCtx
@@ -29,6 +25,7 @@
                  (/ (-> build :process :took) 1000)))
       (update-in [:version :hash]
                  #(->> % (take 7) (apply str)))
+      ; TODO: maybe make status :failure (keyword enum) instead of a string?
       (assoc-in [:process :failed]
                 (= "FAILURE" (-> build :process :status)))
       (when-> (:test build)

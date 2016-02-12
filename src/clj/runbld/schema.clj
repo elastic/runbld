@@ -30,8 +30,7 @@
   {:hook               s/Str
    :success            s/Bool
    :failure            s/Bool
-   :template           (s/cond-pre s/Str java.io.File)
-   })
+   :template           (s/cond-pre s/Str java.io.File)})
 
 (def OptsJava
   {:allow-jre          s/Bool})
@@ -134,8 +133,7 @@
    :tags                      [s/Str]
    (s/optional-key :number)   s/Str
    (s/optional-key :executor) s/Str
-   (s/optional-key :node)     s/Str
-   })
+   (s/optional-key :node)     s/Str})
 
 (def JavaProperties
   {:home     s/Str
@@ -187,8 +185,7 @@
 
     :err-bytes      s/Int
     :out-bytes      s/Int
-    :total-bytes    s/Num
-    }))
+    :total-bytes    s/Num}))
 
 (def StoredProcessResult
   ProcessResult)
@@ -210,8 +207,7 @@
    (s/optional-key :author-time  ) s/Str
    (s/optional-key :commit-email ) s/Str
    (s/optional-key :commit-name  ) s/Str
-   (s/optional-key :message-full ) s/Str
-   })
+   (s/optional-key :message-full ) s/Str})
 
 (def XML
   {:tag     s/Keyword

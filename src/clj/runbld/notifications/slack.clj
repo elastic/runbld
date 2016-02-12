@@ -19,7 +19,7 @@
                {:body js})))
 
 (defn send?
-  "Send a slack alert depending on configs"
+  "Determine whether to send a slack alert depending on configs"
   [opts build]
   (let [ec (-> build :process :exit-code)]
     (or
@@ -33,6 +33,6 @@
 (defn maybe-send! [opts {:keys [index type id] :as addr}]
   (let [build-doc (store/get (-> opts :es :conn) addr)
         failure-docs (store/get-failures opts (:id build-doc))]
-    (if (send? opts build-doc)
+    (when (send? opts build-doc)
       (let [ctx (n/make-context opts build-doc failure-docs)]
         (send opts ctx )))))
