@@ -26,6 +26,13 @@
    :to                 (s/cond-pre s/Str [s/Str])
    :user               s/Str})
 
+(def OptsSlack
+  {:hook               s/Str
+   :success            s/Bool
+   :failure            s/Bool
+   :template           (s/cond-pre s/Str java.io.File)
+   })
+
 (def OptsJava
   {:allow-jre          s/Bool})
 
@@ -69,6 +76,7 @@
    :version    VersionInfo
    :configfile (s/maybe s/Str)
    :email      OptsEmail
+   (s/optional-key :slack) OptsSlack
    :es         OptsElasticsearch
    :process    OptsProcess
    :s3         OptsS3
@@ -420,18 +428,29 @@
        {:total  m/long
         :stream m/long}}}}}})
 
+(def Failure
+  {:build-id     s/Str
+   :class        s/Str
+   :test         s/Str
+   :stacktrace   s/Str})
+
+(def NotifyCtx
+  {:id       s/Str
+   :version  VersionInfo
+   :build    Build
+   :java     JavaProperties
+   :sys      BuildSystem
+   :vcs      VcsLog
+   :process  (merge StoredProcessResult
+                    {:cmd s/Str
+                     :args s/Str
+                     :took-human s/Str
+                     :failed s/Bool})
+   :test     (s/maybe StoredTestSummary)
+   (s/optional-key :failures) [Failure]})
+
 (def EmailCtx
-  {:id s/Str
-   :version VersionInfo
-   :build Build
-   :java JavaProperties
-   :sys BuildSystem
-   :email {:to s/Str
-           :subject s/Str}
-   :vcs VcsLog
-   :process (merge StoredProcessResult
-                   {:cmd s/Str
-                    :args s/Str
-                    :took-human s/Str
-                    :failed s/Bool})
-   :test (s/maybe StoredTestSummary)})
+  (merge
+   NotifyCtx
+   {:email {:to s/Str
+            :subject s/Str}}))

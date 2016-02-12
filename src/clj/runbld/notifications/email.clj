@@ -3,11 +3,10 @@
   (:require [runbld.schema :refer :all]
             [schema.core :as s])
   (:require [clojure.string :as str]
-            [pallet.thread-expr :refer [when->]]
             [postal.core :as mail]
             [runbld.store :as store]
-            [runbld.util.date :as date]
             [runbld.io :as io]
+            [runbld.notifications :as n]
             [runbld.vcs :as vcs]
             [stencil.core :as mustache]))
 
@@ -31,7 +30,7 @@
 (s/defn attach-failure :- {(s/required-key :type) s/Keyword
                            (s/required-key :content) java.io.File
                            (s/required-key :content-type) s/Str}
-  [failure]
+  [failure :- Failure]
   (let [basename (java.net.URLEncoder/encode
                   (format "%s-%s-%s-%s.txt"
                           (:build-id failure)
@@ -51,7 +50,7 @@
    subject  :- s/Str
    plain    :- s/Str
    html     :- (s/maybe s/Str)
-   failures :- [s/Any]]
+   failures :- [Failure]]
   (let [failure-attachments (map attach-failure failures)
         body (if html
                [{:type "text/html; charset=utf-8"
@@ -74,8 +73,7 @@
 
 (s/defn send :- s/Any
   [opts :- MainOpts
-   ctx :- EmailCtx
-   failures :- [s/Any]]
+   ctx :- EmailCtx]
   ;; If needing to regenerate for render tests
   #_(spit "test/context.edn"
           (with-out-str
@@ -100,43 +98,17 @@
                (io/resolve-resource
                 (-> opts :email :template-html)))
               ctx))
-           failures)))
-
-(defn strip-out-runbld [src]
-  (let [runbld-shebang (fn [line]
-                         (not
-                          (re-find #"^#!.*runbld" line)))]
-    (->> src
-         java.io.StringReader.
-         clojure.java.io/reader
-         line-seq
-         (filter runbld-shebang)
-         (interpose "\n")
-         (apply str))))
+           (:failures ctx))))
 
 (s/defn make-context :- EmailCtx
-  ([opts build]
-   (-> build
-       (update-in [:process :cmd] #(str/join " " %))
-       (update-in [:process :cmd-source] strip-out-runbld)
-       (update-in [:process :args] #(str/join " " %))
-       (update-in [:email :to] #(str/join ", " %))
-       (assoc-in [:process :took-human]
-                 (date/human-duration
-                  (/ (-> build :process :took) 1000)))
-       (assoc-in [:email :subject]
-                 (format "%s %s %s"
-                         (-> build :process :status)
-                         (-> build :build :org-project-branch)
-                         (-> build :vcs :commit-short)))
-       (update-in [:version :hash]
-                  #(->> % (take 7) (apply str)))
-       (assoc-in [:process :failed]
-                 (= "FAILURE" (-> build :process :status)))
-       (when-> (:test build)
-         (update-in [:test :failed-testcases] (partial take 10))
-         (update-in [:test :failed-testcases] (partial sort-by :class))
-         (update-in [:test :failed-testcases] (partial sort-by :test))))))
+  [opts build failure]
+  (-> (n/make-context opts build failure)
+      (update-in [:email :to] #(str/join ", " %))
+      (assoc-in [:email :subject]
+                (format "%s %s %s"
+                        (-> build :process :status)
+                        (-> build :build :org-project-branch)
+                        (-> build :vcs :commit-short)))))
 
 (s/defn send? :- s/Bool
   [build :- StoredBuild]
@@ -147,6 +119,6 @@
   (let [build-doc (store/get (-> opts :es :conn) addr)
         failure-docs (store/get-failures opts (:id build-doc))]
     (if (send? build-doc)
-      (let [ctx (make-context opts build-doc)]
-        (send opts ctx failure-docs))
+      (let [ctx (make-context opts build-doc failure-docs)]
+        (send opts ctx))
       ((opts :logger) "NO MAIL GENERATED"))))
