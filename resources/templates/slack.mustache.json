@@ -1,0 +1,34 @@
+{
+    "username": "runbld",
+    "attachments": [{
+        "color": "{{color}}",
+        "fallback": "{{process.status}} {{build.org-project-branch}} {{vcs.commit-short}} {{build.console-url}}",
+        "title": "{{process.status}} <{{vcs.branch-url}}|{{build.org-project-branch}}> <{{vcs.commit-url}}|{{vcs.commit-short}}> <{{build.console-url}}|logs>",
+        "text": "Author: {{ vcs.author-name }} &lt;{{ vcs.author-email }}&gt;
+{{ vcs.message }}
+",
+        "fields": [
+        {{#test}}
+            {
+                "title": "FAILED",
+                "value": "{{test.failures}}",
+                "short": true
+            },
+            {
+                "title": "ERRORS",
+                "value": "{{test.errors}}",
+                "short": true
+            },
+            {
+                "title": "SKIPPED",
+                "value": "{{test.skipped}}",
+                "short": true
+            },
+            {
+                "title": "TOTAL",
+                "value": "{{test.tests}}",
+                "short": true
+            }
+        {{/test}}
+        ]
+}]}

@@ -14,7 +14,10 @@
    ctx  :- NotifyCtx]
   (let [f    (-> opts :slack :template)
         tmpl (-> f io/resolve-resource slurp)
-        js   (mustache/render-string tmpl ctx)]
+        color (if (-> ctx :process :failed)
+                "danger"
+                "good")
+        js   (mustache/render-string tmpl (assoc ctx :color color))]
     (http/post (-> opts :slack :hook)
                {:body js})))
 
