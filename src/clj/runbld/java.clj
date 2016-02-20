@@ -52,7 +52,10 @@
    (java-home-java (java-home)))
   ([path]
    (when path
-     (str (io/file path "bin/java")))))
+     (str
+      (io/file path (case (io/os)
+                      "MAC OS X" "Commands/java"
+                      "bin/java"))))))
 
 (defn jvm-facts [opts]
   (io/with-tmp-source [clj (source)]
