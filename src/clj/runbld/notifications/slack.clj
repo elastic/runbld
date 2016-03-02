@@ -12,14 +12,16 @@
 (s/defn send :- s/Any
   [opts :- MainOpts
    ctx  :- NotifyCtx]
-  (let [f    (-> opts :slack :template)
-        tmpl (-> f io/resolve-resource slurp)
+  (let [f     (-> opts :slack :template)
+        tmpl  (-> f io/resolve-resource slurp)
         color (if (-> ctx :process :failed)
                 "danger"
                 "good")
-        js   (mustache/render-string tmpl (assoc ctx :color color))]
-    (http/post (-> opts :slack :hook)
-               {:body js})))
+        js    (mustache/render-string tmpl (assoc ctx :color color))
+        hook  (-> opts :slack :hook)]
+    (when hook
+      (http/post hook
+                 {:body js}))))
 
 (defn send?
   "Determine whether to send a slack alert depending on configs"
