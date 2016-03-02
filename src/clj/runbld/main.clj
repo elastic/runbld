@@ -37,6 +37,12 @@
      ;; for tests when #'really-die is redefed
      msg*)))
 
+(defmacro try-catch [body]
+  `(try
+     ~body
+     (catch Exception e#
+       (io/log e#))))
+
 (def run
   (-> #'proc/run
       vcs/wrap-vcs-info
@@ -62,8 +68,8 @@
          _ (io/log (format "WRAPPED PROCESS: %s (%d)" status exit-code))
          test-report (tests/report (-> opts :process :cwd))
          store-result (store/save! opts process-result test-report)
-         slack-result (slack/maybe-send! opts (:addr store-result))
-         email-result (email/maybe-send! opts (:addr store-result))
+         slack-result (try-catch (slack/maybe-send! opts (:addr store-result)))
+         email-result (try-catch (email/maybe-send! opts (:addr store-result)))
          ]
 
      (if (environ/env :dev)
