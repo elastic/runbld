@@ -12,6 +12,13 @@
 (defn log [& x]
   (send-off logger (fn [_] (apply println x))))
 
+(defmacro try-log [& body]
+  `(try
+     ~@body
+     (catch Exception e#
+       (log e#))))
+
+
 (defn spit [f x & opts]
   (send-off file-logger
             (fn [_]
