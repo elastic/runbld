@@ -27,7 +27,7 @@
    :user               s/Str})
 
 (def OptsSlack
-  {:hook               s/Str
+  {(s/optional-key :hook) s/Str
    :success            s/Bool
    :failure            s/Bool
    :template           (s/cond-pre s/Str java.io.File)})
