@@ -2,7 +2,7 @@
   (:require [schema.test :as s])
   (:require [clojure.test :refer :all]
             [runbld.build :as build]
-            [runbld.email :as email]
+            [runbld.notifications.email :as email]
             [runbld.env :as env]
             [runbld.opts :as opts]
             [runbld.process :as proc]

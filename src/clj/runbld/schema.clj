@@ -26,6 +26,12 @@
    :to                 (s/cond-pre s/Str [s/Str])
    :user               s/Str})
 
+(def OptsSlack
+  {:hook               s/Str
+   :success            s/Bool
+   :failure            s/Bool
+   :template           (s/cond-pre s/Str java.io.File)})
+
 (def OptsJava
   {:allow-jre          s/Bool})
 
@@ -69,6 +75,7 @@
    :version    VersionInfo
    :configfile (s/maybe s/Str)
    :email      OptsEmail
+   (s/optional-key :slack) OptsSlack
    :es         OptsElasticsearch
    :process    OptsProcess
    :s3         OptsS3
@@ -126,8 +133,7 @@
    :tags                      [s/Str]
    (s/optional-key :number)   s/Str
    (s/optional-key :executor) s/Str
-   (s/optional-key :node)     s/Str
-   })
+   (s/optional-key :node)     s/Str})
 
 (def JavaProperties
   {:home     s/Str
@@ -179,8 +185,7 @@
 
     :err-bytes      s/Int
     :out-bytes      s/Int
-    :total-bytes    s/Num
-    }))
+    :total-bytes    s/Num}))
 
 (def StoredProcessResult
   ProcessResult)
@@ -202,8 +207,7 @@
    (s/optional-key :author-time  ) s/Str
    (s/optional-key :commit-email ) s/Str
    (s/optional-key :commit-name  ) s/Str
-   (s/optional-key :message-full ) s/Str
-   })
+   (s/optional-key :message-full ) s/Str})
 
 (def XML
   {:tag     s/Keyword
@@ -420,18 +424,29 @@
        {:total  m/long
         :stream m/long}}}}}})
 
+(def Failure
+  {:build-id     s/Str
+   :class        s/Str
+   :test         s/Str
+   :stacktrace   s/Str})
+
+(def NotifyCtx
+  {:id       s/Str
+   :version  VersionInfo
+   :build    Build
+   :java     JavaProperties
+   :sys      BuildSystem
+   :vcs      VcsLog
+   :process  (merge StoredProcessResult
+                    {:cmd s/Str
+                     :args s/Str
+                     :took-human s/Str
+                     :failed s/Bool})
+   :test     (s/maybe StoredTestSummary)
+   (s/optional-key :failures) [Failure]})
+
 (def EmailCtx
-  {:id s/Str
-   :version VersionInfo
-   :build Build
-   :java JavaProperties
-   :sys BuildSystem
-   :email {:to s/Str
-           :subject s/Str}
-   :vcs VcsLog
-   :process (merge StoredProcessResult
-                   {:cmd s/Str
-                    :args s/Str
-                    :took-human s/Str
-                    :failed s/Bool})
-   :test (s/maybe StoredTestSummary)})
+  (merge
+   NotifyCtx
+   {:email {:to s/Str
+            :subject s/Str}}))

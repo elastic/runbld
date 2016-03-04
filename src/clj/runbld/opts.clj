@@ -51,7 +51,12 @@
     :template-txt "templates/email.mustache.txt"
     :template-html "templates/email.mustache.html"
     :text-only false
-    :max-failure-notify 10}})
+    :max-failure-notify 10}
+
+   :slack
+   {:success true
+    :failure true
+    :template "templates/slack.mustache.json"}})
 
 (s/defn merge-profiles :- java.util.Map
   [job-name :- s/Str
