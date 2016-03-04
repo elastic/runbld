@@ -12,9 +12,9 @@
             :tests 3
             :skipped 0}
            (select-keys res [:errors :failures :tests :skipped])))
-    (is (= ["java.nio.file.NoSuchFileException"
-            "junit.framework.AssertionFailedError"]
-           (map :type (:failed-testcases res))))))
+    (is (= (sort ["java.nio.file.NoSuchFileException"
+                  "junit.framework.AssertionFailedError"])
+           (sort (map :type (:failed-testcases res)))))))
 
 (deftest no-errors
   (let [res (tests/capture-failures "test/repo/no-errors")]
