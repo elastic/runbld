@@ -1,7 +1,8 @@
 {
-    "username": "runbld",
+    "username": "ci",
     "attachments": [{
         "color": "{{color}}",
         "fallback": "{{process.status}} {{build.org-project-branch}} {{vcs.commit-short}} {{build.console-url}}",
         "title": "{{process.status}} <{{vcs.branch-url}}|{{build.org-project-branch}}> <{{vcs.commit-url}}|{{vcs.commit-short}}> <{{build.console-url}}|logs>"
-}]}
+    }]
+}
