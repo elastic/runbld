@@ -4,6 +4,7 @@
             [environ.core :as environ]
             [runbld.build :as build]
             [runbld.notifications.email :as email]
+            [runbld.notifications.slack :as slack]
             [runbld.java :as java]
             [runbld.opts :as opts]
             [runbld.process :as proc]
@@ -61,13 +62,15 @@
          _ (io/log (format "WRAPPED PROCESS: %s (%d)" status exit-code))
          test-report (tests/report (-> opts :process :cwd))
          store-result (store/save! opts process-result test-report)
-         email-result (email/maybe-send! opts (:addr store-result))
+         slack-result (io/try-log (slack/maybe-send! opts (:addr store-result)))
+         email-result (io/try-log (email/maybe-send! opts (:addr store-result)))
          ]
 
      (if (environ/env :dev)
        (assoc process-result
               :store-result store-result
-              :email-result email-result)
+              :email-result email-result
+              :slack-result slack-result)
        (if (-> opts :process :inherit-exit-code)
          (die (-> store-result :build-doc :process :exit-code))
          (die 0))))
