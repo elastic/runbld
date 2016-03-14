@@ -20,7 +20,7 @@
         js    (mustache/render-string tmpl (assoc ctx :color color))
         hook  (-> opts :slack :hook)]
     (when hook
-      ((opts :logger) "SLACK:" hook)
+      ((opts :logger) "NOTIFYING SLACK")
       (http/post hook
                  {:body js}))))
 
