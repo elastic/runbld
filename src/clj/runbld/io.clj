@@ -78,18 +78,20 @@
 (defn os []
   (-> (System/getProperties)
       (get "os.name")
-      .toUpperCase
-      symbol))
+      .toUpperCase))
 
 (defn which-bin []
   (case (os)
-    LINUX "which"
-    WINDOWS "where.exe"))
+    "LINUX" "which"
+    "MAC OS X" "which"
+    "WINDOWS" "where.exe"))
 
 (defn which [name]
   (let [res (sh/sh (which-bin) name)]
-    (when (zero? (:exit res))
-      (.trim (:out res)))))
+    (if (zero? (:exit res))
+      (.trim (:out res))
+      (throw+ {:type ::missing-file
+               :msg (format "can't find %s" name)}))))
 
 (s/defn readlink
   [path :- s/Str]

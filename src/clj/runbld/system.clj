@@ -70,7 +70,7 @@
      :region])))
 
 (s/defn inspect-system :- BuildSystem
-  ([cwd]
+  ([cwd :- s/Str]
    (let [facter (facter/make-facter)]
      (merge
       (make-facts facter)
