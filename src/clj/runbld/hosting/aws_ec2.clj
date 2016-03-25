@@ -20,7 +20,8 @@
     (:body
      (http/get (str "http://169.254.169.254/latest/meta-data" postfix)
                {:socket-timeout 500 :conn-timeout 500}))
-    (catch org.apache.http.conn.ConnectTimeoutException e))))
+    (catch org.apache.http.conn.ConnectTimeoutException _)
+    (catch java.net.ConnectException _))))
 
 (s/defn this-host? :- s/Bool
   "Is this host in AWS EC2?"
