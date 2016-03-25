@@ -27,10 +27,10 @@
        (apply str)
        .toUpperCase))
 
-(s/defn attach-failure :- {(s/required-key :type) s/Keyword
-                           (s/required-key :content) java.io.File
-                           (s/required-key :content-type) s/Str}
-  [failure :- Failure]
+(s/defn attach-failure :- {:type s/Keyword
+                           :content java.io.File
+                           :content-type s/Str}
+  [failure :- StoredFailure]
   (let [basename (java.net.URLEncoder/encode
                   (format "%s-%s-%s-%s.txt"
                           (:build-id failure)
@@ -50,7 +50,7 @@
    subject  :- s/Str
    plain    :- s/Str
    html     :- (s/maybe s/Str)
-   failures :- [Failure]]
+   failures :- [StoredFailure]]
   (let [failure-attachments (map attach-failure failures)
         body (if html
                [{:type "text/html; charset=utf-8"
@@ -101,8 +101,8 @@
            (:failures ctx))))
 
 (s/defn make-context :- EmailCtx
-  [opts build failure]
-  (-> (n/make-context opts build failure)
+  [opts build failures]
+  (-> (n/make-context opts build failures)
       (update-in [:email :to] #(str/join ", " %))
       (assoc-in [:email :subject]
                 (format "%s %s %s"
@@ -119,6 +119,5 @@
   (let [build-doc (store/get (-> opts :es :conn) addr)
         failure-docs (store/get-failures opts (:id build-doc))]
     (if (send? build-doc)
-      (let [ctx (make-context opts build-doc failure-docs)]
-        (send opts ctx))
+      (send opts (make-context opts build-doc failure-docs))
       ((opts :logger) "NO MAIL GENERATED"))))

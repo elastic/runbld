@@ -424,12 +424,6 @@
        {:total  m/long
         :stream m/long}}}}}})
 
-(def Failure
-  {:build-id     s/Str
-   :class        s/Str
-   :test         s/Str
-   :stacktrace   s/Str})
-
 (def NotifyCtx
   {:id       s/Str
    :version  VersionInfo
@@ -443,7 +437,7 @@
                      :took-human s/Str
                      :failed s/Bool})
    :test     (s/maybe StoredTestSummary)
-   (s/optional-key :failures) [Failure]})
+   (s/optional-key :failures) [StoredFailure]})
 
 (def EmailCtx
   (merge
