@@ -32,8 +32,7 @@
     :secret-key "secret"}
 
    :java
-   {;; java.home property always shows ".../jre", this forces JDK
-    :allow-jre false}
+   {}
 
    :process
    {:inherit-exit-code true
@@ -128,7 +127,7 @@
    ["-j" "--job-name JOBNAME" (str "Job name: org,project,branch,etc "
                                    "also read from $JOB_NAME")
     :default (environ/env :job-name)]
-   [nil "--java-home PATH" "If different from JAVA_HOME"]
+   [nil "--java-home PATH" "If different from JAVA_HOME or need to override what will be discovered in PATH"]
    ["-p" "--program PROGRAM" "Program that will run the scriptfile"
     :default "bash"]
    ["-a" "--args ARGS" "Args to pass PROGRAM"
@@ -198,16 +197,16 @@
 
      (let [options (assemble-all-opts
                     (normalize options))
+           java-facts (java/jvm-facts
+                       (or
+                        (options :java-home)
+                        (env/get-env "JAVA_HOME")
+                        (-> options :process :env :JAVA_HOME)))
            process-env (merge
                         (when (-> options :process :inherit-env)
                           (env/get-env))
                         (-> options :process :env)
-                        (when-let [home (or
-                                         (options :java-home)
-                                         (env/get-env "JAVA_HOME")
-                                         (-> options :process :env :JAVA_HOME)
-                                         (java/java-home))]
-                          {:JAVA_HOME home}))]
+                        {:JAVA_HOME (:home java-facts)})]
        (merge (dissoc options :java-home)
               {:es (set-up-es (:es options))
                :env (env/get-env)
@@ -218,4 +217,5 @@
                             (update :cwd (comp str io/abspath-file))
                             (assoc :env process-env))
                :version {:string (version/version)
-                         :hash (version/build)}})))))
+                         :hash (version/build)}
+               :java java-facts})))))

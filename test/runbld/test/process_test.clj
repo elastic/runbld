@@ -17,7 +17,6 @@
                 "-j" "elastic+foo+master"
                 "-d" (str dir)
                 "-a" "-e"
-                "--java-home" (java/java-home)
                 "test/output.bash"]
           opts (opts/parse-args args)
           build-id (str (java.util.UUID/randomUUID))

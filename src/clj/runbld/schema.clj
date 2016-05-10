@@ -13,6 +13,21 @@
 (def Env
   {s/Keyword s/Str})
 
+(def JavaProperties
+  {:home     s/Str
+   :vendor   s/Str
+   :version  s/Str
+   :class
+   {:path    s/Str}
+   :runtime
+   {:name    s/Str
+    :version s/Str}
+   :vm
+   {:info    s/Str
+    :name    s/Str
+    :vendor  s/Str
+    :version s/Str}})
+
 (def OptsEmail
   {:from               s/Str
    :host               s/Str
@@ -31,9 +46,6 @@
    :success            s/Bool
    :failure            s/Bool
    :template           (s/cond-pre s/Str java.io.File)})
-
-(def OptsJava
-  {:allow-jre          s/Bool})
 
 (def OptsProcess
   {:program           s/Str
@@ -79,7 +91,7 @@
    :es         OptsElasticsearch
    :process    OptsProcess
    :s3         OptsS3
-   :java       OptsJava
+   :java       JavaProperties
    :env        Env})
 
 (def BuildSystem
@@ -134,21 +146,6 @@
    (s/optional-key :number)   s/Str
    (s/optional-key :executor) s/Str
    (s/optional-key :node)     s/Str})
-
-(def JavaProperties
-  {:home     s/Str
-   :vendor   s/Str
-   :version  s/Str
-   :class
-   {:path    s/Str}
-   :runtime
-   {:name    s/Str
-    :version s/Str}
-   :vm
-   {:info    s/Str
-    :name    s/Str
-    :vendor  s/Str
-    :version s/Str}})
 
 (def OptsWithSys
   (merge Opts {:sys    BuildSystem
