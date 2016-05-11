@@ -33,22 +33,22 @@
                  [com.palletops/thread-expr "1.3.0"]
                  [elastic/elasticsearch-clojure "0.99.1"
                   :exclusions [prismatic/schema]]
-                 [enlive "1.1.5"]
-                 [environ "1.0.1"]
+                 [enlive "1.1.6"]
+                 [environ "1.0.3"]
                  [org.clojure/clojure "1.8.0"]
                  [org.clojure/core.async "0.2.374"]
                  [org.clojure/tools.cli "0.3.3"]
 
                  ;; Use 1.7 because the Jenkins plugin is pinned to 1.7
                  [org.tmatesoft.svnkit/svnkit "1.7.8"]
-                 [prismatic/schema "1.0.3"]
+                 [prismatic/schema "1.1.1"]
                  [slingshot "0.12.2"]
                  [stencil "0.5.0"]]
   :injections [(require 'clojure.pprint)]
   :profiles {:dev {:env {:dev true}}
              :package {:plugins [[lein-bin "0.3.4"]]
                        :bin {:bootclasspath false}}}
-  :plugins [[lein-environ "1.0.1"]]
+  :plugins [[lein-environ "1.0.3"]]
   :aliases {"package" ["with-profile" "package" "bin"]}
   :aot :all
   :main runbld.main

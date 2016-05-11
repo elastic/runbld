@@ -91,7 +91,8 @@
     (if (zero? (:exit res))
       (.trim (:out res))
       (throw+ {:type ::missing-file
-               :msg (format "can't find %s" name)}))))
+               :msg (format "can't find %s" name)
+               :path (System/getenv "PATH")}))))
 
 (s/defn readlink
   [path :- s/Str]
