@@ -12,8 +12,7 @@
   "facter")
 
 (defn facter-installed? []
-  (let [{:keys [exit]} (io/run "which" facter-program)]
-    (zero? exit)))
+  (io/which facter-program))
 
 (defn facter-version []
   (when (facter-installed?)
@@ -29,14 +28,12 @@
                               version-string)})))))
 
 (defn facter []
-  (if (facter-installed?)
+  (when (facter-installed?)
     (let [{:keys [out err exit]} (io/run facter-program "--yaml")]
       (if out
         (yaml/parse-string out)
         (throw+ {:error ::empty-facter
-                 :msg (format "facter returned empty (%d): %s" exit err)})))
-    (throw+ {:warning ::no-facter
-             :msg "facter cannot be found in PATH"})))
+                 :msg (format "facter returned empty (%d): %s" exit err)})))))
 
 (defn make-facter []
   (if-let [{:keys [major]} (facter-version)]
@@ -44,4 +41,3 @@
       3 (runbld.facts.facter3.Facter3. (facter))
       2 (runbld.facts.facter2.Facter2. (facter))
       1 (runbld.facts.facter1.Facter1. (facter)))))
-
