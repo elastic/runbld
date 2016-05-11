@@ -96,5 +96,14 @@
                (into (sorted-map)
                      (system/inspect-system "."))))))
 
+   (catch [:error :runbld.vcs.middleware/unknown-repo] {:keys [msg opts]}
+     (io/log msg)
+     (when (environ/env :dev)
+       (io/log "DUMPING CONFIG for DEV=true")
+       (io/log
+        (with-out-str
+          (clojure.pprint/pprint opts))))
+     (die 1))
+
    (catch Exception e
      (die 1 e))))
