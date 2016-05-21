@@ -105,7 +105,7 @@
   (-> (n/make-context opts build failures)
       (update-in [:email :to] #(str/join ", " %))
       (assoc-in [:email :subject]
-                (format "%s %s %s"
+                (format "%s %s %s %s"
                         (-> build :process :status)
                         (-> build :build :org-project-branch)
                         (-> build :vcs :commit-short)
