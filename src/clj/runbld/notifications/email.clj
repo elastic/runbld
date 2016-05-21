@@ -108,7 +108,8 @@
                 (format "%s %s %s"
                         (-> build :process :status)
                         (-> build :build :org-project-branch)
-                        (-> build :vcs :commit-short)))))
+                        (-> build :vcs :commit-short)
+                        (-> build :build :job-name-extra)))))
 
 (s/defn send? :- s/Bool
   [build :- StoredBuild]
