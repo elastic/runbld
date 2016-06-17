@@ -81,7 +81,7 @@
       .toUpperCase))
 
 (defn which-bin []
-  (case (os)
+  (condp #(.startsWith %2 %1) (os)
     "LINUX" "which"
     "MAC OS X" "which"
     "WINDOWS" "where.exe"))
