@@ -44,6 +44,9 @@
 (defn abspath [f]
   (.getCanonicalPath (jio/as-file f)))
 
+(defn abspath? [f]
+  (.isAbsolute (jio/as-file f)))
+
 (defn abspath-file [f]
   (jio/file (abspath f)))
 
@@ -94,11 +97,13 @@
 
 (def windows-which
   (fn [name]
-    (-> (run-which "where.exe" name)
-        java.io.StringReader.
-        jio/reader
-        line-seq
-        first)))
+    (if (abspath? name)
+      name
+      (-> (run-which "where.exe" name)
+          java.io.StringReader.
+          jio/reader
+          line-seq
+          first))))
 
 (defn which-fn [os]
   (condp #(.startsWith %2 %1) os
