@@ -44,6 +44,9 @@
 (defn abspath [f]
   (.getCanonicalPath (jio/as-file f)))
 
+(defn abspath? [f]
+  (.isAbsolute (jio/as-file f)))
+
 (defn abspath-file [f]
   (jio/file (abspath f)))
 
@@ -80,19 +83,36 @@
       (get "os.name")
       .toUpperCase))
 
-(defn which-bin []
-  (case (os)
-    "LINUX" "which"
-    "MAC OS X" "which"
-    "WINDOWS" "where.exe"))
-
-(defn which [name]
-  (let [res (sh/sh (which-bin) name)]
+(defn run-which [cmd name]
+  (let [res (sh/sh cmd name)]
     (if (zero? (:exit res))
       (.trim (:out res))
       (throw+ {:type ::missing-file
-               :msg (format "can't find %s" name)
+               :msg (format "%s failed: %s\n%s" cmd name (:err res))
                :path (System/getenv "PATH")}))))
+
+(def unix-which
+  (fn [name]
+    (run-which "which" name)))
+
+(def windows-which
+  (fn [name]
+    (if (abspath? name)
+      name
+      (-> (run-which "where.exe" name)
+          java.io.StringReader.
+          jio/reader
+          line-seq
+          first))))
+
+(defn which-fn [os]
+  (condp #(.startsWith %2 %1) os
+    "LINUX" unix-which
+    "MAC OS X" unix-which
+    "WINDOWS" windows-which))
+
+(defn which [name]
+  ((which-fn (os)) name))
 
 (s/defn readlink
   [path :- s/Str]
