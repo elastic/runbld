@@ -85,7 +85,7 @@
     (if (zero? (:exit res))
       (.trim (:out res))
       (throw+ {:type ::missing-file
-               :msg (format "can't find %s" name)
+               :msg (format "%s failed: %s\n%s" cmd name (:err res))
                :path (System/getenv "PATH")}))))
 
 (def unix-which
