@@ -9,7 +9,16 @@
             [runbld.store :as store]
             [stencil.core :as mustache]))
 
+(defn api-send
+  "Make the Slack REST API call"
+  [opts js hook]
+  (do
+    ((opts :logger) "NOTIFYING SLACK")
+    (http/post hook
+               {:body js})))
+
 (s/defn send :- s/Any
+  "Format and send the Slack notifcation"
   [opts :- MainOpts
    ctx  :- NotifyCtx]
   (let [f     (-> opts :slack :template)
@@ -18,11 +27,10 @@
                 "danger"
                 "good")
         js    (mustache/render-string tmpl (assoc ctx :color color))
-        hook  (-> opts :slack :hook)]
-    (when hook
-      ((opts :logger) "NOTIFYING SLACK")
-      (http/post hook
-                 {:body js}))))
+        hooks (-> opts :slack :hook)]
+    (if (string? hooks)
+      (api-send opts js hooks)
+      (doall (map #(api-send opts js %) hooks)))))
 
 (defn send?
   "Determine whether to send a slack alert depending on configs"
@@ -41,4 +49,4 @@
         failure-docs (store/get-failures opts (:id build-doc))]
     (when (send? opts build-doc)
       (let [ctx (n/make-context opts build-doc failure-docs)]
-        (send opts ctx )))))
+        (send opts ctx)))))
