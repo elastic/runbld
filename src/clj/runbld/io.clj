@@ -3,7 +3,8 @@
   (:require [schema.core :as s])
   (:require [clojure.java.io :as jio]
             [clojure.java.shell :as sh]
-            [slingshot.slingshot :refer [throw+]]))
+            [slingshot.slingshot :refer [throw+]])
+  (:import (org.apache.commons.io FileUtils)))
 
 (def logger (agent nil))
 
@@ -33,13 +34,10 @@
     res))
 
 (defn rmdir-r [dir]
-  (run "rm" "-r" dir))
-
-(defn rmdir-rf [dir]
-  (run "rm" "-rf" dir))
+  (FileUtils/deleteDirectory (jio/file dir)))
 
 (defn mkdir-p [dir]
-  (run "mkdir" "-p" dir))
+  (.mkdirs (jio/file dir)))
 
 (defn abspath [f]
   (.getCanonicalPath (jio/as-file f)))

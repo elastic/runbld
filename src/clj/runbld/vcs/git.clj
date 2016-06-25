@@ -37,7 +37,7 @@
        (init-test-repo ~(bindings 1))
        ~@body
        (finally
-         (io/rmdir-rf ~(bindings 0))))))
+         (io/rmdir-r ~(bindings 0))))))
 
 (defn add-test-commit [dir]
   (let [repo (git/load-repo dir)
