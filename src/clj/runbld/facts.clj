@@ -19,6 +19,7 @@
   (model           [_])
   (os              [_])
   (os-version      [_])
+  (os-family       [_])
   (ram-mb          [_])
   (ram-gb          [_])
   (ram-bytes       [_])
