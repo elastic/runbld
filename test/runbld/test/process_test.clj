@@ -13,25 +13,33 @@
 
 (deftest output-io
   (io/with-tmp-dir [dir ["tmp" (str *ns* "-")]]
-    (let [args ["-c" "test/config/main.yml"
-                "-j" "elastic+foo+master"
-                "-d" (str dir)
-                "-a" "-e"
-                "test/output.bash"]
+    (let [args (concat ["-j" "elastic+foo+master"
+                        "-d" (str dir)]
+                       (if (.startsWith (io/os) "WINDOWS")
+                         ["-c" "test\\config\\main.yml"
+                          "-p" "CMD"
+                          "-a" "/C"
+                          "test\\output.bat"]
+                         ["-c" "test/config/main.yml"
+                          "-p" "bash"
+                          "-a" "-e"
+                          "test/output.bash"]))
           opts (opts/parse-args args)
           build-id (str (java.util.UUID/randomUUID))
           master (io/file dir "master.log")
-          output (io/file dir (-> opts :process :output))]
+          output (io/file dir (-> opts :process :output))
+          err (java.io.StringWriter.)]
       (with-open [out (java.io.PrintWriter. master)]
         (let [res (binding [*out* out
-                            *err* (java.io.StringWriter.)]
+                            *err* err]
                     (proc/run
                       (-> opts
                           (assoc-in [:id] build-id)
                           (assoc-in [:es :bulk-timeout-ms] 50)
                           (assoc-in [:es :bulk-size] 5))))]
           #_(println (slurp output))
-          #_(println (slurp master))
+          #_(println "MASTER:" (slurp master))
+          #_(println "ERROR:" (str err))
           (testing "test should produce output"
             (is (= 11
                    (count

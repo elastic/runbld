@@ -10,6 +10,17 @@
 
 (def file-logger (agent nil))
 
+(defn os []
+  (-> (System/getProperties)
+      (get "os.name")
+      .toUpperCase))
+
+(defn windows?
+  ([]
+   (windows? (os)))
+  ([os]
+   (.startsWith os "WINDOWS")))
+
 (defn log [& x]
   (send-off logger (fn [_] (apply println x))))
 
@@ -34,6 +45,8 @@
     res))
 
 (defn rmdir-r [dir]
+  (if (windows?)
+    (System/gc)) ;; you heard right
   (FileUtils/deleteDirectory (jio/file dir)))
 
 (defn mkdir-p [dir]
@@ -75,11 +88,6 @@
       path
       (throw+ {:error ::resource-not-found
                :msg (format "cannot find %s" path)}))))
-
-(defn os []
-  (-> (System/getProperties)
-      (get "os.name")
-      .toUpperCase))
 
 (defn run-which [cmd name]
   (let [res (sh/sh cmd name)]
