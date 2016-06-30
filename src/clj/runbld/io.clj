@@ -1,7 +1,8 @@
 (ns runbld.io
   (:refer-clojure :exclude [spit])
   (:require [schema.core :as s])
-  (:require [clojure.java.io :as jio]
+  (:require [again.core :as again]
+            [clojure.java.io :as jio]
             [clojure.java.shell :as sh]
             [slingshot.slingshot :refer [throw+]])
   (:import (org.apache.commons.io FileUtils)))
@@ -45,9 +46,21 @@
     res))
 
 (defn rmdir-r [dir]
-  (if (windows?)
-    (System/gc)) ;; you heard right
-  (FileUtils/deleteDirectory (jio/file dir)))
+  (let [f (fn [[x & xs]]
+            (if (or (.isFile x)
+                    (and (.isDirectory x)
+                         (zero? (count (.listFiles x)))))
+              (do
+                (when (windows?)
+                  (System/gc)
+                  (.setWritable x true))
+                (again/with-retries [100 500 500]
+                  (println "deleting" x)
+                  (jio/delete-file x)))
+              (recur (concat (if (.isDirectory x)
+                               (.listFiles x))
+                             xs))))]
+    (f [(jio/file dir)])))
 
 (defn mkdir-p [dir]
   (.mkdirs (jio/file dir)))
