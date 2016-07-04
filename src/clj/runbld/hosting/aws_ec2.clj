@@ -21,7 +21,10 @@
      (http/get (str "http://169.254.169.254/latest/meta-data" postfix)
                {:socket-timeout 500 :conn-timeout 500}))
     (catch org.apache.http.conn.ConnectTimeoutException _)
-    (catch java.net.ConnectException _))))
+    (catch java.net.ConnectException _)
+    ;; Non-AWS Windows
+    (catch java.net.SocketException _)
+    (catch java.net.UnknownHostException _))))
 
 (s/defn this-host? :- s/Bool
   "Is this host in AWS EC2?"
