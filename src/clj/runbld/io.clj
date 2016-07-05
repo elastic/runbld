@@ -58,7 +58,6 @@
                     (System/gc)
                     (.setWritable x true))
                   (again/with-retries [100 500 500]
-                    (println "deleting" x)
                     (jio/delete-file x))
                   (recur xs))
 
