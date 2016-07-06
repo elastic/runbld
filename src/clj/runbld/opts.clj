@@ -214,7 +214,7 @@
                             ;; Invariant: Jenkins passes it in through arguments
                             (assoc :scriptfile (first arguments))
                             ;; Go ahead and resolve
-                            (update :cwd (comp str io/abspath-file))
+                            (update :cwd io/abspath)
                             (assoc :env process-env))
                :version {:string (version/version)
                          :hash (version/build)}

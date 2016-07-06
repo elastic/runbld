@@ -2,6 +2,7 @@
   (:require [clojure.test :refer :all]
             [schema.test])
   (:require [clj-time.core :as t]
+            [runbld.io :as io]
             [runbld.opts :as opts]
             [runbld.java :as java] :reload-all))
 
@@ -14,7 +15,10 @@
             :inherit-exit-code true
             :inherit-env false,
             :scriptfile "/path/to/script.zsh"
-            :cwd (System/getProperty "user.dir")
+            ;; The case will resolve differently on Windows between
+            ;; user.dir and io/abspath (c: vs C:)
+            :cwd (io/abspath
+                  (System/getProperty "user.dir"))
             :stdout ".stdout.log"
             :stderr ".stderr.log"
             :output ".output.log"
