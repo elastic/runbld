@@ -145,8 +145,9 @@
     (-> path
         file
         .toPath
-        (.toRealPath
-         (into-array java.nio.file.LinkOption []))
+        (cond-> (not (windows?))
+          (.toRealPath
+           (into-array java.nio.file.LinkOption [])))
         str)))
 
 (s/defn resolve-binary :- s/Str
