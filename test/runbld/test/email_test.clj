@@ -40,15 +40,13 @@
                                         (swap! email concat args))]
         (git/with-tmp-repo [d "tmp/git/email-failures"]
           (io/run "rsync" "-a" "test/repo/some-errors/" d)
-          (let [args (concat
-                        ["-c" "test/config/main.yml"
-                        "-j" "elastic+foo+master"
-                         "-d" d]
-                         (if (.startsWith (io/os) "WINDOWS")
-                           ["-p" "CMD.EXE"
-                            "-a" "/C"
-                            "test/fail.bat"]
-                           ["test/fail.bash"]))
+          (let [args (conj
+                      ["-c" "test/config/main.yml"
+                       "-j" "elastic+foo+master"
+                       "-d" d]
+                      (if (opts/windows?)
+                        "test/fail.bat"
+                        "test/fail.bash"))
                 opts (opts/parse-args args)
                 res (apply main/-main args)
                 build-doc (store/get (-> opts :es :conn)

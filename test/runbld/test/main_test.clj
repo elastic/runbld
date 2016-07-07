@@ -57,15 +57,13 @@
                                   ;; to satisfy schema
                                   {})]
         (git/with-tmp-repo [d "tmp/git/main-test-2"]
-          (let [args (concat
-                       ["-c" "test/config/main.yml"
-                         "-j" "elastic+foo+master"
-                         "-d" d]
-                       (if (.startsWith (io/os) "WINDOWS")
-                           ["-p" "CMD.EXE"
-                            "-a" "/C"
-                            "test/fail.bat"]
-                           ["test/fail.bash"]))
+          (let [args (conj
+                      ["-c" "test/config/main.yml"
+                       "-j" "elastic+foo+master"
+                       "-d" d]
+                      (if (opts/windows?)
+                        "test/fail.bat"
+                        "test/fail.bash"))
                 opts (opts/parse-args args)
                 res (apply main/-main args)]
             (is (= 1 (:exit-code res)))

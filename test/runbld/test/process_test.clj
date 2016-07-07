@@ -15,13 +15,10 @@
   (io/with-tmp-dir [dir ["tmp" (str *ns* "-")]]
     (let [args (concat ["-j" "elastic+foo+master"
                         "-d" (str dir)]
-                       (if (.startsWith (io/os) "WINDOWS")
+                       (if (opts/windows?)
                          ["-c" "test\\config\\main.yml"
-                          "-p" "CMD"
-                          "-a" "/C"
                           "test\\output.bat"]
                          ["-c" "test/config/main.yml"
-                          "-p" "bash"
                           "-a" "-e"
                           "test/output.bash"]))
           opts (opts/parse-args args)
