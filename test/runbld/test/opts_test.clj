@@ -10,8 +10,8 @@
 
 (deftest basic
   (let [java-home (:home (java/jvm-facts))]
-    (is (= {:program "zsh"
-            :args ["-x"]
+    (is (= {:program (if (opts/windows?) "CMD.EXE" "zsh")
+            :args (if (opts/windows?) ["/C"] ["-x"])
             :inherit-exit-code true
             :inherit-env false,
             :scriptfile "/path/to/script.zsh"
