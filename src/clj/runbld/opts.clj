@@ -14,6 +14,9 @@
             [runbld.io :as io]
             [runbld.version :as version]))
 
+(defn windows? []
+  (.startsWith (System/getProperty "os.name") "Windows"))
+
 (def config-file-defaults
   {:es
    {:url "http://localhost:9200"
@@ -89,7 +92,7 @@
 
 (defn system-config []
   (io/file
-   (if (.startsWith (System/getProperty "os.name") "Windows")
+   (if (windows?)
      "c:\\runbld\\runbld.conf"
      "/etc/runbld/runbld.conf")))
 
@@ -129,9 +132,9 @@
     :default (environ/env :job-name)]
    [nil "--java-home PATH" "If different from JAVA_HOME or need to override what will be discovered in PATH"]
    ["-p" "--program PROGRAM" "Program that will run the scriptfile"
-    :default "bash"]
+    :default (if (windows?) "CMD.EXE" "bash")]
    ["-a" "--args ARGS" "Args to pass PROGRAM"
-    :default ["-x"]
+    :default (if (windows?) ["/C"] ["-x"])
     :parse-fn #(str/split % #" ")]
    [nil "--system-info" "Just dump facts output"]
    ["-h" "--help" "Help me"]])
