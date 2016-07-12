@@ -164,6 +164,18 @@
         (assoc :log-index-write log-index-write)
         (assoc :conn conn))))
 
+(s/defn make-script :- s/Str
+  ([filename :- s/Str]
+   (make-script filename *in*))
+  ([filename :- s/Str
+    rdr :- java.io.Reader]
+   (if (= filename "-")
+     (let [tmp (doto (io/make-tmp-file "stdin" ".program")
+                 .deleteOnExit)]
+       (spit tmp (slurp rdr))
+       (str tmp))
+     filename)))
+
 (s/defn parse-args :- Opts
   ([args :- [s/Str]]
    (let [{:keys [options arguments summary errors]
@@ -206,13 +218,14 @@
                         (when (-> options :process :inherit-env)
                           (env/get-env))
                         (-> options :process :env)
-                        {:JAVA_HOME (:home java-facts)})]
+                        {:JAVA_HOME (:home java-facts)})
+           scriptfile (make-script (first arguments))]
        (merge (dissoc options :java-home)
               {:es (set-up-es (:es options))
                :env (env/get-env)
                :process (-> (:process options)
                             ;; Invariant: Jenkins passes it in through arguments
-                            (assoc :scriptfile (first arguments))
+                            (assoc :scriptfile scriptfile)
                             ;; Go ahead and resolve
                             (update :cwd (comp str io/abspath-file))
                             (assoc :env process-env))

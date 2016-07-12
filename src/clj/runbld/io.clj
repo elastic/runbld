@@ -156,6 +156,9 @@
          (rmdir-r
           ~(bindings 0))))))
 
+(defn make-tmp-file [pre post]
+  (java.io.File/createTempFile (format "runbld-%s-" pre) post))
+
 (s/defn same-file? :- s/Bool
   ([f1 :- java.io.File
     f2 :- java.io.File]

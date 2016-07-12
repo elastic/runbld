@@ -38,3 +38,16 @@
                opts/parse-args
                :email
                (select-keys [:from :to]))))))
+
+(deftest stdin
+  (let [java-home (:home (java/jvm-facts))
+        prog "l33t code"
+        scriptfile (-> ["-c" "test/config/opts.yml"
+                        "-j" "test,foo,master"
+                        "--java-home" java-home
+                        (opts/make-script "-" (java.io.StringReader. prog))]
+                       opts/parse-args
+                       :process
+                       :scriptfile)]
+    (is (re-find #".*program$" scriptfile))
+    (is (= prog (slurp scriptfile)))))
