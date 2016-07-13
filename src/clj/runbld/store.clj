@@ -41,8 +41,13 @@
   [conn :- Connection
    idx :- s/Keyword]
   (let [r (conn/request conn :get
-                        {:uri (format "/%s/_stats/store" (name idx))})]
-    (get-in r [:indices idx :primaries :store :size_in_bytes])))
+                        {:uri (format "/%s/_stats/store" (name idx))})
+        size (get-in r [:indices idx :primaries :store :size_in_bytes])]
+    (when-not size
+      (throw+ {:type ::index-error
+               :msg (format
+                     "could not retrieve metadata for %s, is it red?" idx)}))
+    size))
 
 (s/defn create-index :- s/Str
   [conn :- Connection
