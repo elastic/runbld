@@ -1,13 +1,26 @@
 (ns runbld.io
   (:refer-clojure :exclude [spit])
   (:require [schema.core :as s])
-  (:require [clojure.java.io :as jio]
+  (:require [again.core :as again]
+            [clojure.java.io :as jio]
             [clojure.java.shell :as sh]
-            [slingshot.slingshot :refer [throw+]]))
+            [slingshot.slingshot :refer [throw+]])
+  (:import (org.apache.commons.io FileUtils)))
 
 (def logger (agent nil))
 
 (def file-logger (agent nil))
+
+(defn os []
+  (-> (System/getProperties)
+      (get "os.name")
+      .toUpperCase))
+
+(defn windows?
+  ([]
+   (windows? (os)))
+  ([os]
+   (.startsWith os "WINDOWS")))
 
 (defn log [& x]
   (send-off logger (fn [_] (apply println x))))
@@ -33,13 +46,30 @@
     res))
 
 (defn rmdir-r [dir]
-  (run "rm" "-r" dir))
+  (let [f (fn [[x & xs]]
+            (when x
+              (cond
+                ;; Leaf (file or empty directory)
+                (or (.isFile x)
+                    (and (.isDirectory x)
+                         (zero? (count (.listFiles x)))))
+                (do
+                  (when (windows?)
+                    (System/gc)
+                    (.setWritable x true))
+                  (again/with-retries [100 500 500]
+                    (jio/delete-file x))
+                  (recur xs))
 
-(defn rmdir-rf [dir]
-  (run "rm" "-rf" dir))
+                ;; Node (non-empty directory)
+                (and (.isDirectory x)
+                     (pos? (count (.listFiles x))))
+                (recur
+                 (concat (.listFiles x) [x] xs)))))]
+    (f [(jio/file dir)])))
 
 (defn mkdir-p [dir]
-  (run "mkdir" "-p" dir))
+  (.mkdirs (jio/file dir)))
 
 (defn abspath [f]
   (.getCanonicalPath (jio/as-file f)))
@@ -78,11 +108,6 @@
       (throw+ {:error ::resource-not-found
                :msg (format "cannot find %s" path)}))))
 
-(defn os []
-  (-> (System/getProperties)
-      (get "os.name")
-      .toUpperCase))
-
 (defn run-which [cmd name]
   (let [res (sh/sh cmd name)]
     (if (zero? (:exit res))
@@ -120,8 +145,9 @@
     (-> path
         file
         .toPath
-        (.toRealPath
-         (into-array java.nio.file.LinkOption []))
+        (cond-> (not (windows?))
+          (.toRealPath
+           (into-array java.nio.file.LinkOption [])))
         str)))
 
 (s/defn resolve-binary :- s/Str

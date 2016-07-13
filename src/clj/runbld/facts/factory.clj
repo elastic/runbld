@@ -8,15 +8,9 @@
             [runbld.facts.facter3]
             [runbld.io :as io]))
 
-(def facter-program
-  "facter")
-
-(defn facter-installed? []
-  (io/which facter-program))
-
 (defn facter-version []
-  (when (facter-installed?)
-    (let [version-string (:out (io/run facter-program "--version"))
+  (when-let [facter-bin (io/which "facter")]
+    (let [version-string (:out (io/run facter-bin "--version"))
           [_ maj minor patch] (re-find #"(\d+)\.(\d+)\.(\d+).*"
                                        (.trim version-string))]
       (if (and maj minor patch)
@@ -28,8 +22,8 @@
                               version-string)})))))
 
 (defn facter []
-  (when (facter-installed?)
-    (let [{:keys [out err exit]} (io/run facter-program "--yaml")]
+  (when-let [facter-bin (io/which "facter")]
+    (let [{:keys [out err exit]} (io/run facter-bin "--yaml")]
       (if out
         (yaml/parse-string out)
         (throw+ {:error ::empty-facter

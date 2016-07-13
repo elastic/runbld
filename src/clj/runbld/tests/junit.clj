@@ -75,10 +75,11 @@
          (map #(.getCanonicalPath %))
          (map str)
          (filter #(re-find #"TEST-.*\.xml$" %))
-         (map #(str "file://" %))
-         (map #(java.net.URL. %))
+         (map io/file)
+         (map #(.toURI %))
+         (map #(.toURL %))
          (map x/xml-resource)
-         (pmap make-failure-report)
+         (map make-failure-report)
          (filter identity)
          (reduce combine-failure-reports {:errors 0
                                           :failures 0

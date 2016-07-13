@@ -53,6 +53,9 @@
   (os-version [x]
     (-> (.facts x) :os :release :full))
 
+  (os-family [x]
+    (-> (.facts x) :os :family))
+
   (ram-mb [x]
     (data/bigdec
      (/ (facts/ram-bytes x) (* 1024 1024))
