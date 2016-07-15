@@ -173,7 +173,7 @@
   ([filename :- s/Str
     rdr :- java.io.Reader]
    (if (= filename "-")
-     (let [tmp (doto (io/make-tmp-file "stdin" ".program")
+     (let [tmp (doto (io/make-tmp-file "stdin" ".bat")
                  .deleteOnExit)]
        (spit tmp (slurp rdr))
        (str tmp))
