@@ -55,5 +55,5 @@
                        opts/parse-args
                        :process
                        :scriptfile)]
-    (is (re-find #".*program$" scriptfile))
+    (is (re-find #".*stdin.*" scriptfile))
     (is (= prog (slurp scriptfile)))))
