@@ -14,6 +14,9 @@
             [runbld.io :as io]
             [runbld.version :as version]))
 
+(defn windows? []
+  (.startsWith (System/getProperty "os.name") "Windows"))
+
 (def config-file-defaults
   {:es
    {:url "http://localhost:9200"
@@ -50,7 +53,8 @@
     :template-txt "templates/email.mustache.txt"
     :template-html "templates/email.mustache.html"
     :text-only false
-    :max-failure-notify 10}
+    :max-failure-notify 10
+    :disable false}
 
    :slack
    {:success true
@@ -89,7 +93,7 @@
 
 (defn system-config []
   (io/file
-   (if (.startsWith (System/getProperty "os.name") "Windows")
+   (if (windows?)
      "c:\\runbld\\runbld.conf"
      "/etc/runbld/runbld.conf")))
 
@@ -129,9 +133,9 @@
     :default (environ/env :job-name)]
    [nil "--java-home PATH" "If different from JAVA_HOME or need to override what will be discovered in PATH"]
    ["-p" "--program PROGRAM" "Program that will run the scriptfile"
-    :default "bash"]
+    :default (if (windows?) "CMD.EXE" "bash")]
    ["-a" "--args ARGS" "Args to pass PROGRAM"
-    :default ["-x"]
+    :default (if (windows?) ["/C"] ["-x"])
     :parse-fn #(str/split % #" ")]
    [nil "--system-info" "Just dump facts output"]
    ["-h" "--help" "Help me"]])
@@ -214,7 +218,7 @@
                             ;; Invariant: Jenkins passes it in through arguments
                             (assoc :scriptfile (first arguments))
                             ;; Go ahead and resolve
-                            (update :cwd (comp str io/abspath-file))
+                            (update :cwd io/abspath)
                             (assoc :env process-env))
                :version {:string (version/version)
                          :hash (version/build)}
