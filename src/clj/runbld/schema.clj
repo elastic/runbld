@@ -47,7 +47,8 @@
   {(s/optional-key :hook) (s/cond-pre s/Str [s/Str])
    :success            s/Bool
    :failure            s/Bool
-   :template           (s/cond-pre s/Str java.io.File)})
+   :template           (s/cond-pre s/Str java.io.File)
+   :disable            s/Bool})
 
 (def OptsProcess
   {:program           s/Str
