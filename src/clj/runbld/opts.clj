@@ -59,7 +59,8 @@
    :slack
    {:success true
     :failure true
-    :template "templates/slack.mustache.json"}})
+    :template "templates/slack.mustache.json"
+    :disable false}})
 
 (s/defn merge-profiles :- java.util.Map
   [job-name :- s/Str
