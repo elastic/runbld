@@ -36,13 +36,15 @@
   "Determine whether to send a slack alert depending on configs"
   [opts build]
   (let [ec (-> build :process :exit-code)]
-    (or
-     (and
-      (zero? ec)
-      (-> opts :slack :success))
-     (and
-      (pos? ec)
-      (-> opts :slack :failure)))))
+    (and
+     (or
+      (and
+       (zero? ec)
+       (-> opts :slack :success))
+      (and
+       (pos? ec)
+       (-> opts :slack :failure)))
+     (not (-> opts :slack :disable)))))
 
 (defn maybe-send! [opts {:keys [index type id] :as addr}]
   (let [build-doc (store/get (-> opts :es :conn) addr)
