@@ -39,7 +39,8 @@
    :text-only          s/Bool
    :tls                s/Bool
    :to                 (s/cond-pre s/Str [s/Str])
-   :user               s/Str})
+   :user               s/Str
+   :disable            s/Bool})
 
 (def OptsSlack
   ;; hook is optional because the other values have defaults

@@ -53,7 +53,8 @@
     :template-txt "templates/email.mustache.txt"
     :template-html "templates/email.mustache.html"
     :text-only false
-    :max-failure-notify 10}
+    :max-failure-notify 10
+    :disable false}
 
    :slack
    {:success true

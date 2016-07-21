@@ -112,13 +112,16 @@
                         (-> build :build :job-name-extra)))))
 
 (s/defn send? :- s/Bool
-  [build :- StoredBuild]
-  (pos?
-   (-> build :process :exit-code)))
+  [email-opts :- OptsEmail
+   build :- StoredBuild]
+  (and
+   (not (:disable email-opts))
+   (pos?
+    (-> build :process :exit-code))))
 
 (defn maybe-send! [opts {:keys [index type id] :as addr}]
   (let [build-doc (store/get (-> opts :es :conn) addr)
         failure-docs (store/get-failures opts (:id build-doc))]
-    (if (send? build-doc)
+    (if (send? (-> opts :email) build-doc)
       (send opts (make-context opts build-doc failure-docs))
       ((opts :logger) "NO MAIL GENERATED"))))
