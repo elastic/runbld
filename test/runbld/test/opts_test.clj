@@ -9,8 +9,9 @@
 (use-fixtures :once schema.test/validate-schemas)
 
 (deftest basic
-  (let [java-home (:home (java/jvm-facts))]
-    (is (= {:program (if (opts/windows?) "CMD.EXE" "zsh")
+  (let [java-home (:home (java/jvm-facts))
+        program (if (opts/windows?) "CMD.EXE" "zsh")]
+    (is (= {:program program
             :args (if (opts/windows?) ["/C"] ["-x"])
             :inherit-exit-code true
             :inherit-env false,
@@ -27,18 +28,32 @@
             (opts/parse-args ["-c" "test/config/opts.yml"
                               "-j" "test,foo,master"
                               "--java-home" java-home
-                              "-p" "zsh"
+                              "-p" program
                               "/path/to/script.zsh"]))))))
 
 (deftest profile1
-  (let [java-home (:home (java/jvm-facts))]
+  (let [java-home (:home (java/jvm-facts))
+        program (if (opts/windows?) "CMD.EXE" "zsh")]
     (is (= {:from "override@example.com"
             :to "override@example.com"}
            (-> ["-c" "test/config/opts.yml"
                 "-j" "test,foo,master"
-                "-p" "zsh"
+                "-p" program
                 "--java-home" java-home
                 "/path/to/script.zsh"]
                opts/parse-args
                :email
                (select-keys [:from :to]))))))
+
+(deftest stdin
+  (let [java-home (:home (java/jvm-facts))
+        prog "l33t code"
+        scriptfile (-> ["-c" "test/config/opts.yml"
+                        "-j" "test,foo,master"
+                        "--java-home" java-home
+                        (opts/make-script "-" (java.io.StringReader. prog))]
+                       opts/parse-args
+                       :process
+                       :scriptfile)]
+    (is (re-find #".*stdin.*" scriptfile))
+    (is (= prog (slurp scriptfile)))))
