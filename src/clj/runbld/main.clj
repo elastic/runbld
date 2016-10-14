@@ -52,6 +52,7 @@
                     (opts/parse-args args)
                     :logger io/log)
          _ (io/log (version/string))
+         pre-store-result (store/begin-process! opts)
          _ (io/log ">>>>>>>>>>>> SCRIPT EXECUTION BEGIN >>>>>>>>>>>>")
          {:keys [opts process-result]} (run opts-init)
          _ (io/log "<<<<<<<<<<<< SCRIPT EXECUTION END <<<<<<<<<<<<")
