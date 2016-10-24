@@ -2,9 +2,7 @@
   (:require [runbld.schema :refer :all]
             [schema.core :as s])
   (:require [cheshire.core :as json]
-            [clojure.core.async :as async
-             :refer [thread go go-loop chan
-                     >! <! >!! <!! alts! alts!! close!]]
+            [clojure.core.async :as async]
             [runbld.env :as env]
             [runbld.store :as store]
             [runbld.util.data :as data]
@@ -50,14 +48,14 @@
     ords      :- Ref
     bytes     :- Ref
     log-extra :- {s/Any s/Any}]
-   (thread
+   (async/thread
      (doseq [line (line-seq (io/reader is))]
        (let [log (dosync
                   (inc-ordinals ords label)
                   (inc-bytes bytes line label)
                   (make-structured-log line label ords log-extra))]
-         (>!! ch log)))
-     (close! ch)
+         (async/>!! ch log)))
+     (async/close! ch)
      (keyword (str (name label) "-done")))))
 
 (s/defn add-env! :- nil
@@ -79,8 +77,8 @@
    (let [start-ms    (System/currentTimeMillis)
          ords        (ref {:total 0 :stderr 0 :stdout 0})
          bytes       (ref {:total 0 :stderr 0 :stdout 0})
-         out-ch      (chan)
-         err-ch      (chan)
+         out-ch      (async/chan)
+         err-ch      (async/chan)
          proc        (.start pb)
          stdout (start-input-reader!
                  (.getInputStream proc) out-ch :stdout ords bytes log-extra)
@@ -96,13 +94,13 @@
 (s/defn start-input-multiplexer!
   ([in-ch   :- ManyToManyChannel
     out-chs :- [ManyToManyChannel]]
-   (go-loop [x (<! in-ch)]
+   (async/go-loop [x (async/<! in-ch)]
      (if x
        (do (doseq [ch out-chs]
-             (>! ch x))
-           (recur (<! in-ch)))
+             (async/>! ch x))
+           (recur (async/<! in-ch)))
        (doseq [c out-chs]
-         (close! c))))))
+         (async/close! c))))))
 
 (s/defn exec-pb :-
   {:exit-code      s/Num
@@ -173,9 +171,9 @@
   ([file]
    (start-file-listener! file 100))
   ([file bufsize]
-   (let [ch (chan bufsize)]
-     [ch (go-loop []
-           (when-let [x (<! ch)]
+   (let [ch (async/chan bufsize)]
+     [ch (async/go-loop []
+           (when-let [x (async/<! ch)]
              (io/spit file (str (json/encode x) "\n") :append true)
              (recur)))])))
 
@@ -187,9 +185,9 @@
   ([wtr stream]
    (start-writer-listener! wtr stream 100))
   ([wtr stream bufsize]
-   (let [ch (chan bufsize)]
-     [ch (go-loop []
-           (when-let [x (<! ch)]
+   (let [ch (async/chan bufsize)]
+     [ch (async/go-loop []
+           (when-let [x (async/<! ch)]
              (when (= (name stream) (:stream x))
                (binding [*out* wtr]
                  (println (:log x))))
@@ -213,7 +211,7 @@
          listeners [file-ch es-ch stdout-ch stderr-ch]
          result (exec program args scriptfile cwd env listeners log-extra)
          listeners-done (doall
-                         (map <!! [file-process
+                         (map async/<!! [file-process
                                    es-process
                                    stdout-process
                                    stderr-process]))
