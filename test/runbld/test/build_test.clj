@@ -1,9 +1,10 @@
 (ns runbld.test.build-test
   (:require [clojure.test :refer :all]
-            [schema.test])
-  (:require [runbld.build :as build] :reload-all))
+            clojure.spec
+            clojure.spec.test)
+  (:require [runbld.build :as build]))
 
-(use-fixtures :once schema.test/validate-schemas)
+(clojure.spec.test/instrument)
 
 (deftest basic
   (is
@@ -15,3 +16,10 @@
        :project "elasticsearch"}
       (build/split-job-name
        "elastic+elasticsearch+master+multijob-intake"))))
+
+#_(deftest fail
+  (is
+   (= {:branch "master"
+       :project "elasticsearch"}
+      (build/split-job-name
+       "nothing"))))

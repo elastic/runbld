@@ -70,37 +70,3 @@
      (def ~(symbol (str name "Raw")) ~form)
      (def ~(symbol (str name "Mapping")) (mapping-walk ~form))))
 
-(def not-analyzed
-  {:type :string
-   :index :not_analyzed})
-
-(def analyzed
-  {:type :string})
-
-(def long
-  {:type :long})
-
-(def double
-  {:type :double})
-
-(def boolean
-  {:type :boolean})
-
-(def date
-  {:type :date})
-
-(def multi-string
-  (merge
-   not-analyzed
-   {:fields {:analyzed
-             {:type :string
-              :index :analyzed}}}))
-
-(def classpath-analyzer
-  {:classpath
-   {:type :pattern
-    :pattern ":|;"}})
-
-(def classpath
-  {:type :string
-   :analyzer "classpath"})

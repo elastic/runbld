@@ -1,6 +1,5 @@
 (ns runbld.opts
-  (:require [runbld.schema :refer :all]
-            [schema.core :as s]
+  (:require [clojure.spec :as s]
             [slingshot.slingshot :refer [throw+]])
   (:require [clj-yaml.core :as yaml]
             [clojure.string :as str]
@@ -13,6 +12,8 @@
             [runbld.util.date :as date]
             [runbld.io :as io]
             [runbld.version :as version]))
+
+(s/def ::job-name string?)
 
 (defn windows? []
   (.startsWith (System/getProperty "os.name") "Windows"))
@@ -63,9 +64,8 @@
     :template "templates/slack.mustache.json"
     :disable false}})
 
-(s/defn merge-profiles :- java.util.Map
-  [job-name :- s/Str
-   profiles :- [{s/Keyword s/Any}]]
+(defn merge-profiles
+  [job-name profiles]
   (if profiles
     (apply deep-merge-with deep-merge
            (for [ms profiles]
@@ -84,9 +84,8 @@
                             filepath)}))
     (yaml/parse-string (slurp f))))
 
-(s/defn load-config-with-profiles :- java.util.Map
-  [job-name :- s/Str
-   filepath :- (s/cond-pre s/Str java.io.File)]
+(defn load-config-with-profiles
+  [job-name filepath]
   (let [conf (load-config filepath)
         res (deep-merge-with deep-merge
                              (dissoc conf :profiles)
@@ -99,9 +98,8 @@
      "c:\\runbld\\runbld.conf"
      "/etc/runbld/runbld.conf")))
 
-(s/defn assemble-all-opts :- java.util.Map
-  [{:keys [job-name] :as opts} :- {(s/required-key :job-name) s/Str
-                                   s/Keyword s/Any}]
+(defn assemble-all-opts
+  [{:keys [job-name] :as opts}]
   (deep-merge-with deep-merge
                    config-file-defaults
                    (if (environ/env :dev)
@@ -142,39 +140,10 @@
    [nil "--system-info" "Just dump facts output"]
    ["-h" "--help" "Help me"]])
 
-(s/defn set-up-es [{:keys [url
-                           build-index
-                           failure-index
-                           log-index
-                           max-index-bytes] :as opts}]
-  (let [conn (store/make-connection
-              (select-keys opts [:url :http-opts]))
-        build-index-write (store/set-up-index
-                           conn build-index
-                           StoredBuildIndexSettings
-                           max-index-bytes)
-        failure-index-write (store/set-up-index
-                             conn failure-index
-                             StoredFailureIndexSettings
-                             max-index-bytes)
-        log-index-write (store/set-up-index
-                         conn log-index
-                         StoredLogIndexSettings
-                         max-index-bytes)]
-    (-> opts
-        (assoc :build-index-search (format "%s*" build-index))
-        (assoc :failure-index-search (format "%s*" failure-index))
-        (assoc :log-index-search (format "%s*" log-index))
-        (assoc :build-index-write build-index-write)
-        (assoc :failure-index-write failure-index-write)
-        (assoc :log-index-write log-index-write)
-        (assoc :conn conn))))
-
-(s/defn make-script :- s/Str
-  ([filename :- s/Str]
+(defn make-script
+  ([filename]
    (make-script filename *in*))
-  ([filename :- s/Str
-    rdr :- java.io.Reader]
+  ([filename rdr]
    (if (= filename "-")
      (let [tmp (doto (io/make-tmp-file "stdin" (if (windows?)
                                                  ".bat" ".program"))
@@ -183,8 +152,10 @@
        (str tmp))
      filename)))
 
-(s/defn parse-args :- Opts
-  ([args :- [s/Str]]
+(s/fdef parse-args
+        :args (s/cat :argv (s/spec (s/* string?))))
+(defn parse-args
+  ([args]
    (let [{:keys [options arguments summary errors]
           :as parsed-opts} (cli/parse-opts args opts :nodefault true)]
 
@@ -228,7 +199,7 @@
                         {:JAVA_HOME (:home java-facts)})
            scriptfile (make-script (first arguments))]
        (merge (dissoc options :java-home)
-              {:es (set-up-es (:es options))
+              {:es (store/set-up-es! (:es options))
                :env (env/get-env)
                :process (-> (:process options)
                             ;; Invariant: Jenkins passes it in through arguments
@@ -239,3 +210,4 @@
                :version {:string (version/version)
                          :hash (version/build)}
                :java java-facts})))))
+

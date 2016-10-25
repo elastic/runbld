@@ -1,5 +1,10 @@
 (ns runbld.version
-  (:require [clojure.java.io :as io]))
+  (:require [clojure.spec :as s]
+            [clojure.java.io :as io]))
+
+(s/def ::string string?)
+(s/def ::hash string?)
+(s/def ::version (s/keys :req-un [::string ::hash]))
 
 (defn build []
   (if-let [b (io/resource "build.txt")]

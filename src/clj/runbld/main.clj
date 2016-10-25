@@ -15,7 +15,7 @@
             [runbld.io :as io]
             [runbld.vcs.middleware :as vcs]
             [runbld.version :as version]
-            [schema.core :as s]
+            [clojure.spec :as s]
             [slingshot.slingshot :refer [try+ throw+]]))
 
 (defn really-die
@@ -37,25 +37,25 @@
      ;; for tests when #'really-die is redefed
      msg*)))
 
-(def run
-  (-> #'proc/run
-      vcs/wrap-vcs-info
+(def build-opts
+  (-> #'vcs/wrap-vcs-info
       build/wrap-build-meta
       scheduler/wrap-scheduler
       java/wrap-java
       system/wrap-system))
 
-;; -main :: IO ()
+;; -main :: List String -> IO ()
 (defn -main [& args]
   (try+
+   (io/log (version/string))
    (let [opts-init (assoc
                     (opts/parse-args args)
                     :logger io/log)
-         _ (io/log (version/string))
+         opts (build-opts opts-init)
          pre-store-result (store/begin-process! opts)
-         _ (io/log ">>>>>>>>>>>> SCRIPT EXECUTION BEGIN >>>>>>>>>>>>")
-         {:keys [opts process-result]} (run opts-init)
-         _ (io/log "<<<<<<<<<<<< SCRIPT EXECUTION END <<<<<<<<<<<<")
+         _ (io/log "BEGIN PROCESS")
+         {:keys [opts process-result]} (proc/run opts)
+         _ (io/log "END PROCESS")
          {:keys [took status exit-code out-bytes err-bytes]} process-result
          _ (io/log (format "DURATION: %sms" took))
          _ (io/log (format "STDOUT: %d bytes" out-bytes))

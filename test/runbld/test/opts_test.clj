@@ -1,12 +1,12 @@
 (ns runbld.test.opts-test
   (:require [clojure.test :refer :all]
-            [schema.test])
+            clojure.spec.test)
   (:require [clj-time.core :as t]
             [runbld.io :as io]
             [runbld.opts :as opts]
             [runbld.java :as java] :reload-all))
 
-(use-fixtures :once schema.test/validate-schemas)
+(clojure.spec.test/instrument)
 
 (deftest basic
   (let [java-home (:home (java/jvm-facts))

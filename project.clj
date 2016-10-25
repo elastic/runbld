@@ -31,15 +31,14 @@
                  [com.taoensso/timbre "4.1.4"]
 
                  [com.palletops/thread-expr "1.3.0"]
-                 [elastic/elasticsearch-clojure "0.99.1"
+                 [elastic/elasticsearch-clojure "0.99.2"
                   :exclusions [prismatic/schema]]
                  [enlive "1.1.6"]
                  [environ "1.0.3"]
                  [listora/again "0.1.0"]
-                 [org.clojure/clojure "1.8.0"]
-                 [clojure-future-spec "1.9.0-alpha13"]
+                 [org.clojure/clojure "1.9.0-alpha13"]
                  [org.clojure/test.check "0.9.0"]
-                 [org.clojure/core.async "0.2.374"]
+                 [org.clojure/core.async "0.2.395"]
                  [org.clojure/tools.cli "0.3.3"]
 
                  ;; Use 1.7 because the Jenkins plugin is pinned to 1.7
@@ -49,8 +48,8 @@
                  [slingshot "0.12.2"]
                  [stencil "0.5.0"]]
   :injections [(require 'clojure.pprint)]
-  :profiles {:dev {:env {:dev true}}
-             :package {:plugins [[elastic/lein-bin "0.3.6"]]
+  :profiles {:dev {:env {:dev "true"}}
+             :package {:plugins [[lein-bin "0.3.4"]]
                        :bin {:bootclasspath false}}}
   :plugins [[lein-environ "1.0.3"]]
   :aliases {"package" ["with-profile" "package" "bin"]}
