@@ -1,15 +1,45 @@
 (ns runbld.spec
-  (:require [clojure.spec :as s])
+  (:require [clojure.spec :as s]
+            [clojure.spec.gen :as gen]
+            [elasticsearch.connection.http :as es])
   (:import (elasticsearch.connection Connection)))
 
-(s/def :runbld.store/index-name string?)
+;; Assuming require [clojure.tools.logging :as log]
+(Thread/setDefaultUncaughtExceptionHandler
+ (reify Thread$UncaughtExceptionHandler
+   (uncaughtException [_ thread ex]
+     (locking #'clojure.pprint/pprint
+       (clojure.pprint/pprint "Uncaught exception on" (.getName thread) ex)))))
+
+(s/def :runbld.store/index-name
+  (s/with-gen string?
+    (fn []
+      (gen/fmap #(.toLowerCase %)
+                (gen/not-empty (gen/string-alphanumeric))))))
 
 (s/def :runbld.store/url
-  (s/and string?
-         #(.startsWith % "http")))
+  (s/with-gen (s/and string?
+                     #(.startsWith % "http"))
+    #(s/gen #{"http://localhost:9200"})))
 
-(s/def :runbld.store/conn #(instance? Connection %))
-(s/def :runbld.store/http-opts map?)
+(s/def :runbld.store/conn
+  (s/with-gen (partial instance? Connection)
+    #(s/gen #{(es/make {:url "http://localhost:9200"})})))
+
+(s/def :runbld.store/http-opts
+  (s/with-gen map?
+    #(s/gen #{{:query-string ""}})))
+
+(s/def :runbld.store/index-meta
+  (s/with-gen (s/keys :opt-un [:runbld.store/settings
+                               :runbld.store/mappings])
+    #(s/gen #{{:settings
+               {:index
+                {:number_of_shards 1
+                 :number_of_replicas 0}}}})))
+
+(s/def :runbld.store/settings map?)
+(s/def :runbld.store/mappings map?)
 (s/def :runbld.store/build-index :runbld.store/index-name)
 (s/def :runbld.store/failure-index :runbld.store/index-name)
 (s/def :runbld.store/log-index :runbld.store/index-name)

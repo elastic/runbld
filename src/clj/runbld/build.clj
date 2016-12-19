@@ -65,7 +65,7 @@
 
 (s/fdef split-job-name
         :args (s/cat :s string?)
-        :ret ::job-split)
+        :ret (s/nilable ::job-split))
 (defn split-job-name
   [s]
   (when s
@@ -76,12 +76,13 @@
             (format
              "^([^%s]+)\\%s([^%s]+)\\%s([^%s]+)\\%s?([^%s]*)?$"
              delim delim delim delim delim delim delim)) s)]
-      {:job-name job-name
-       :org org
-       :project project
-       :branch branch
-       :job-name-extra job-name-extra
-       :org-project-branch (format "%s/%s#%s" org project branch)})))
+      (when job-name
+        {:job-name job-name
+         :org org
+         :project project
+         :branch branch
+         :job-name-extra job-name-extra
+         :org-project-branch (format "%s/%s#%s" org project branch)}))))
 
 (defn wrap-build-meta
   [proc]
@@ -92,3 +93,4 @@
             :build (merge (:build opts)
                           (split-job-name (:job-name opts))
                           (scheduler/as-map (:scheduler opts)))))))
+

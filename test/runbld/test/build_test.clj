@@ -16,10 +16,3 @@
        :project "elasticsearch"}
       (build/split-job-name
        "elastic+elasticsearch+master+multijob-intake"))))
-
-#_(deftest fail
-  (is
-   (= {:branch "master"
-       :project "elasticsearch"}
-      (build/split-job-name
-       "nothing"))))

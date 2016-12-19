@@ -31,12 +31,12 @@
                  [com.taoensso/timbre "4.1.4"]
 
                  [com.palletops/thread-expr "1.3.0"]
-                 [elastic/elasticsearch-clojure "0.99.2"
+                 [elastic/elasticsearch-clojure "0.99.3"
                   :exclusions [prismatic/schema]]
                  [enlive "1.1.6"]
                  [environ "1.0.3"]
                  [listora/again "0.1.0"]
-                 [org.clojure/clojure "1.9.0-alpha13"]
+                 [org.clojure/clojure "1.9.0-alpha14"]
                  [org.clojure/test.check "0.9.0"]
                  [org.clojure/core.async "0.2.395"]
                  [org.clojure/tools.cli "0.3.3"]
@@ -56,4 +56,5 @@
   :aot :all
   :main runbld.main
   :test-selectors {:default (complement :integration)
-                   :integration :integration})
+                   :integration :integration}
+  :monkeypatch-clojure-test false)
