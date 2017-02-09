@@ -7,6 +7,14 @@
             [runbld.util.data :as data])
   (:import (java.nio.file Files)))
 
+;; We need to guard against overflows on filesystems (particularly
+;; AWS EFS) that are larger than Long/MAX_VALUE. See
+;; https://bugs.openjdk.java.net/browse/JDK-8162520
+(defn prevent-overflow [n]
+  (if (neg? n)
+    Long/MAX_VALUE
+    n))
+
 (defrecord JavaFileSystem [jfs]
   FileSystem
   (fs-mountpoint [x]
@@ -16,10 +24,10 @@
     (-> x .jfs .type))
 
   (fs-bytes-total [x]
-    (-> x .jfs .getTotalSpace))
+    (-> x .jfs .getTotalSpace prevent-overflow))
 
   (fs-bytes-free [x]
-    (-> x .jfs .getUsableSpace))
+    (-> x .jfs .getUsableSpace prevent-overflow))
 
   (fs-bytes-used [x]
     (let [tot (fs/fs-bytes-total x)
