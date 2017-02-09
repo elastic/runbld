@@ -4,7 +4,7 @@
 
 It wraps!
 
-[![Other Wrappers](https://rockhall.com/media/assets/inductees/default/run_dmc.jpg)]
+[![Other Wrappers](https://upload.wikimedia.org/wikipedia/en/1/1f/Rundmc_2.jpg)]
 (https://en.wikipedia.org/wiki/Run%E2%80%93D.M.C.)
 
 When you need the power of Jenkins, but the sanity of change
