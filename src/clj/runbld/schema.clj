@@ -45,6 +45,7 @@
 (def OptsSlack
   ;; hook is optional because the other values have defaults
   {(s/optional-key :hook) (s/cond-pre s/Str [s/Str])
+   :first-success      s/Bool
    :success            s/Bool
    :failure            s/Bool
    :template           (s/cond-pre s/Str java.io.File)
