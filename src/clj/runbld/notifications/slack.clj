@@ -8,15 +8,18 @@
             [runbld.notifications :as n]
             [runbld.store :as store]
             [stencil.core :as mustache]
-            [elasticsearch.document :as doc]))
+            [elasticsearch.document :as doc]
+            [robert.bruce :refer [try-try-again] :as try]))
 
 (defn api-send
   "Make the Slack REST API call"
   [opts js hook]
   (do
     ((opts :logger) "NOTIFYING SLACK")
-    (http/post hook
-               {:body js})))
+    (try-try-again
+     {:sleep 250 :tries 10 :decay try/exponential}
+     #(http/post hook
+                 {:body js}))))
 
 (s/defn send :- s/Any
   "Format and send the Slack notifcation"
@@ -71,4 +74,9 @@
         failure-docs (store/get-failures opts (:id build-doc))]
     (when (send? opts build-doc)
       (let [ctx (n/make-context opts build-doc failure-docs)]
-        (send opts ctx)))))
+        (try
+          (send opts ctx)
+          (catch Exception e
+            ((opts :logger)
+             (str "Caught exception while notifying Slack: "
+                  (.getMessage e)))))))))
