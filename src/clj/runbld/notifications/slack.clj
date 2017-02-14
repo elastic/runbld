@@ -7,7 +7,8 @@
             [runbld.io :as io]
             [runbld.notifications :as n]
             [runbld.store :as store]
-            [stencil.core :as mustache]))
+            [stencil.core :as mustache]
+            [elasticsearch.document :as doc]))
 
 (defn api-send
   "Make the Slack REST API call"
@@ -32,19 +33,38 @@
       (api-send opts js hooks)
       (doall (map #(api-send opts js %) hooks)))))
 
+(defn first-successful-build?
+  "If the build before this one was a failure, send a success notification to
+  indicate that the build has been fixed."
+  [opts build-doc]
+  (when (-> opts :slack :first-success)
+    (let [job (-> build-doc :build :job-name)
+          query {:body
+                 {:size 2
+                  :query {:term {:build.job-name job}}
+                  :sort {:process.time-end {:order "desc"}}}}
+          previous (doc/search (-> opts :es :conn) query)]
+      (-> previous
+          :hits
+          :hits
+          second
+          :_source
+          :process
+          :status
+          (= "FAILURE")))))
+
+(defn send-success? [opts build]
+  (or (-> opts :slack :success)
+      (first-successful-build? opts build)))
+
 (defn send?
   "Determine whether to send a slack alert depending on configs"
   [opts build]
   (let [ec (-> build :process :exit-code)]
-    (and
-     (or
-      (and
-       (zero? ec)
-       (-> opts :slack :success))
-      (and
-       (pos? ec)
-       (-> opts :slack :failure)))
-     (not (-> opts :slack :disable)))))
+    (when-not (-> opts :slack :disable)
+      (if (zero? ec)
+        (send-success? opts build)
+        (-> opts :slack :failure)))))
 
 (defn maybe-send! [opts {:keys [index type id] :as addr}]
   (let [build-doc (store/get (-> opts :es :conn) addr)
