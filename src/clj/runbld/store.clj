@@ -17,6 +17,8 @@
 
 (def MAX_INDEX_BYTES (* 1024 1024 1024))
 
+(def MAX_TERM_LENGTH 32766)
+
 (defn make-connection
   [{:keys [url http-opts] :as args}]
   (http/make args))
@@ -82,6 +84,14 @@
        (name newest)
        (create-timestamped-index conn (format "%s-" idx) body)))))
 
+(defn truncate-message [{:keys [message] :as doc}]
+  (let [bytes (.getBytes message "UTF-8")
+        truncated (if (> (count bytes) MAX_TERM_LENGTH)
+                    (String. (byte-array (take MAX_TERM_LENGTH bytes))
+                             "UTF-8")
+                    message)]
+    (merge doc {:message truncated})))
+
 (s/defn create-build-doc :- StoredBuild
   [opts result test-report]
   (merge
@@ -96,7 +106,7 @@
                                      :message
                                      :summary])]
               (update (:report test-report)
-                      :failed-testcases #(map f %))))}))
+                      :failed-testcases #(map (comp truncate-message f) %))))}))
 
 (s/defn save-build!
   [opts
