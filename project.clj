@@ -21,7 +21,7 @@
                  [circleci/clj-yaml "0.5.4"]
                  [com.draines/postal "1.11.3"
                   :exclusions
-                  [;; Newer one comes from clj-http
+                  [ ;; Newer one comes from clj-http
                    commons-codec
                    ]]
 
@@ -43,6 +43,7 @@
                  ;; Use 1.7 because the Jenkins plugin is pinned to 1.7
                  [org.tmatesoft.svnkit/svnkit "1.7.8"]
                  [prismatic/schema "1.1.1"]
+                 [robert/bruce "0.8.0"]
                  [slingshot "0.12.2"]
                  [stencil "0.5.0"]]
   :injections [(require 'clojure.pprint)]

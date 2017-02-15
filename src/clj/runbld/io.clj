@@ -23,7 +23,7 @@
    (.startsWith os "WINDOWS")))
 
 (defn log [& x]
-  (send-off logger (fn [_] (apply println x))))
+  (send-off logger (fn [_] (apply println "runbld>>>" x))))
 
 (defmacro try-log [& body]
   `(try
