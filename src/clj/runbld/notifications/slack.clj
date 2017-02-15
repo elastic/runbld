@@ -17,7 +17,7 @@
   (do
     ((opts :logger) "NOTIFYING SLACK")
     (try-try-again
-     {:sleep 250 :tries 10 :decay try/exponential}
+     {:sleep 500 :tries 20 :decay try/linear}
      #(http/post hook
                  {:body js}))))
 
