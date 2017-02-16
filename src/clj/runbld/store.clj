@@ -85,12 +85,14 @@
        (create-timestamped-index conn (format "%s-" idx) body)))))
 
 (defn truncate-message [{:keys [message] :as doc}]
-  (let [bytes (.getBytes message "UTF-8")
-        truncated (if (> (count bytes) MAX_TERM_LENGTH)
-                    (String. (byte-array (take MAX_TERM_LENGTH bytes))
-                             "UTF-8")
-                    message)]
-    (merge doc {:message truncated})))
+  (if message
+    (let [bytes (.getBytes message "UTF-8")
+          truncated (if (> (count bytes) MAX_TERM_LENGTH)
+                      (String. (byte-array (take MAX_TERM_LENGTH bytes))
+                               "UTF-8")
+                      message)]
+      (merge doc {:message truncated}))
+    doc))
 
 (s/defn create-build-doc :- StoredBuild
   [opts result test-report]
