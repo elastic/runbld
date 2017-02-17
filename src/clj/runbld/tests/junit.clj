@@ -2,6 +2,7 @@
   (:require [runbld.schema :refer :all]
             [schema.core :as s])
   (:require [clojure.java.io :as io]
+            [clojure.set :refer [rename-keys]]
             [clojure.string :as str]
             [net.cgrand.enlive-html :as x]))
 
@@ -12,6 +13,7 @@
                   (x/attr= :tests)]])
       first
       :attrs
+      (rename-keys {:skip :skipped}) ;; for nosetest
       (update :errors   #(Integer/parseInt %))
       (update :failures #(Integer/parseInt %))
       (update :tests    #(Integer/parseInt %))
