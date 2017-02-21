@@ -6,7 +6,7 @@
 (use-fixtures :once schema.test/validate-schemas)
 
 (deftest some-errors
-  (let [res (tests/capture-failures "test/repo/some-errors")]
+  (let [res (tests/capture-failures "test/repo/java/some-errors")]
     (is (= {:errors 1
             :failures 1
             :tests 3
@@ -17,7 +17,7 @@
            (sort (map :type (:failed-testcases res)))))))
 
 (deftest no-errors
-  (let [res (tests/capture-failures "test/repo/no-errors")]
+  (let [res (tests/capture-failures "test/repo/java/no-errors")]
     (is (= {:errors 0
             :failures 0
             :tests 1

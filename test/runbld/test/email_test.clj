@@ -39,7 +39,7 @@
                     mail/send-message (fn [& args]
                                         (swap! email concat args))]
         (git/with-tmp-repo [d "tmp/git/email-failures"]
-          (io/run "rsync" "-a" "test/repo/some-errors/" d)
+          (io/run "rsync" "-a" "test/repo/java/some-errors/" d)
           (let [args (conj
                       ["-c" "test/config/main.yml"
                        "-j" "elastic+foo+master"

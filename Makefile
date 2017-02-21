@@ -6,6 +6,6 @@ package:
 	lein do clean, test :all, package
 
 test:
-	cd test/repo/no-errors && mvn test
-	-cd test/repo/some-errors && mvn test
+	cd test/repo/java/no-errors && mvn test
+	-cd test/repo/java/some-errors && mvn test
 	lein test
