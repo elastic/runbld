@@ -12,4 +12,8 @@ test:
 	nosetests --with-xunit --xunit-file=TEST-no-errors.xml -w tests/
 	-cd test/repo/python/some-errors && \
 	nosetests --with-xunit --xunit-file=TEST-some-errors.xml -w tests/
+	-cd test/repo/go/no-errors && \
+	go test -v | go-junit-report > TEST-no-errors.xml
+	-cd test/repo/go/some-errors && \
+	go test -v | go-junit-report > TEST-some-errors.xml
 	lein test

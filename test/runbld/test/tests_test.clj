@@ -25,7 +25,15 @@
              (select-keys res [:errors :failures :tests :skipped])))
       (is (= (sort ["exceptions.AssertionError"
                     "exceptions.Exception"])
-             (sort (map :type (:failed-testcases res))))))))
+             (sort (map :type (:failed-testcases res)))))))
+  (testing "go"
+    (let [res (tests/capture-failures "test/repo/go/some-errors")]
+      (is (= {:errors 0
+              :failures 1
+              :tests 1
+              :skipped 0}
+             (select-keys res [:errors :failures :tests :skipped])))
+      (is (= ["Failed"] (map :message (:failed-testcases res)))))))
 
 (deftest no-errors
   (testing "java"
@@ -38,6 +46,14 @@
       (is (= [] (map :type (:failed-testcases res))))))
   (testing "python"
     (let [res (tests/capture-failures "test/repo/python/no-errors")]
+      (is (= {:errors 0
+              :failures 0
+              :tests 1
+              :skipped 0}
+             (select-keys res [:errors :failures :tests :skipped])))
+      (is (= [] (map :type (:failed-testcases res))))))
+  (testing "go"
+    (let [res (tests/capture-failures "test/repo/go/no-errors")]
       (is (= {:errors 0
               :failures 0
               :tests 1
