@@ -2,8 +2,13 @@
   (:require [runbld.schema :refer :all]
             [schema.core :as s])
   (:require [clojure.java.io :as io]
+            [clojure.set :refer [rename-keys]]
             [clojure.string :as str]
             [net.cgrand.enlive-html :as x]))
+
+(defn maybe-update [m ks f & x]
+  (into m (for [[k v] (select-keys m ks)]
+            [k (apply f v x)])))
 
 (defn testcase-meta [xml]
   (-> xml
@@ -12,10 +17,9 @@
                   (x/attr= :tests)]])
       first
       :attrs
-      (update :errors   #(Integer/parseInt %))
-      (update :failures #(Integer/parseInt %))
-      (update :tests    #(Integer/parseInt %))
-      (update :skipped  #(Integer/parseInt %))))
+      (rename-keys {:skip :skipped})
+      (maybe-update [:errors :failures :tests :skipped]
+                    #(Integer/parseInt %))))
 
 (defn content-text [xml]
   (apply str (map x/text xml)))
@@ -67,6 +71,15 @@
       (clojure.pprint/pprint testsuite)
       (throw t))))
 
+(def default-failure-report
+  {:errors 0
+   :failures 0
+   :tests 0
+   :skipped 0})
+
+(defn merge-default [m]
+  (merge default-failure-report m))
+
 (defn find-failures [dir]
   (when dir
     (->> dir
@@ -79,8 +92,10 @@
          (map #(.toURI %))
          (map #(.toURL %))
          (map x/xml-resource)
+         (mapcat #(x/select % [[(x/tag= :testsuite)]]))
          (map make-failure-report)
          (filter identity)
+         (map merge-default)
          (reduce combine-failure-reports {:errors 0
                                           :failures 0
                                           :tests 0

@@ -14,3 +14,5 @@ target/
 .stderr.log
 .stdout.log
 /envg*
+*.pyc
+TEST-*
