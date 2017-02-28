@@ -1,5 +1,6 @@
 (ns runbld.spec
-  (:require [clojure.spec :as s]
+  (:require [clojure.future :refer :all]
+            [clojure.spec :as s]
             [clojure.spec.gen :as gen]
             [elasticsearch.connection.http :as es])
   (:import (elasticsearch.connection Connection)))

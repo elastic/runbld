@@ -14,6 +14,7 @@
             [runbld.version :as version]))
 
 (s/def ::job-name string?)
+(s/def ::filepath string?)
 
 (defn windows? []
   (.startsWith (System/getProperty "os.name") "Windows"))
@@ -64,6 +65,10 @@
     :template "templates/slack.mustache.json"
     :disable false}})
 
+(s/fdef merge-profiles
+        :args (s/cat :job-name ::job-name
+                     :profiles (s/nilable (s/coll-of map?)))
+        :ret map?)
 (defn merge-profiles
   [job-name profiles]
   (if profiles
@@ -76,6 +81,9 @@
                  {}))))
     {}))
 
+(s/fdef load-config
+        :args (s/cat :filepath ::filepath)
+        :ret map?)
 (defn load-config [filepath]
   (let [f (io/file filepath)]
     (when (not (.isFile f))
@@ -84,6 +92,10 @@
                             filepath)}))
     (yaml/parse-string (slurp f))))
 
+(s/fdef load-config-with-profiles
+        :args (s/cat :job-name ::job-name
+                     :filepath ::filepath)
+        :ret map?)
 (defn load-config-with-profiles
   [job-name filepath]
   (let [conf (load-config filepath)
@@ -115,14 +127,14 @@
 
 (defn normalize
   "Normalize the tools.cli map to the local structure."
-  [cli-opts]
+  [{:keys [job-name config version java-home] :as cli-opts}]
   (merge
    {:process (select-keys cli-opts [:program :args :cwd])
-    :job-name (:job-name cli-opts)
-    :configfile (:config cli-opts)
-    :version (:version cli-opts)}
-   (when (:java-home cli-opts)
-     {:java-home (:java-home cli-opts)})))
+    :job-name job-name
+    :configfile config
+    :version version}
+   (when java-home
+     {:java-home java-home})))
 
 (def opts
   [["-v" "--version" "Print version"]
@@ -210,4 +222,3 @@
                :version {:string (version/version)
                          :hash (version/build)}
                :java java-facts})))))
-

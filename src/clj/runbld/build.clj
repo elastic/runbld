@@ -1,5 +1,6 @@
 (ns runbld.build
   (:require [clojure.java.io :as io]
+            [clojure.future :refer :all]
             [clojure.spec :as s]
             [environ.core :as environ]
             [runbld.util.data :refer [deep-merge-with deep-merge]]
@@ -45,9 +46,6 @@
                    ::job-name-extra
                    ::org-project-branch]))
 
-(s/fdef make-rand-uuid
-        :args (s/coll-of any? :count 0)
-        :ret string?)
 (defn make-rand-uuid []
   (.toUpperCase
    (first
@@ -55,9 +53,6 @@
      (str (java.util.UUID/randomUUID))
      (re-pattern "-")))))
 
-(s/fdef make-id
-        :args (s/coll-of any? :count 0)
-        :ret string?)
 (defn make-id []
   (format "%s-%s"
           (date/yyyymmdd-hhmmss)
@@ -93,4 +88,3 @@
             :build (merge (:build opts)
                           (split-job-name (:job-name opts))
                           (scheduler/as-map (:scheduler opts)))))))
-

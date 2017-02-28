@@ -1,5 +1,4 @@
 (ns runbld.test.main-test
-  (:require [schema.test :as s])
   (:require [clojure.test :refer :all]
             [clojure.walk :refer [keywordize-keys]]
             [runbld.build :as build]
@@ -27,10 +26,10 @@
       first
       :title))
 
-(s/deftest main
+(deftest main
   ;; Change root bindings for these Vars, affects any execution no
   ;; matter what thread
-  (with-redefs [;; Don't pollute the console
+  (with-redefs [ ;; Don't pollute the console
                 io/log (fn [& _] :noconsole)
                 ;; Don't really kill the JVM
                 main/really-die (fn [& args] :dontdie)
@@ -47,7 +46,7 @@
                                    "-j" "elastic+foo+master"
                                    "/path/to/script.bash") "config file ")))))
 
-(s/deftest unexpected
+(deftest unexpected
   (with-redefs [io/log (fn [& _] :noconsole)
                 main/really-die (fn [& args] :dontdie)
                 proc/run (fn [& args] (throw
@@ -63,7 +62,7 @@
         (is (= String (type res)))
         (is (.startsWith res "#error {\n :cause boy that was "))))))
 
-(s/deftest execution-with-defaults
+(deftest execution-with-defaults
   (testing "real execution all the way through"
     (with-redefs [io/log (fn [& _] :noconsole)
                   email/send* (fn [& args]
@@ -117,7 +116,7 @@
             (is (empty? @email))
             (is (.contains (slack-msg) "SUCCESS"))))))))
 
-(s/deftest execution-with-slack-overrides
+(deftest execution-with-slack-overrides
   (testing "real execution all the way through"
     (with-redefs [io/log (fn [& _] :noconsole)
                   email/send* (fn [& args]

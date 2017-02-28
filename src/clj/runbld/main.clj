@@ -37,8 +37,9 @@
      ;; for tests when #'really-die is redefed
      msg*)))
 
-(def build-opts
-  (-> #'vcs/wrap-vcs-info
+(def run
+  (-> #'proc/run
+      vcs/wrap-vcs-info
       build/wrap-build-meta
       scheduler/wrap-scheduler
       java/wrap-java
@@ -51,10 +52,10 @@
    (let [opts-init (assoc
                     (opts/parse-args args)
                     :logger io/log)
-         opts (build-opts opts-init)
-         pre-store-result (store/begin-process! opts)
+         #_opts #_(run opts-init)
+         #_pre-store-result #_(store/begin-process! opts)
          _ (io/log "BEGIN PROCESS")
-         {:keys [opts process-result]} (proc/run opts)
+         {:keys [opts process-result]} (run opts-init)
          _ (io/log "END PROCESS")
          {:keys [took status exit-code out-bytes err-bytes]} process-result
          _ (io/log (format "DURATION: %sms" took))

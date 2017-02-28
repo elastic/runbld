@@ -1,7 +1,8 @@
 (ns runbld.test.build-test
   (:require [clojure.test :refer :all]
-            clojure.spec
-            clojure.spec.test)
+            [clojure.future :refer :all]
+            [clojure.spec :refer :all]
+            [clojure.spec.test :refer :all])
   (:require [runbld.build :as build]))
 
 (clojure.spec.test/instrument)

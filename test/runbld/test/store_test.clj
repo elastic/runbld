@@ -20,8 +20,8 @@
         idx2 (store/create-timestamped-index conn pre settings)
         target-index (store/set-up-index conn pre settings)]
     (is (= target-index idx2))
-    (indices/delete conn {:index idx2})
-    (indices/delete conn {:index idx1})))
+    (indices/delete conn idx2)
+    (indices/delete conn idx1)))
 
 #_(deftest run-test-check-tests
     #_(testing "That the auto-generated quick-check style tests pass."

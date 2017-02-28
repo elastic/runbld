@@ -22,6 +22,7 @@
                {:socket-timeout 500 :conn-timeout 500}))
     (catch org.apache.http.conn.ConnectTimeoutException _)
     (catch java.net.ConnectException _)
+    (catch java.net.SocketTimeoutException _)
     ;; Non-AWS Windows
     (catch java.net.SocketException _)
     (catch java.net.UnknownHostException _))))

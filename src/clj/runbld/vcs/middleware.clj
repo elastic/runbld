@@ -8,23 +8,22 @@
             [runbld.vcs.subversion :as svn]
             [runbld.vcs.git :as git]))
 
-(s/defn make-repo :- (s/protocol vcs/VcsRepo)
-  [opts :- OptsWithBuild]
+(defn make-repo [opts]
   (let [cwd (get-in opts [:process :cwd])]
     (cond
-      (.isDirectory
-       (io/file cwd ".git")) (git/make-repo
-                              cwd
-                              (get-in opts [:build :org])
-                              (get-in opts [:build :project])
-                              (get-in opts [:build :branch]))
+      (.isDirectory (io/file cwd ".git"))
+      (git/make-repo
+       cwd
+       (get-in opts [:build :org])
+       (get-in opts [:build :project])
+       (get-in opts [:build :branch]))
 
-      (.isDirectory
-       (io/file cwd ".svn")) (svn/make-repo
-                              (get-in opts [:env :SVN_URL])
-                              (get-in opts [:build :org])
-                              (get-in opts [:build :project])
-                              (get-in opts [:env :SVN_REVISION]))
+      (.isDirectory (io/file cwd ".svn"))
+      (svn/make-repo
+       (get-in opts [:env :SVN_URL])
+       (get-in opts [:build :org])
+       (get-in opts [:build :project])
+       (get-in opts [:env :SVN_REVISION]))
 
       :else (throw+
              {:error ::unknown-repo
@@ -34,8 +33,7 @@
                            cwd)
               :opts opts}))))
 
-(s/defn wrap-vcs-info :- MainOpts
-  [proc :- clojure.lang.IFn]
+(defn wrap-vcs-info [proc]
   (fn [opts]
     (proc
      (assoc opts :vcs (vcs/log-latest

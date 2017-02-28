@@ -2,6 +2,7 @@
   (:refer-clojure :exclude [get])
   (:require [clojure.core.async :as async
              :refer [go go-loop chan >! <! alts! close!]]
+            [clojure.future :refer :all]
             [clojure.spec :as s]
             [clojure.spec.test :as st]
             runbld.spec
@@ -67,8 +68,8 @@
 (defn create-index
   [conn idx body]
   (try+
-   (indices/create conn {:index idx :body body})
-   (indices/wait-for-health conn :yellow {:index idx})
+   (indices/create conn idx {:body body})
+   (indices/wait-for-health conn :yellow idx)
    (catch [:status 400] e
      (when-not (= (get-in e [:body :error :type])
                   "index_already_exists_exception")
@@ -145,9 +146,9 @@
         (assoc :log-index-write log-index-write)
         (assoc :conn conn))))
 
-(s/fdef create-base-build-doc
-        :args (s/cat :o ::opts)
-        :ret ::build-doc-init)
+#_(s/fdef create-base-build-doc
+          :args (s/cat :o ::opts)
+          :ret ::build-doc-init)
 (defn create-base-build-doc
   [opts]
   (select-keys opts [:id :version :system :java
@@ -178,8 +179,8 @@
         t (name m/doc-type)
         id (:id d)
         es-addr {:index idx :type t :id id}]
-    (doc/index conn (merge es-addr {:body d
-                                    :query-params {:refresh true}}))
+    (doc/index conn idx t id {:body d
+                              :query-params {:refresh true}})
     {:url (format "%s://%s:%s/%s/%s/%s"
                   (-> opts :es :conn :settings :scheme name)
                   (-> opts :es :conn :settings :server-name)
@@ -204,8 +205,8 @@
           idx (-> opts :es :failure-index-write)
           t (name m/doc-type)
           es-addr {:index idx :type t}]
-      (doc/index conn (merge es-addr {:body d
-                                      :query-params {:refresh true}})))))
+      (doc/index conn idx t {:body d
+                             :query-params {:refresh true}}))))
 
 (defn save!
   ([opts result test-report]
@@ -225,8 +226,8 @@
      res)))
 
 (defn get
-  ([conn addr]
-   (:_source (doc/get conn addr))))
+  ([conn {:keys [index type id]}]
+   (:_source (doc/get conn index type id))))
 
 (defn get-failures
   ([opts id]
@@ -236,7 +237,7 @@
                {:match
                 {:build-id id}}}]
      (try+
-      (->> (doc/search conn {:index idx :body body})
+      (->> (doc/search conn idx {:body body})
            :hits
            :hits
            (map :_source))
@@ -245,9 +246,10 @@
 
 (defn save-log!
   ([opts line]
-   (doc/index (:conn opts) {:index (opts :log-index-write)
-                            :type (name m/doc-type)
-                            :body line})))
+   (doc/index (:conn opts)
+              (opts :log-index-write)
+              (name m/doc-type)
+              {:body line})))
 
 (defn save-logs!
   ([opts docs]
@@ -255,26 +257,26 @@
      (let [make (fn [doc]
                   {:index {:source doc}})
            actions (map make docs)]
-       (doc/bulk (:conn opts) {:index (opts :log-index-write)
-                               :type (name m/doc-type)
-                               :body actions})))))
+       (doc/bulk (:conn opts)
+                 (opts :log-index-write)
+                 (name m/doc-type)
+                 {:body actions})))))
 
 (defn after-log
-  ([opts]
-   (indices/refresh (:conn opts) {:index (opts :log-index-write)})))
+  ([{:keys [conn log-index-write]}]
+   (indices/refresh conn log-index-write)))
 
 (defn count-logs
   ([opts log-type id]
-   (-> (-> opts :es :conn)
-       (indices/count
-        {:index (-> opts :es :log-index-write)
-         :body
-         {:query
-          {:bool
-           {:must
-            [{:match {:build-id id}}
-             {:match {:stream log-type}}]}}}})
-       :count)))
+   (let [conn (-> opts :es :conn)
+         idx (-> opts :es :log-index-write)
+         body {:body
+               {:query
+                {:bool
+                 {:must
+                  [{:match {:build-id id}}
+                   {:match {:stream log-type}}]}}}}]
+     (:count (indices/count conn idx body)))))
 
 (defn make-bulk-logger
   ([opts]
