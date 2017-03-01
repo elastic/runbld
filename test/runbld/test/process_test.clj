@@ -9,8 +9,6 @@
             [runbld.util.data :as data]
             [runbld.io :as io] :reload-all))
 
-(use-fixtures :once schema.test/validate-schemas)
-
 (deftest output-io
   (io/with-tmp-dir [dir ["tmp" (str *ns* "-")]]
     (let [args (concat ["-j" "elastic+foo+master"

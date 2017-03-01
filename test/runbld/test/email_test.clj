@@ -30,25 +30,25 @@
   (is (= "foo@q***.dom"
          (email/obfuscate-addr "foo@bar.quux.dom"))))
 
-#_(deftest attached
-    (testing "failures present"
-      (let [email (atom [])]
-        (with-redefs [io/log (fn [& _] :noconsole)
-                      mail/send-message (fn [& args]
-                                          (swap! email concat args))]
-          (git/with-tmp-repo [d "tmp/git/email-failures"]
-            (io/run "rsync" "-a" "test/repo/java/some-errors/" d)
-            (let [args (conj
-                        ["-c" "test/config/main.yml"
-                         "-j" "elastic+foo+master"
-                         "-d" d]
-                        (if (opts/windows?)
-                          "test/fail.bat"
-                          "test/fail.bash"))
-                  opts (opts/parse-args args)
-                  res (apply main/-main args)
-                  build-doc (store/get (-> opts :es :conn)
-                                       (-> res :store-result :addr))]
-              (is (= 1 (:exit-code res)))
-              (is (= 1 (-> build-doc :process :exit-code)))
-              (is (= 2 (count (store/get-failures opts (:id build-doc)))))))))))
+(deftest attached
+  (testing "failures present"
+    (let [email (atom [])]
+      (with-redefs [io/log (fn [& _] :noconsole)
+                    mail/send-message (fn [& args]
+                                        (swap! email concat args))]
+        (git/with-tmp-repo [d "tmp/git/email-failures"]
+          (io/run "rsync" "-a" "test/repo/java/some-errors/" d)
+          (let [args (conj
+                      ["-c" "test/config/main.yml"
+                       "-j" "elastic+foo+master"
+                       "-d" d]
+                      (if (opts/windows?)
+                        "test/fail.bat"
+                        "test/fail.bash"))
+                opts (opts/parse-args args)
+                res (apply main/-main args)
+                build-doc (store/get (-> opts :es :conn)
+                                     (-> res :store-result :addr))]
+            (is (= 1 (:exit-code res)))
+            (is (= 1 (-> build-doc :process :exit-code)))
+            (is (= 2 (count (store/get-failures opts (:id build-doc)))))))))))

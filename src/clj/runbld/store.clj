@@ -31,11 +31,10 @@
 (s/fdef newest-index-matching-pattern
         :args (s/cat :c ::conn :pat string?)
         :ret keyword?)
-(defn newest-index-matching-pattern
-  [conn pat]
-  (try+
-   (let [resp (indices/get-settings conn {:index pat})]
-     (when (not-empty resp)
+(defn newest-index-matching-pattern [conn pat]
+  (let [resp (indices/get-settings conn pat)]
+    (when (not-empty resp)
+      (try+
        (->> resp
             (map #(vector
                    (key %)
@@ -44,15 +43,14 @@
             (sort-by second)
             reverse
             first
-            first
-            name)))
-   (catch [:status 404] _
-     ;; index doesn't exist
-     )))
+            first)
+       (catch [:status 404] _
+         ;; index doesn't exist
+         )))))
 
-(s/fdef index-size-bytes
-        :args (s/cat :c ::conn :idx ::index-name)
-        :ret int?)
+#_(s/fdef index-size-bytes
+          :args (s/cat :c ::conn :idx ::index-name)
+          :ret int?)
 (defn index-size-bytes
   [conn idx]
   (let [r (try+
@@ -65,11 +63,9 @@
 (s/fdef create-index
         :args (s/cat :c ::conn :idx ::index-name :body map?)
         :ret ::index-name)
-(defn create-index
-  [conn idx body]
+(defn create-index [conn idx body]
   (try+
    (indices/create conn idx {:body body})
-   (indices/wait-for-health conn :yellow idx)
    (catch [:status 400] e
      (when-not (= (get-in e [:body :error :type])
                   "index_already_exists_exception")
@@ -80,9 +76,8 @@
         :args (s/cat :c ::conn
                      :p string?
                      :body ::index-meta))
-(defn create-timestamped-index
-  [conn prefix body]
-  (let [idx (format "%s-%d" prefix (System/currentTimeMillis))]
+(defn create-timestamped-index [conn prefix body]
+  (let [idx (format "%s%d" prefix (System/currentTimeMillis))]
     (create-index conn idx body)))
 
 (s/fdef set-up-index
@@ -99,21 +94,10 @@
   ([conn idx body]
    (set-up-index conn idx body MAX_INDEX_BYTES))
   ([conn idx body max-bytes]
-   (let [newest (newest-index-matching-pattern
-                 conn (format "%s*" idx))]
+   (let [newest (newest-index-matching-pattern conn (format "%s*" idx))]
      (if (and newest (<= (index-size-bytes conn newest) max-bytes))
        (name newest)
-       (create-timestamped-index conn idx body)))))
-
-(defn truncate-message [{:keys [message] :as doc}]
-  (if message
-    (let [bytes (.getBytes message "UTF-8")
-          truncated (if (> (count bytes) MAX_TERM_LENGTH)
-                      (String. (byte-array (take MAX_TERM_LENGTH bytes))
-                               "UTF-8")
-                      message)]
-      (merge doc {:message truncated}))
-    doc))
+       (create-timestamped-index conn (format "%s-" idx) body)))))
 
 (s/fdef set-up-es!
           :args (s/cat :o ::opts)
@@ -146,6 +130,16 @@
         (assoc :log-index-write log-index-write)
         (assoc :conn conn))))
 
+(defn truncate-message [{:keys [message] :as doc}]
+  (if message
+    (let [bytes (.getBytes message "UTF-8")
+          truncated (if (> (count bytes) MAX_TERM_LENGTH)
+                      (String. (byte-array (take MAX_TERM_LENGTH bytes))
+                               "UTF-8")
+                      message)]
+      (merge doc {:message truncated}))
+    doc))
+
 #_(s/fdef create-base-build-doc
           :args (s/cat :o ::opts)
           :ret ::build-doc-init)
@@ -169,6 +163,21 @@
               (update (:report test-report)
                       :failed-testcases #(map (comp truncate-message f) %))))}))
 
+#_(defn create-build-doc [opts result test-report]
+    (merge
+     (select-keys opts [:id :version :system :java
+                        :vcs :sys :jenkins :build])
+     {:process (dissoc result :err-file :out-file)
+      :test (when (:report-has-tests test-report)
+              (let [f #(select-keys % [:error-type
+                                       :class
+                                       :test
+                                       :type
+                                       :message
+                                       :summary])]
+                (update (:report test-report)
+                        :failed-testcases #(map (comp truncate-message f) %))))}))
+
 (defn save-build!
   [opts
    result
@@ -189,8 +198,7 @@
      :addr es-addr
      :build-doc d}))
 
-(defn create-failure-docs
-  [opts result failures]
+(defn create-failure-docs [opts result failures]
   (map #(assoc %
                :build-id (:id opts)
                :time (:time-end result)
@@ -198,18 +206,16 @@
                :project (-> opts :build :project)
                :branch (-> opts :build :branch)) failures))
 
-(defn save-failures!
-  [opts failures]
+(defn save-failures! [opts failures]
   (doseq [d failures]
     (let [conn (-> opts :es :conn)
           idx (-> opts :es :failure-index-write)
           t (name m/doc-type)
-          es-addr {:index idx :type t}]
-      (doc/index conn idx t {:body d
-                             :query-params {:refresh true}}))))
+          req {:body d
+               :query-params {:refresh true}}]
+      (doc/index conn idx t req))))
 
-(defn save!
-  ([opts result test-report]
+(defn save! ([opts result test-report]
    (when (:report-has-tests test-report)
      ((opts :logger) (format "FAILURES: %d"
                              (count
@@ -263,8 +269,8 @@
                  {:body actions})))))
 
 (defn after-log
-  ([{:keys [conn log-index-write]}]
-   (indices/refresh conn log-index-write)))
+  ([opts]
+   (indices/refresh (:conn opts) (opts :log-index-write))))
 
 (defn count-logs
   ([opts log-type id]
@@ -276,52 +282,46 @@
                  {:must
                   [{:match {:build-id id}}
                    {:match {:stream log-type}}]}}}}]
-     (:count (indices/count conn idx body)))))
+     (-> (doc/search conn idx body)
+         :hits
+         :total))))
 
-(defn make-bulk-logger
-  ([opts]
-   (let [BUFSIZE (-> opts :bulk-size)
-         TIMEOUT_MS (-> opts :bulk-timeout-ms)
-         ch (chan BUFSIZE)
-         proc (go-loop [buf []]
-                (let [timed-out (async/timeout TIMEOUT_MS)
-                      [x select] (alts! [ch timed-out])
-                      newbuf
-                      (cond
-                        ;; got nil from the message chan, index buf,
-                        ;; then exit
-                        (and (nil? x) (= select ch))
-                        (do
-                          (save-logs! opts buf)
-                          :die)
+(defn make-bulk-logger [opts]
+  (let [BUFSIZE (-> opts :bulk-size)
+        TIMEOUT_MS (-> opts :bulk-timeout-ms)
+        ch (chan BUFSIZE)
+        proc (go-loop [buf []]
+               (let [timed-out (async/timeout TIMEOUT_MS)
+                     [x select] (alts! [ch timed-out])
+                     newbuf
+                     (cond
+                       ;; got nil from the message chan, index buf,
+                       ;; then exit
+                       (and (nil? x) (= select ch))
+                       (do
+                         (save-logs! opts buf)
+                         :die)
 
-                        ;; have a value, and makes buf full
-                        (and (not (nil? x))
-                             (>= (inc (count buf)) BUFSIZE))
-                        (do (save-logs! opts (conj buf x))
-                            [])
+                       ;; have a value, and makes buf full
+                       (and (not (nil? x))
+                            (>= (inc (count buf)) BUFSIZE))
+                       (do (save-logs! opts (conj buf x))
+                           [])
 
-                        ;; have a value, buf still not full
-                        (and (not (nil? x))
-                             (< (inc (count buf)) BUFSIZE))
-                        (conj buf x)
+                       ;; have a value, buf still not full
+                       (and (not (nil? x))
+                            (< (inc (count buf)) BUFSIZE))
+                       (conj buf x)
 
-                        ;; timer expired, index what's there
-                        (and (= select timed-out)
-                             (seq buf))
-                        (do (save-logs! opts buf)
-                            [])
+                       ;; timer expired, index what's there
+                       (and (= select timed-out)
+                            (seq buf))
+                       (do (save-logs! opts buf)
+                           [])
 
-                        ;; keep waiting
-                        :else
-                        buf)]
-                  (when (not= newbuf :die)
-                    (recur newbuf))))]
-     [ch proc])))
-
-#_(defn begin-process! [opts]
-    )
-
-#_(s/fdef begin-process!
-          :args (s/cat :opts :runbld.opts/full)
-          :ret keyword?)
+                       ;; keep waiting
+                       :else
+                       buf)]
+                 (when (not= newbuf :die)
+                   (recur newbuf))))]
+    [ch proc]))
