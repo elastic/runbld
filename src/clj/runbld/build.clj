@@ -38,6 +38,32 @@
        :job-name-extra job-name-extra
        :org-project-branch (format "%s/%s#%s" org project branch)})))
 
+(defn query-for-commit [keyword-mapping? intake-job]
+  (let [clauses (if keyword-mapping?
+                  ;; post-5.0 mapping for string fields
+                  [{:term {:build.job-name.keyword intake-job}}
+                   {:term {:process.status.keyword "SUCCESS"}}]
+                  ;; pre-5.0 mapping for string fields
+                  [{:term {:build.job-name intake-job}}
+                   {:term {:process.status "SUCCESS"}}])]
+    {:body
+     {:query
+      {:bool
+       {:filter clauses}},
+      :sort {:process.time-end {:order "desc"}},
+      :size 1}}))
+
+(defn commit-id [keyword-mapping? es-conn idx intake-job]
+  (let [q (query-for-commit keyword-mapping? intake-job)
+        doc (doc/search es-conn idx q)]
+    (-> doc
+        :hits
+        :hits
+        first
+        :_source
+        :vcs
+        :commit-id)))
+
 (defn last-good-commit
   "For a given project and branch, returns the last commit ID known to have
   passed the intake job."
@@ -51,32 +77,10 @@
                                               project
                                               branch
                                               "multijob-intake"]))
-        ;; post-5.0 mapping for string fields
-        q1 {:query
-            {:bool
-             {:filter
-              [{:term {:build.job-name.keyword intake-job}}
-               {:term {:process.status.keyword "SUCCESS"}}]}},
-            :sort {:process.time-end {:order "desc"}},
-            :size 1}
-        ;; pre-5.0 mapping for string fields
-        q2 {:query
-            {:bool
-             {:filter
-              [{:term {:build.job-name intake-job}}
-               {:term {:process.status "SUCCESS"}}]}},
-            :sort {:process.time-end {:order "desc"}},
-            :size 1}
-        commit (fn [doc]
-                 (-> doc
-                     :hits
-                     :hits
-                     first
-                     :_source
-                     :vcs
-                     :commit-id))]
-    (or (commit (doc/search es-conn idx {:body q1}))
-        (commit (doc/search es-conn idx {:body q2})))))
+        commit (fn [k?]
+                 (commit-id k? es-conn idx intake-job))]
+    (or (commit false)
+        (commit true))))
 
 (s/defn wrap-build-meta :- OptsWithBuild
   [proc :- clojure.lang.IFn]
