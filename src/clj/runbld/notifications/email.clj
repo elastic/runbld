@@ -119,8 +119,8 @@
    (pos?
     (-> build :process :exit-code))))
 
-(defn maybe-send! [opts {:keys [index type id] :as addr}]
-  (let [build-doc (store/get (-> opts :es :conn) addr)
+(defn maybe-send! [opts {:keys [index type id]}]
+  (let [build-doc (store/get (-> opts :es :conn) index type id)
         failure-docs (store/get-failures opts (:id build-doc))]
     (if (send? (-> opts :email) build-doc)
       (send opts (make-context opts build-doc failure-docs))

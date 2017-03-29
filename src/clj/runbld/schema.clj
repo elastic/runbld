@@ -137,19 +137,20 @@
    (s/optional-key :virtual) s/Bool})
 
 (def Build
-  {:org                       s/Str
-   :project                   s/Str
-   :branch                    s/Str
-   :job-name-extra            s/Str
-   :job-name                  s/Str
-   :org-project-branch        s/Str
-   :scheduler                 s/Str
-   :url                       s/Str
-   :console-url               s/Str
-   :tags                      [s/Str]
-   (s/optional-key :number)   s/Str
-   (s/optional-key :executor) s/Str
-   (s/optional-key :node)     s/Str})
+  {:org                               s/Str
+   :project                           s/Str
+   :branch                            s/Str
+   :job-name-extra                    s/Str
+   :job-name                          s/Str
+   :org-project-branch                s/Str
+   :scheduler                         s/Str
+   :url                               s/Str
+   :console-url                       s/Str
+   :tags                              [s/Str]
+   (s/optional-key :number)           s/Str
+   (s/optional-key :executor)         s/Str
+   (s/optional-key :node)             s/Str
+   (s/optional-key :last-good-commit) s/Str})
 
 (def OptsWithSys
   (merge Opts {:sys    BuildSystem

@@ -133,6 +133,7 @@
    ["-j" "--job-name JOBNAME" (str "Job name: org,project,branch,etc "
                                    "also read from $JOB_NAME")
     :default (environ/env :job-name)]
+   [nil "--latest-good-commit" "Whether to checkout the latest commit to have passed an intake job."]
    [nil "--java-home PATH" "If different from JAVA_HOME or need to override what will be discovered in PATH"]
    ["-p" "--program PROGRAM" "Program that will run the scriptfile"
     :default (if (windows?) "CMD.EXE" "bash")]

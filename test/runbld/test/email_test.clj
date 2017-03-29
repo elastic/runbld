@@ -49,8 +49,10 @@
                         "test/fail.bash"))
                 opts (opts/parse-args args)
                 res (apply main/-main args)
-                build-doc (store/get (-> opts :es :conn)
-                                     (-> res :store-result :addr))]
+                idx (-> res :store-result :addr :index)
+                t (-> res :store-result :addr :type)
+                id (-> res :store-result :addr :id)
+                build-doc (store/get (-> opts :es :conn) idx t id)]
             (is (= 1 (:exit-code res)))
             (is (= 1 (-> build-doc :process :exit-code)))
             (is (= 2 (count (store/get-failures opts (:id build-doc)))))))))))

@@ -92,7 +92,9 @@
                 res (apply main/-main args)]
             (is (= 1 (:exit-code res)))
             (is (= 1 (-> (store/get (-> opts :es :conn)
-                                    (-> res :store-result :addr))
+                                    (-> res :store-result :addr :index)
+                                    (-> res :store-result :addr :type)
+                                    (-> res :store-result :addr :id))
                          :process
                          :exit-code)))
             (is (.startsWith
@@ -111,7 +113,9 @@
                 res (apply main/-main args)]
             (is (= 0 (:exit-code res)))
             (is (= 0 (-> (store/get (-> opts :es :conn)
-                                    (-> res :store-result :addr))
+                                    (-> res :store-result :addr :index)
+                                    (-> res :store-result :addr :type)
+                                    (-> res :store-result :addr :id))
                          :process
                          :exit-code)))
             (is (empty? @email))

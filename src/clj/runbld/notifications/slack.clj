@@ -69,8 +69,8 @@
         (send-success? opts build)
         (-> opts :slack :failure)))))
 
-(defn maybe-send! [opts {:keys [index type id] :as addr}]
-  (let [build-doc (store/get (-> opts :es :conn) addr)
+(defn maybe-send! [opts {:keys [index type id]}]
+  (let [build-doc (store/get (-> opts :es :conn) index type id)
         failure-docs (store/get-failures opts (:id build-doc))]
     (when (send? opts build-doc)
       (let [ctx (n/make-context opts build-doc failure-docs)]

@@ -100,6 +100,10 @@
         HEAD (first (git/git-log workspace-repo))]
     (commit-map HEAD)))
 
+(defn checkout-commit [commit]
+  (let [workspace-repo (git/load-repo ".")]
+    (git/git-checkout workspace-repo commit false true)))
+
 (defn head-commit
   [dir]
   (let [HEAD (first

@@ -13,6 +13,7 @@
             [runbld.system :as system]
             [runbld.tests :as tests]
             [runbld.io :as io]
+            [runbld.vcs.git :refer [checkout-commit]]
             [runbld.vcs.middleware :as vcs]
             [runbld.version :as version]
             [schema.core :as s]
@@ -45,6 +46,12 @@
       java/wrap-java
       system/wrap-system))
 
+(defn maybe-find-and-checkout [opts]
+  (when (:latest-good-commit opts)
+    (let [commit (build/last-good-commit opts)]
+      (io/log "Checking out latest good commit: " commit)
+      (checkout-commit commit))))
+
 ;; -main :: IO ()
 (defn -main [& args]
   (try+
@@ -52,6 +59,7 @@
                     (opts/parse-args args)
                     :logger io/log)
          _ (io/log (version/string))
+         _ (maybe-find-and-checkout opts-init)
          _ (io/log ">>>>>>>>>>>> SCRIPT EXECUTION BEGIN >>>>>>>>>>>>")
          {:keys [opts process-result]} (run opts-init)
          _ (io/log "<<<<<<<<<<<< SCRIPT EXECUTION END <<<<<<<<<<<<")

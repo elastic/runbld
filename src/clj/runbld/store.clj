@@ -120,8 +120,8 @@
         t (name DocType)
         id (:id d)
         es-addr {:index idx :type t :id id}]
-    (doc/index conn (merge es-addr {:body d
-                                    :query-params {:refresh true}}))
+    (doc/index conn idx t id {:body d
+                              :query-params {:refresh true}})
     {:url (format "%s://%s:%s/%s/%s/%s"
                   (-> opts :es :conn :settings :scheme name)
                   (-> opts :es :conn :settings :server-name)
@@ -146,10 +146,9 @@
   (doseq [d failures]
     (let [conn (-> opts :es :conn)
           idx (-> opts :es :failure-index-write)
-          t (name DocType)
-          es-addr {:index idx :type t}]
-      (doc/index conn (merge es-addr {:body d
-                                      :query-params {:refresh true}})))))
+          t (name DocType)]
+      (doc/index conn idx t {:body d
+                             :query-params {:refresh true}}))))
 
 (s/defn save! :- {s/Keyword s/Any}
   ([opts        :- MainOpts
@@ -171,8 +170,8 @@
      res)))
 
 (s/defn get :- StoredBuild
-  ([conn addr]
-   (:_source (doc/get conn addr))))
+  ([conn idx t id]
+   (:_source (doc/get conn idx t id))))
 
 (s/defn get-failures
   ([opts id]
@@ -182,7 +181,7 @@
                {:match
                 {:build-id id}}}]
      (try+
-      (->> (doc/search conn {:index idx :body body})
+      (->> (doc/search conn idx {:body body})
            :hits
            :hits
            (map :_source))
@@ -192,9 +191,10 @@
 (s/defn save-log!
   ([opts :- OptsElasticsearch
     line :- StoredLogLine]
-   (doc/index (:conn opts) {:index (opts :log-index-write)
-                            :type (name DocType)
-                            :body line})))
+   (doc/index (:conn opts)
+              (opts :log-index-write)
+              (name DocType)
+              {:body line})))
 
 (s/defn save-logs!
   ([opts :- OptsElasticsearch
@@ -203,9 +203,10 @@
      (let [make (fn [doc]
                   {:index {:source doc}})
            actions (map make docs)]
-       (doc/bulk (:conn opts) {:index (opts :log-index-write)
-                               :type (name DocType)
-                               :body actions})))))
+       (doc/bulk (:conn opts)
+                 (opts :log-index-write)
+                 (name DocType)
+                 {:body actions})))))
 
 (s/defn after-log
   ([opts :- OptsElasticsearch]
@@ -214,7 +215,7 @@
 (s/defn count-logs :- s/Num
   ([opts log-type id]
    (-> (-> opts :es :conn)
-       (indices/count
+       (doc/search
         (-> opts :es :log-index-write)
         {:body
          {:query
@@ -222,7 +223,8 @@
            {:must
             [{:match {:build-id id}}
              {:match {:stream log-type}}]}}}})
-       :count)))
+       :hits
+       :total)))
 
 (s/defn make-bulk-logger
   ([opts :- OptsElasticsearch]

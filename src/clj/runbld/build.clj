@@ -1,11 +1,12 @@
 (ns runbld.build
-  (:require [runbld.schema :refer :all]
-            [schema.core :as s])
   (:require [clojure.java.io :as io]
+            [elasticsearch.document :as doc]
             [environ.core :as environ]
+            [runbld.schema :refer :all]
             [runbld.util.data :refer [deep-merge-with deep-merge]]
             [runbld.util.date :as date]
             [runbld.scheduler :as scheduler]
+            [schema.core :as s]
             [slingshot.slingshot :refer [throw+]]))
 
 (defn make-rand-uuid []
@@ -36,6 +37,35 @@
        :branch branch
        :job-name-extra job-name-extra
        :org-project-branch (format "%s/%s#%s" org project branch)})))
+
+(defn last-good-commit
+  "For a given project and branch, returns the last commit ID known to have
+  passed the intake job."
+  [{:keys [job-name] :as opts}]
+  (let [es-conn (-> opts :es :conn)
+        idx (str (-> opts :es :build-index) "-*")
+        {org :org
+         project :project
+         branch :branch} (split-job-name job-name)
+        intake-job (apply str (interpose "+" [org
+                                              project
+                                              branch
+                                              "multijob-intake"]))
+        query {:query
+               {:bool
+                {:must
+                 [{:term {:build.job-name.keyword intake-job}}
+                  {:term {:process.status.keyword "SUCCESS"}}]}},
+               :sort {:process.time-end {:order "desc"}},
+               :size 1}
+        res (doc/search es-conn idx {:body query})]
+    (-> res
+        :hits
+        :hits
+        first
+        :_source
+        :vcs
+        :commit-id)))
 
 (s/defn wrap-build-meta :- OptsWithBuild
   [proc :- clojure.lang.IFn]
