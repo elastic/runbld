@@ -88,6 +88,7 @@
 
 (def Opts
   {:job-name   s/Str
+   (s/optional-key :last-good-commit) s/Bool
    :version    VersionInfo
    :configfile (s/maybe s/Str)
    :email      OptsEmail

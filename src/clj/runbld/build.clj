@@ -38,49 +38,47 @@
        :job-name-extra job-name-extra
        :org-project-branch (format "%s/%s#%s" org project branch)})))
 
-(defn query-for-commit [keyword-mapping? intake-job]
+(defn query-for-commit [keyword-mapping? org-project-branch vcs-provider]
   (let [clauses (if keyword-mapping?
                   ;; post-5.0 mapping for string fields
-                  [{:term {:build.job-name.keyword intake-job}}
-                   {:term {:process.status.keyword "SUCCESS"}}]
+                  [{:term {:build.org-project-branch org-project-branch}}
+                   {:term {:process.status.keyword "SUCCESS"}}
+                   {:term {:vcs.provider vcs-provider}}]
                   ;; pre-5.0 mapping for string fields
-                  [{:term {:build.job-name intake-job}}
-                   {:term {:process.status "SUCCESS"}}])]
+                  [{:term {:build.org-project-branch org-project-branch}}
+                   {:term {:process.status "SUCCESS"}}
+                   {:term {:vcs.provider vcs-provider}}])]
     {:body
      {:query
       {:bool
        {:filter clauses}},
-      :sort {:process.time-end {:order "desc"}},
+      :sort {:process.time-start {:order "desc"}},
       :size 1}}))
 
-(defn commit-id [keyword-mapping? es-conn idx intake-job]
-  (let [q (query-for-commit keyword-mapping? intake-job)
-        doc (doc/search es-conn idx q)]
+(defn find-last-good-build
+  [keyword-mapping? conn idx org-project-branch vcs-provider]
+  (let [q (query-for-commit keyword-mapping? org-project-branch vcs-provider)
+        doc (doc/search conn idx q)]
     (-> doc
         :hits
         :hits
         first
-        :_source
-        :vcs
-        :commit-id)))
+        :_source)))
 
 (defn last-good-commit
-  "For a given project and branch, returns the last commit ID known to have
-  passed the intake job."
+  "For a given project and branch, returns the last commit ID known to
+  have passed any job matching org/project/branch"
   [{:keys [job-name] :as opts}]
-  (let [es-conn (-> opts :es :conn)
-        idx (str (-> opts :es :build-index) "-*")
-        {org :org
-         project :project
-         branch :branch} (split-job-name job-name)
-        intake-job (apply str (interpose "+" [org
-                                              project
-                                              branch
-                                              "multijob-intake"]))
-        commit (fn [k?]
-                 (commit-id k? es-conn idx intake-job))]
-    (or (commit false)
-        (commit true))))
+  (let [conn (-> opts :es :conn)
+        idx (-> opts :es :build-index-search)
+        org-project-branch (:org-project-branch (split-job-name job-name))
+        build (fn [k?]
+                ;; hardcode git for now; this is really supposed to
+                ;; come from vcs/wrap-vcs-info, but that hasn't run
+                ;; yet
+                (find-last-good-build k? conn idx org-project-branch "git"))]
+    (or (build false)
+        (build true))))
 
 (s/defn wrap-build-meta :- OptsWithBuild
   [proc :- clojure.lang.IFn]

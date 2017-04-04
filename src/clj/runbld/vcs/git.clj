@@ -19,11 +19,9 @@
 
 (defn init-test-repo [dir]
   (assert (not (nil? dir)))
-  (if (repo? dir)
-    (git/load-repo dir)
+  (let [repo (git/git-init dir)]
     (let [basename "this-is-a-test-repo.sh"
-          f (jio/file dir basename)
-          repo (git/git-init dir)]
+          f (jio/file dir basename)]
       (spit f "echo 'this would have been a test build --->here<---'\n")
       (git/git-add repo basename)
       (git/git-commit repo "Add build")
@@ -85,13 +83,12 @@
                    "--branch" branch
                    absremote absworkspace)
         workspace-repo (git/load-repo absworkspace)
-        workspace-ref (git/git-checkout workspace-repo branch false true)
+        _ (git/git-checkout workspace-repo branch)
         HEAD (first (git/git-log workspace-repo))]
     (commit-map HEAD)))
 
-(defn checkout-commit [commit]
-  (let [workspace-repo (git/load-repo ".")]
-    (git/git-checkout workspace-repo commit false true)))
+(defn checkout-commit [repo commit]
+  (git/git-checkout (git/load-repo repo) commit))
 
 (defn head-commit
   [dir]

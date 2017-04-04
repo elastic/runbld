@@ -47,10 +47,10 @@
       system/wrap-system))
 
 (defn maybe-find-and-checkout [opts]
-  (when (:latest-good-commit opts)
-    (let [commit (build/last-good-commit opts)]
-      (io/log "Checking out latest good commit: " commit)
-      (checkout-commit commit))))
+  (when (:last-good-commit opts)
+    (when-let [build (build/last-good-commit opts)]
+      (checkout-commit (-> opts :process :cwd) (-> build :vcs :commit-id))
+      build)))
 
 ;; -main :: IO ()
 (defn -main [& args]
@@ -59,7 +59,14 @@
                     (opts/parse-args args)
                     :logger io/log)
          _ (io/log (version/string))
-         _ (maybe-find-and-checkout opts-init)
+         good-build (maybe-find-and-checkout opts-init)
+         _ (when good-build
+             (io/log "using commit"
+                     (-> good-build :vcs :commit-short)
+                     "from build"
+                     (-> good-build :id)
+                     "at"
+                     (-> good-build :process :time-end)))
          _ (io/log ">>>>>>>>>>>> SCRIPT EXECUTION BEGIN >>>>>>>>>>>>")
          {:keys [opts process-result]} (run opts-init)
          _ (io/log "<<<<<<<<<<<< SCRIPT EXECUTION END <<<<<<<<<<<<")

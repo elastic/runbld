@@ -120,11 +120,13 @@
       (cons commit (when-let [p (:parent commit)]
                      (git-log repo p)))))))
 
-(defn load-repo [dir]
-  (->Repository dir))
+(defn load-repo [path]
+  (if (instance? Repository path)
+    path
+    (->Repository path)))
 
 (defn git-init [repo]
-  (let [repo (if (string? repo) (load-repo repo) repo)]
+  (let [repo (load-repo repo)]
     (.mkdirs (io/file (:path repo)))
     (git repo "init")
     repo))
@@ -135,5 +137,5 @@
 (defn git-commit [repo msg]
   (git repo "commit" ["-m" msg]))
 
-(defn git-checkout [repo branch _ _]
-  (git repo "checkout" ["-b" branch]))
+(defn git-checkout [repo sha-ish]
+  (git repo "checkout" ["-f" sha-ish]))
