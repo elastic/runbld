@@ -26,9 +26,8 @@
                  [instaparse "1.4.5"]
 
                  ;; logging
-                 [com.fzakaria/slf4j-timbre "0.2.1"]
+                 [org.clojure/tools.logging "0.3.1"]
                  [log4j/log4j "1.2.17"]
-                 [com.taoensso/timbre "4.1.4"]
 
                  [com.palletops/thread-expr "1.3.0"]
                  [elastic/elasticsearch-clojure "0.99.6-SNAPSHOT"
