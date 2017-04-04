@@ -1,7 +1,7 @@
 (ns runbld.vcs.git
   (:require [runbld.schema :refer :all]
             [schema.core :as s])
-  (:require [clj-jgit.porcelain :as git]
+  (:require [clj-git.core :as git]
             [clojure.java.io :as jio]
             [clojure.java.shell :as sh]
             [environ.core :as environ]
@@ -48,37 +48,26 @@
     (git/git-commit repo (format "Add %s!" basename))))
 
 (defn commit-map [commit]
-  (let [author (.getAuthorIdent commit)
-        committer (.getCommitterIdent commit)
-        commit-id (.getName commit)
-        author-name (and author (.getName author))
-        author-email (and author (.getEmailAddress author))
-        message (.getShortMessage commit)
-        commit-time (and committer
-                         (date/date-to-iso
-                          (.getWhen committer)))]
-    {:commit-id commit-id
-     :commit-short (->> commit-id
-                        (take 7)
-                        (apply str))
-
-     :message message
-     :message-full (.getFullMessage commit)
-     :commit-time commit-time
-     :commit-name (and committer (.getName committer))
-     :commit-email (and committer (.getEmailAddress committer))
-     :author-time (and author
-                       (date/date-to-iso
-                        (.getWhen author)))
-     :author-name author-name
-     :author-email author-email
+  (let [message (let [b (-> commit :message :body)]
+                  (str (-> commit :message :title)
+                       (when (and b (not-empty b)) (str "\n\n" b))))]
+    {:commit-id (:commit commit)
+     :commit-short (:commit-short commit)
+     :message (-> commit :message :title)
+     :message-full message
+     :commit-time (-> commit :committer :time str)
+     :commit-name (-> commit :committer :name)
+     :commit-email (-> commit :committer :email)
+     :author-time (-> commit :author :time str)
+     :author-name (-> commit :author :name)
+     :author-email (-> commit :author :email)
      :provider provider
      :log-pretty (format
                   "commit %s\nAuthor: %s <%s>\nDate:   %s\n\n%s"
-                  commit-id
-                  (or author-name "")
-                  (or author-email "")
-                  commit-time
+                  (:commit commit)
+                  (or (-> commit :author :name) "")
+                  (or (-> commit :author :email) "")
+                  (-> commit :committer :time str)
                   message)}))
 
 (defn resolve-remote [^String loc]

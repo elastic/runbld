@@ -16,14 +16,14 @@
   :source-paths ["src/clj"]
   :java-source-paths ["src/java"]
   :javac-options ["-Xlint:unchecked"]
-  :dependencies [[clj-jgit "0.8.8"]
-                 [clj-time "0.11.0"]
+  :dependencies [[clj-time "0.11.0"]
                  [circleci/clj-yaml "0.5.4"]
                  [com.draines/postal "1.11.3"
                   :exclusions
                   [ ;; Newer one comes from clj-http
                    commons-codec
                    ]]
+                 [instaparse "1.4.5"]
 
                  ;; logging
                  [com.fzakaria/slf4j-timbre "0.2.1"]
