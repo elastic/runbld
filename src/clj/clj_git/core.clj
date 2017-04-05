@@ -29,10 +29,10 @@
      res)))
 
 (def fuller
-  (io/resource "git/fuller.bnf"))
+  (io/resource "clj_git/grammar/fuller.bnf"))
 
 (def raw
-  (io/resource "git/raw.bnf"))
+  (io/resource "clj_git/grammar/raw.bnf"))
 
 (def parse-log-fuller
   (i/parser fuller))
