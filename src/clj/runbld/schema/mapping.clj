@@ -1,5 +1,5 @@
 (ns runbld.schema.mapping
-  (:refer-clojure :exclude [boolean long double map-entry?])
+  (:refer-clojure :exclude [boolean long double map-entry? keyword])
   (:require [clojure.walk :as walk]
             [schema.core :as s]))
 
@@ -70,7 +70,7 @@
      (def ~(symbol (str name "Raw")) ~form)
      (def ~(symbol (str name "Mapping")) (mapping-walk ~form))))
 
-(def not-analyzed
+(def keyword
   {:type :keyword})
 
 (def analyzed
@@ -90,7 +90,7 @@
 
 (def multi-string
   (merge
-   not-analyzed
+   keyword
    {:fields
     {:analyzed
      {:type :text}}}))

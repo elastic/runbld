@@ -277,79 +277,85 @@
    {DocType
     {:_all {:enabled false}
      :properties
-     {:id m/not-analyzed
+     {:id m/keyword
       :version {:properties
-                {:string m/not-analyzed
-                 :hash   m/not-analyzed}}
+                {:string m/keyword
+                 :hash   m/keyword}}
       :build {:properties
-              {:org                 m/not-analyzed
-               :project             m/not-analyzed
-               :branch              m/not-analyzed
+              {:org                 m/keyword
+               :project             m/keyword
+               :branch              m/keyword
                :job-name-extra      m/multi-string
                :job-name            m/multi-string
-               :org-project-branch  m/not-analyzed
-               :scheduler           m/not-analyzed
+               :org-project-branch  m/keyword
+               :scheduler           m/keyword
                :url                 m/multi-string
                :console-url         m/multi-string
-               :tags                m/not-analyzed
-               :number              m/not-analyzed
-               :executor            m/not-analyzed
-               :node                m/not-analyzed}}
+               :tags                m/keyword
+               :number              m/keyword
+               :executor            m/keyword
+               :node                m/keyword
+               :last-good-commit
+               {:properties
+                {:commit-id         m/keyword
+                 :commit-short      m/keyword
+                 :build-id          m/keyword
+                 }}}}
       :sys {:properties
-            {:arch            m/not-analyzed
+            {:arch            m/keyword
              :cpu-type        m/multi-string
              :cpus            m/long
              :cpus-physical   m/long
-             :datacenter      m/not-analyzed
-             :provider        m/not-analyzed
-             :hostname        m/not-analyzed
-             :facter-provider m/not-analyzed
-             :facter-version  m/not-analyzed
-             :fs-mountpoint   m/not-analyzed
-             :fs-type         m/not-analyzed
+             :datacenter      m/keyword
+             :provider        m/keyword
+             :hostname        m/keyword
+             :facter-provider m/keyword
+             :facter-version  m/keyword
+             :fs-mountpoint   m/keyword
+             :fs-type         m/keyword
              :fs-bytes-total  m/long
              :fs-bytes-free   m/long
              :fs-bytes-used   m/long
              :fs-percent-free m/double
              :fs-percent-used m/double
-             :image-id        m/not-analyzed
-             :instance-id     m/not-analyzed
-             :instance-type   m/not-analyzed
-             :ip4             m/not-analyzed
-             :ip6             m/not-analyzed
-             :kernel-name     m/not-analyzed
-             :kernel-release  m/not-analyzed
-             :kernel-version  m/not-analyzed
-             :model           m/not-analyzed
-             :os              m/not-analyzed
-             :os-version      m/not-analyzed
+             :image-id        m/keyword
+             :instance-id     m/keyword
+             :instance-type   m/keyword
+             :ip4             m/keyword
+             :ip6             m/keyword
+             :kernel-name     m/keyword
+             :kernel-release  m/keyword
+             :kernel-version  m/keyword
+             :model           m/keyword
+             :os              m/keyword
+             :os-version      m/keyword
              :ram-mb          m/double
              :ram-gb          m/double
-             :region          m/not-analyzed
-             :timezone        m/not-analyzed
+             :region          m/keyword
+             :timezone        m/keyword
              :uptime          m/analyzed
              :uptime-days     m/long
              :uptime-secs     m/long
              :virtual         m/boolean}}
       :vcs {:properties
             {:author-name   m/multi-string
-             :commit-id     m/not-analyzed
-             :commit-short  m/not-analyzed
+             :commit-id     m/keyword
+             :commit-short  m/keyword
              :commit-time   m/date
              :message       m/analyzed
-             :provider      m/not-analyzed
+             :provider      m/keyword
              :log-pretty    m/analyzed
-             :project-url   m/not-analyzed
+             :project-url   m/keyword
 
-             :branch-url   m/not-analyzed
-             :commit-url   m/not-analyzed
+             :branch-url   m/keyword
+             :commit-url   m/keyword
              :author-email m/multi-string
              :author-time  m/date
-             :commit-email m/not-analyzed
+             :commit-email m/keyword
              :commit-name  m/multi-string
              :message-full m/analyzed}}
       :process {:properties
-                {:cmd             m/not-analyzed
+                {:cmd             m/keyword
                  :cmd-source      m/multi-string
                  :err-accuracy    m/long
                  :err-bytes       m/long
@@ -360,7 +366,7 @@
                  :out-accuracy    m/long
                  :out-bytes       m/long
                  :out-file-bytes  m/long
-                 :status          m/not-analyzed
+                 :status          m/keyword
                  :time-end        m/date
                  :time-start      m/date
                  :took            m/long}}
@@ -371,10 +377,10 @@
               :skipped  m/long
               :failed-testcases
               {:properties
-               {:error-type m/not-analyzed
-                :class      m/not-analyzed
-                :test       m/not-analyzed
-                :type       m/not-analyzed
+               {:error-type m/keyword
+                :class      m/keyword
+                :test       m/keyword
+                :type       m/keyword
                 :summary    m/analyzed
                 :message    m/multi-string}}}}
       :java {:properties
@@ -400,7 +406,7 @@
    {DocType
     {:_all {:enabled false}
      :properties
-     {:build-id m/not-analyzed}}}})
+     {:build-id m/keyword}}}})
 
 (def StoredLogLine
   {:build-id s/Str
@@ -417,8 +423,8 @@
    {DocType
     {:_all {:enabled false}
      :properties
-     {:build-id m/not-analyzed
-      :stream   m/not-analyzed
+     {:build-id m/keyword
+      :stream   m/keyword
       :time     m/date
       :log      m/analyzed
       :size     m/long
