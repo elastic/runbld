@@ -71,11 +71,10 @@
      (def ~(symbol (str name "Mapping")) (mapping-walk ~form))))
 
 (def not-analyzed
-  {:type :string
-   :index :not_analyzed})
+  {:type :keyword})
 
 (def analyzed
-  {:type :string})
+  {:type :text})
 
 (def long
   {:type :long})
@@ -92,9 +91,9 @@
 (def multi-string
   (merge
    not-analyzed
-   {:fields {:analyzed
-             {:type :string
-              :index :analyzed}}}))
+   {:fields
+    {:analyzed
+     {:type :text}}}))
 
 (def classpath-analyzer
   {:classpath
@@ -102,5 +101,5 @@
     :pattern ":|;"}})
 
 (def classpath
-  {:type :string
+  {:type :text
    :analyzer "classpath"})
