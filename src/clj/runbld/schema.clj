@@ -88,7 +88,7 @@
 
 (def Opts
   {:job-name   s/Str
-   (s/optional-key :last-good-commit) s/Bool
+   (s/optional-key :last-good-commit) s/Str
    :version    VersionInfo
    :configfile (s/maybe s/Str)
    :email      OptsEmail
@@ -137,21 +137,27 @@
    :uptime-secs            s/Num
    (s/optional-key :virtual) s/Bool})
 
+(def LastGoodBuild
+  {:id            s/Str
+   :checked-out   s/Bool
+   :commit-id     s/Str
+   :job-name      s/Str})
+
 (def Build
-  {:org                               s/Str
-   :project                           s/Str
-   :branch                            s/Str
-   :job-name-extra                    s/Str
-   :job-name                          s/Str
-   :org-project-branch                s/Str
-   :scheduler                         s/Str
-   :url                               s/Str
-   :console-url                       s/Str
-   :tags                              [s/Str]
-   (s/optional-key :number)           s/Str
-   (s/optional-key :executor)         s/Str
-   (s/optional-key :node)             s/Str
-   (s/optional-key :last-good-commit) s/Str})
+  {:org                        s/Str
+   :project                    s/Str
+   :branch                     s/Str
+   :job-name-extra             s/Str
+   :job-name                   s/Str
+   :org-project-branch         s/Str
+   :scheduler                  s/Str
+   :url                        s/Str
+   :console-url                s/Str
+   :tags                       [s/Str]
+   (s/optional-key :number)    s/Str
+   (s/optional-key :executor)  s/Str
+   (s/optional-key :node)      s/Str
+   (s/optional-key :last-success) LastGoodBuild})
 
 (def OptsWithSys
   (merge Opts {:sys    BuildSystem
@@ -295,12 +301,12 @@
                :number              m/keyword
                :executor            m/keyword
                :node                m/keyword
-               :last-good-commit
+               :last-success
                {:properties
-                {:commit-id         m/keyword
-                 :commit-short      m/keyword
-                 :build-id          m/keyword
-                 }}}}
+                {:id                m/keyword
+                 :checked-out       m/boolean
+                 :commit-id         m/keyword
+                 :job-name          m/keyword}}}}
       :sys {:properties
             {:arch            m/keyword
              :cpu-type        m/multi-string

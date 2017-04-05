@@ -87,9 +87,6 @@
         HEAD (first (git/git-log workspace-repo))]
     (commit-map HEAD)))
 
-(defn checkout-commit [repo commit]
-  (git/git-checkout (git/load-repo repo) commit))
-
 (defn head-commit
   [dir]
   (let [HEAD (first
@@ -115,6 +112,10 @@
           (project-url this)
           commit-id))
 
+(defn checkout-commit [this commit]
+  (git/git-checkout
+   (git/load-repo (.dir this)) commit))
+
 (s/defn log-latest :- VcsLog
   ([this]
    (let [{:keys [commit-id] :as commit} (head-commit (.dir this))]
@@ -136,7 +137,8 @@
 (extend GitRepo
   VcsRepo
   {:log-latest log-latest
-   :provider (fn [& args] provider)})
+   :provider (constantly provider)
+   :check-out checkout-commit})
 
 (s/defn make-repo :- GitRepo
   [dir org project branch]
