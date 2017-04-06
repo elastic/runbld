@@ -40,13 +40,14 @@
        :org-project-branch (format "%s/%s#%s" org project branch)})))
 
 (defn find-build [opts id]
-  (-> (doc/search (-> opts :es :conn)
-                  (-> opts :es :build-index-search)
-                  {:body
-                   {:query
-                    {:match
-                     {:id id}}}})
-      :hits :hits first :_source))
+  (when id
+    (-> (doc/search (-> opts :es :conn)
+                    (-> opts :es :build-index-search)
+                    {:body
+                     {:query
+                      {:match
+                       {:id id}}}})
+        :hits :hits first :_source)))
 
 (defn query-for-build [keyword-mapping? job-name vcs-provider]
   (let [clauses (if keyword-mapping?
@@ -63,6 +64,8 @@
      {:query
       {:bool
        {:filter clauses}},
+      ;; search for time-start, because we want the latest commit that
+      ;; has a *finished* job
       :sort {:process.time-start {:order "desc"}},
       :size 1}}))
 

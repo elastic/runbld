@@ -71,6 +71,12 @@
                (re-pattern "(.*?)@([^.]+\\.)?(.)[^.]+\\.([^.]+)$")
                "$1@$3***.$4"))
 
+(s/defn render :- s/Str
+  [tmpl :- s/Str
+   ctx :- EmailCtx]
+  (mustache/render-string
+   (slurp (io/resolve-resource tmpl)) ctx))
+
 (s/defn send :- s/Any
   [opts :- MainOpts
    ctx :- EmailCtx]
@@ -86,18 +92,10 @@
            (-> opts :email :from)
            rcpts
            (-> ctx :email :subject)
-           (mustache/render-string
-            (slurp
-             (io/resolve-resource
-              (-> opts :email :template-txt)))
-            ctx)
+           (render (-> opts :email :template-txt) ctx)
            (when (and (-> opts :email :template-html)
                       (not (-> opts :email :text-only)))
-             (mustache/render-string
-              (slurp
-               (io/resolve-resource
-                (-> opts :email :template-html)))
-              ctx))
+             (render (-> opts :email :template-html) ctx))
            (:failures ctx))))
 
 (s/defn make-context :- EmailCtx

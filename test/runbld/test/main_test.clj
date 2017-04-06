@@ -65,7 +65,7 @@
 
 (s/deftest execution-with-defaults
   (testing "real execution all the way through"
-    (with-redefs [io/log (fn [& _] :noconsole)
+    (with-redefs [io/log (fn [& x] (prn x))
                   email/send* (fn [& args]
                                 (swap! email concat args)
                                 ;; to satisfy schema

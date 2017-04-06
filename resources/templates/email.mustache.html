@@ -65,7 +65,13 @@
 
 <p></p>
 <div style="background-color:#eec;padding:1px 15px">
-<pre>branch <a href="{{vcs.branch-url}}">{{ build.branch }}</a>
+<pre>{{#build.last-success.checked-out}}
+using successful commit from
+  {{ build.last-success.id }}
+  {{ build.last-success.job-name }}
+  {{ build.last-success.time-end }} ({{ build.last-success.age }} ago)
+{{/build.last-success.checked-out}}
+branch <a href="{{vcs.branch-url}}">{{ build.branch }}</a>
 commit <a href="{{vcs.commit-url}}">{{ vcs.commit-id }}</a>
 Author: {{ vcs.author-name }} &lt;{{ vcs.author-email }}&gt;
 Date: {{ vcs.commit-time }}

@@ -141,7 +141,9 @@
   {:id            s/Str
    :checked-out   s/Bool
    :commit-id     s/Str
-   :job-name      s/Str})
+   :job-name      s/Str
+   (s/optional-key :time-end) s/Str
+   (s/optional-key :age) s/Str})
 
 (def Build
   {:org                        s/Str

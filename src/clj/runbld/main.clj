@@ -65,7 +65,10 @@
                        (date/human-duration
                         (date/iso-diff-secs
                          (date/from-iso
-                          (-> b :process :time-start))
+                          ;; notify on time-end because it makes more
+                          ;; logical sense to report on the last
+                          ;; completed build's end time, I think
+                          (-> b :process :time-end))
                          (date/now)))
                        "ago")))
          _ (io/log ">>>>>>>>>>>> SCRIPT EXECUTION BEGIN >>>>>>>>>>>>")
