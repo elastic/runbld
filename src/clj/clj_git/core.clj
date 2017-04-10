@@ -17,16 +17,32 @@
 
 (defrecord Commit [commit tree parent author committer message])
 
-(defn git
-  ([repo cmd]
-   (git repo cmd []))
-  ([repo cmd args]
-   (let [res (apply sh/sh "git" cmd (concat args [:dir (:path repo)]))]
+(defn abspath [f]
+  (.getCanonicalPath (io/as-file f)))
+
+(defn abspath-file [f]
+  (io/file (abspath f)))
+
+(defn parent-dir [dir]
+  (-> dir abspath-file .toPath .getParent str))
+
+(defn run
+  ([cmd args]
+   (run cmd args "."))
+  ([cmd args dir]
+   (prn cmd args dir)
+   (let [res (apply sh/sh "git" cmd (concat args [:dir dir]))]
      (assert (= 0 (:exit res)) (format "%s: \nout: %s\nerr: %s"
                                        (pr-str [cmd args])
                                        (:out res)
                                        (:err res)))
      res)))
+
+(defn git
+  ([repo cmd]
+   (git repo cmd []))
+  ([repo cmd args]
+   (run cmd args (:path repo))))
 
 (def fuller
   (io/resource "clj_git/grammar/fuller.bnf"))
@@ -139,3 +155,8 @@
 
 (defn git-checkout [repo sha-ish]
   (git repo "checkout" ["-f" sha-ish]))
+
+(defn git-clone [local remote]
+  (.mkdirs (io/file (parent-dir local)))
+  ;; don't worry about local/remote & hardlinks for now
+  (run "clone" [remote local]))

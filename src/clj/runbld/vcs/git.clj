@@ -17,15 +17,22 @@
   (when dir
     (.isDirectory (jio/file dir ".git"))))
 
-(defn init-test-repo [dir]
-  (assert (not (nil? dir)))
-  (let [repo (git/git-init dir)]
-    (let [basename "this-is-a-test-repo.sh"
-          f (jio/file dir basename)]
-      (spit f "echo 'this would have been a test build --->here<---'\n")
-      (git/git-add repo basename)
-      (git/git-commit repo "Add build")
-      repo)))
+(defn init-test-repo
+  ([dir]
+   (let [repo (git/git-init dir)]
+     (let [basename "this-is-a-test-repo.sh"
+           f (jio/file dir basename)]
+       (spit f "echo 'this would have been a test build --->here<---'\n")
+       (git/git-add repo basename)
+       (git/git-commit repo "Add build")
+       repo))))
+
+(defn init-test-clone
+  ([local-path remote-path]
+   (let [local-repo (git/load-repo local-path)
+         remote-repo (git/load-repo remote-path)]
+     (init-test-repo remote-path)
+     (git/git-clone local-path remote-path))))
 
 (defmacro with-tmp-repo [bindings & body]
   `(let ~bindings
