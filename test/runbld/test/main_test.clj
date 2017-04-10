@@ -65,7 +65,7 @@
 
 (s/deftest execution-with-defaults
   (testing "real execution all the way through"
-    (with-redefs [io/log (fn [& _] :noconsole)
+    (with-redefs [io/log (fn [& x] (prn x))
                   email/send* (fn [& args]
                                 (swap! email concat args)
                                 ;; to satisfy schema
@@ -92,7 +92,9 @@
                 res (apply main/-main args)]
             (is (= 1 (:exit-code res)))
             (is (= 1 (-> (store/get (-> opts :es :conn)
-                                    (-> res :store-result :addr))
+                                    (-> res :store-result :addr :index)
+                                    (-> res :store-result :addr :type)
+                                    (-> res :store-result :addr :id))
                          :process
                          :exit-code)))
             (is (.startsWith
@@ -111,14 +113,16 @@
                 res (apply main/-main args)]
             (is (= 0 (:exit-code res)))
             (is (= 0 (-> (store/get (-> opts :es :conn)
-                                    (-> res :store-result :addr))
+                                    (-> res :store-result :addr :index)
+                                    (-> res :store-result :addr :type)
+                                    (-> res :store-result :addr :id))
                          :process
                          :exit-code)))
             (is (empty? @email))
             (is (.contains (slack-msg) "SUCCESS"))))))))
 
 (s/deftest execution-with-slack-overrides
-  (testing "real execution all the way through"
+  (testing "slack overrides:"
     (with-redefs [io/log (fn [& _] :noconsole)
                   email/send* (fn [& args]
                                 (swap! email concat args)
@@ -175,3 +179,47 @@
             ;; we shouldn't get any more notifications
             (is (empty? @email))
             (is (empty? @slack))))))))
+
+(defn run [args]
+  [(opts/parse-args args) (apply main/-main args)])
+
+(s/deftest last-good-commit
+  (testing "last-good-commit:"
+    (testing "successful intake"
+      (let [email-body (atom :no-email-body-yet)]
+        (with-redefs [io/log (fn [& x] (prn x))
+                      email/send* (fn [_ _ _ _ _ html _]
+                                    (reset! email-body html)
+                                    ;; to satisfy schema
+                                    {})
+                      slack/send (fn [& _] (prn 'slack))]
+          (let [intake-dir "tmp/git/main-intake"
+                periodic-dir "tmp/git/main-periodic"]
+            (try
+              (git/init-test-clone periodic-dir intake-dir)
+              (let [[opts-intake res-intake]
+                    (run (conj
+                          ["-c" "test/config/main.yml"
+                           "-j" "elastic+foo+master+intake"
+                           "-d" intake-dir]
+                          (if (opts/windows?)
+                            "test/success.bat"
+                            "test/success.bash")))]
+                (let [[opts-periodic res-periodic]
+                      (run (conj
+                            ["-c" "test/config/main.yml"
+                             "-j" "elastic+foo+master+periodic"
+                             "-d" periodic-dir
+                             "--last-good-commit" "elastic+foo+master+intake"]
+                            (if (opts/windows?)
+                              "test/fail.bat"
+                              "test/fail.bash")))]
+                  (is (= 0 (:exit-code res-intake)))
+                  (is (= 1 (:exit-code res-periodic)))
+                  (is (.contains @email-body "using successful commit")
+                      (with-out-str
+                        (println "@email-body")
+                        (prn @email-body)))))
+              (finally
+                (io/rmdir-r periodic-dir)
+                (io/rmdir-r intake-dir)))))))))

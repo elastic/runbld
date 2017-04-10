@@ -4,7 +4,7 @@
 
 (defn index [opts body]
   (assert (not (nil? (-> opts :es :index))))
-  (let [doc {:index (-> opts :es :index)
-             :type "b"
-             :body body}]
-    (doc/index (-> opts :es :conn) doc)))
+  (doc/index (-> opts :es :conn)
+             (-> opts :es :index)
+             "b"
+             {:body body}))

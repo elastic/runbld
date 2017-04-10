@@ -124,7 +124,9 @@
     :configfile (:config cli-opts)
     :version (:version cli-opts)}
    (when (:java-home cli-opts)
-     {:java-home (:java-home cli-opts)})))
+     {:java-home (:java-home cli-opts)})
+   (when (:last-good-commit cli-opts)
+     {:last-good-commit (:last-good-commit cli-opts)})))
 
 (def opts
   [["-v" "--version" "Print version"]
@@ -133,6 +135,7 @@
    ["-j" "--job-name JOBNAME" (str "Job name: org,project,branch,etc "
                                    "also read from $JOB_NAME")
     :default (environ/env :job-name)]
+   [nil "--last-good-commit JOBNAME" "Whether to checkout the latest commit to have passed a matching job."]
    [nil "--java-home PATH" "If different from JAVA_HOME or need to override what will be discovered in PATH"]
    ["-p" "--program PROGRAM" "Program that will run the scriptfile"
     :default (if (windows?) "CMD.EXE" "bash")]

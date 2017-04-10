@@ -5,6 +5,9 @@
             [clojure.string :as str]
             [slingshot.slingshot :refer [throw+]]))
 
+(defn now []
+  (t/now))
+
 (defn expand
   ([fmt]
    (expand fmt (t/now)))
@@ -42,6 +45,12 @@
 (defn long-to-iso [num]
   (str
    (c/from-long num)))
+
+(defn from-iso [iso]
+  (f/parse (f/formatter :date-time) iso))
+
+(defn iso-diff-secs [iso1 iso2]
+  (t/in-seconds (t/interval iso1 iso2)))
 
 ;; Thanks Devin Humbert!
 ;; https://www.cromulentbits.com/clojure-readable-time-duration/

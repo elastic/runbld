@@ -16,27 +16,26 @@
   :source-paths ["src/clj"]
   :java-source-paths ["src/java"]
   :javac-options ["-Xlint:unchecked"]
-  :dependencies [[clj-jgit "0.8.8"]
-                 [clj-time "0.11.0"]
+  :dependencies [[clj-time "0.11.0"]
                  [circleci/clj-yaml "0.5.4"]
                  [com.draines/postal "1.11.3"
                   :exclusions
                   [ ;; Newer one comes from clj-http
                    commons-codec
                    ]]
+                 [instaparse "1.4.5"]
 
                  ;; logging
-                 [com.fzakaria/slf4j-timbre "0.2.1"]
+                 [org.clojure/tools.logging "0.3.1"]
                  [log4j/log4j "1.2.17"]
-                 [com.taoensso/timbre "4.1.4"]
 
                  [com.palletops/thread-expr "1.3.0"]
-                 [elastic/elasticsearch-clojure "0.99.1"
+                 [elastic/elasticsearch-clojure "0.99.6-SNAPSHOT"
                   :exclusions [prismatic/schema]]
                  [enlive "1.1.6"]
                  [environ "1.0.3"]
                  [listora/again "0.1.0"]
-                 [org.clojure/clojure "1.8.0"]
+                 [org.clojure/clojure "1.9.0-alpha14"]
                  [org.clojure/core.async "0.2.374"]
                  [org.clojure/tools.cli "0.3.3"]
 

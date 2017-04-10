@@ -83,6 +83,9 @@
 (defn file [& args]
   (apply jio/file args))
 
+(defn parent [dir]
+  (-> dir abspath-file .toPath .getParent str))
+
 (defn prepend-path
   "An absolute path-safe combinator.
 

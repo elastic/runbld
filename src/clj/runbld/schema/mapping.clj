@@ -1,5 +1,5 @@
 (ns runbld.schema.mapping
-  (:refer-clojure :exclude [boolean long double map-entry?])
+  (:refer-clojure :exclude [boolean long double map-entry? keyword])
   (:require [clojure.walk :as walk]
             [schema.core :as s]))
 
@@ -70,12 +70,11 @@
      (def ~(symbol (str name "Raw")) ~form)
      (def ~(symbol (str name "Mapping")) (mapping-walk ~form))))
 
-(def not-analyzed
-  {:type :string
-   :index :not_analyzed})
+(def keyword
+  {:type :keyword})
 
 (def analyzed
-  {:type :string})
+  {:type :text})
 
 (def long
   {:type :long})
@@ -91,10 +90,10 @@
 
 (def multi-string
   (merge
-   not-analyzed
-   {:fields {:analyzed
-             {:type :string
-              :index :analyzed}}}))
+   keyword
+   {:fields
+    {:analyzed
+     {:type :text}}}))
 
 (def classpath-analyzer
   {:classpath
@@ -102,5 +101,5 @@
     :pattern ":|;"}})
 
 (def classpath
-  {:type :string
+  {:type :text
    :analyzer "classpath"})

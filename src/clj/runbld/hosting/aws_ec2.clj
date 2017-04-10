@@ -20,6 +20,7 @@
     (:body
      (http/get (str "http://169.254.169.254/latest/meta-data" postfix)
                {:socket-timeout 500 :conn-timeout 500}))
+    (catch java.net.SocketTimeoutException _)
     (catch org.apache.http.conn.ConnectTimeoutException _)
     (catch java.net.ConnectException _)
     ;; Non-AWS Windows

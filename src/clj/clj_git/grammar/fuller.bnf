@@ -1,0 +1,30 @@
+git = commitLine <newline>
+      authorLine <newline>
+      authorDateLine <newline>
+      committerLine <newline>
+      committerDateLine <newline>
+      <newline>
+      msgTitle
+      <newline>
+      msgBody?
+      <newline>?
+
+commitLine = <"commit"> <sp> sha
+authorLine = <"Author:"> <sp> name <bracket> emailAddr <bracket>
+authorDateLine = <"AuthorDate:"> <sp> date
+committerLine = <"Commit:"> <sp> name <bracket> emailAddr <bracket>
+committerDateLine = <"CommitDate:"> <sp> date
+
+msgTitle = <indent> any*
+msgBody = ( newline <indent> any* )*
+
+emailAddr = #"[^>]+"
+bracket = #"[<>]"
+name = #"[^<]+" (* trim this *)
+date = #"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{2}:\d{2}"
+sha = #"[a-f0-9]+"
+sp = #"[ ]+"
+oneSp = ' '
+indent = oneSp oneSp oneSp oneSp
+newline = '\n'
+any = #"."

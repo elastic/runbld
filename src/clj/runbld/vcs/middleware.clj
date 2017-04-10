@@ -9,7 +9,7 @@
             [runbld.vcs.git :as git]))
 
 (s/defn make-repo :- (s/protocol vcs/VcsRepo)
-  [opts :- OptsWithBuild]
+  [opts]
   (let [cwd (get-in opts [:process :cwd])]
     (cond
       (.isDirectory
@@ -36,7 +36,7 @@
 
 (s/defn wrap-vcs-info :- MainOpts
   [proc :- clojure.lang.IFn]
-  (fn [opts]
+  (s/fn [opts :- OptsWithBuild]
     (proc
      (assoc opts :vcs (vcs/log-latest
                        (make-repo opts))))))

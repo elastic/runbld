@@ -13,6 +13,8 @@
             [runbld.system :as system]
             [runbld.tests :as tests]
             [runbld.io :as io]
+            [runbld.util.date :as date]
+            [runbld.vcs.git :refer [checkout-commit]]
             [runbld.vcs.middleware :as vcs]
             [runbld.version :as version]
             [schema.core :as s]
@@ -37,8 +39,8 @@
      ;; for tests when #'really-die is redefed
      msg*)))
 
-(def run
-  (-> #'proc/run
+(def make-opts
+  (-> #'identity
       vcs/wrap-vcs-info
       build/wrap-build-meta
       scheduler/wrap-scheduler
@@ -48,12 +50,29 @@
 ;; -main :: IO ()
 (defn -main [& args]
   (try+
-   (let [opts-init (assoc
-                    (opts/parse-args args)
-                    :logger io/log)
+   (let [opts (make-opts
+               (assoc
+                (opts/parse-args args)
+                :logger io/log))
          _ (io/log (version/string))
+         _ (when (-> opts :build :last-success :checked-out)
+             (let [b (build/find-build opts (-> opts :build :last-success :id))]
+               (io/log "using last successful commit"
+                       (-> b :vcs :commit-short)
+                       "from"
+                       (-> b :build :job-name) (-> b :id)
+                       (-> b :process :time-start)
+                       (date/human-duration
+                        (date/iso-diff-secs
+                         (date/from-iso
+                          ;; notify on time-end because it makes more
+                          ;; logical sense to report on the last
+                          ;; completed build's end time, I think
+                          (-> b :process :time-end))
+                         (date/now)))
+                       "ago")))
          _ (io/log ">>>>>>>>>>>> SCRIPT EXECUTION BEGIN >>>>>>>>>>>>")
-         {:keys [opts process-result]} (run opts-init)
+         {:keys [opts process-result]} (proc/run opts)
          _ (io/log "<<<<<<<<<<<< SCRIPT EXECUTION END <<<<<<<<<<<<")
          {:keys [took status exit-code out-bytes err-bytes]} process-result
          _ (io/log (format "DURATION: %sms" took))
