@@ -1,3 +1,6 @@
 * runbld changes
+** 1.1.1
+   - Fix bug in new git module that didn't handle shallow clones (a commit has a
+     =parent=, but the parent SHA doesn't exist)
 ** 1.1.0
    - [#56](elastic/runbld#56) Optionally check last successful build for commit SHA
