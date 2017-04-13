@@ -40,8 +40,8 @@
          exit (:exit res)]
      (if (pos? exit)
        (case exit
-         128 (if (.contains (:err res) "bad object") nil (err))
-         (err))
+         128 (if (.contains (:err res) "bad object") nil (err res))
+         (err res))
        res))))
 
 (defn git
