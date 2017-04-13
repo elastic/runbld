@@ -1,4 +1,6 @@
 * runbld changes
+** 1.1.2  
+   - Fix bug in error condition with new function called with wrong arity
 ** 1.1.1
    - Fix bug in new git module that didn't handle shallow clones (a commit has a
      =parent=, but the parent SHA doesn't exist)
