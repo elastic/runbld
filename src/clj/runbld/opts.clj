@@ -105,7 +105,9 @@
   (deep-merge-with deep-merge
                    config-file-defaults
                    (if (environ/env :dev)
-                     {}
+                     (do
+                       (io/log "DEV enabled, not attempting to read" (str (system-config)))
+                       {})
                      (let [sys (system-config)]
                        (if (.isFile sys)
                          (load-config-with-profiles job-name (system-config))

@@ -31,12 +31,18 @@
    (run cmd args "."))
   ([cmd args dir]
    (prn cmd args dir)
-   (let [res (apply sh/sh "git" cmd (concat args [:dir dir]))]
-     (assert (= 0 (:exit res)) (format "%s: \nout: %s\nerr: %s"
-                                       (pr-str [cmd args])
-                                       (:out res)
-                                       (:err res)))
-     res)))
+   (let [res (apply sh/sh "git" cmd (concat args [:dir dir]))
+         err (fn [r]
+               (assert
+                (= 0 (:exit r)) (format "%s: \nout: %s\nerr: %s"
+                                        (pr-str [cmd args])
+                                        (:out r) (:err r))))
+         exit (:exit res)]
+     (if (pos? exit)
+       (case exit
+         128 (if (.contains (:err res) "bad object") nil (err))
+         (err))
+       res))))
 
 (defn git
   ([repo cmd]
@@ -125,13 +131,14 @@
   ([repo]
    (git-log-commit repo "HEAD"))
   ([repo sha]
-   (parse-raw-commit (git-log-raw-string repo sha))))
+   (when-let [raw (git-log-raw-string repo sha)]
+     (parse-raw-commit raw))))
 
 (defn git-log
   ([repo]
    (git-log repo "HEAD"))
   ([repo sha]
-   (let [commit (git-log-commit repo sha)]
+   (when-let [commit (git-log-commit repo sha)]
      (lazy-seq
       (cons commit (when-let [p (:parent commit)]
                      (git-log repo p)))))))
