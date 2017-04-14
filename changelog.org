@@ -1,4 +1,6 @@
 * runbld changes
+** 1.1.3
+   - Fix bug where git module couldn't handle gpg-signed commits
 ** 1.1.2  
    - Fix bug in error condition with new function called with wrong arity
 ** 1.1.1
