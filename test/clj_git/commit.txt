@@ -1,0 +1,28 @@
+commit 21f7b242cf06dc5d6ebcd4e1e902c6b8b950adc6
+tree 89371cfd2b12bb57c40ffd71d6309dcf2e38a1c1
+parent b22c612de46e48ac4ca1560bb69cd3ce0b0e60c4
+author Martijn van Groningen <martijn.v.groningen@gmail.com> 1492109568 +0200
+committer Martijn van Groningen <martijn.v.groningen@gmail.com> 1492110480 +0200
+gpgsig -----BEGIN PGP SIGNATURE-----
+ Version: GnuPG v2
+ Comment: GPGTools - http://gpgtools.org
+ 
+ iQIcBAABCAAGBQJY78yQAAoJEKsjb0/PKvEqKAMP/2mU4A82VJC7ruIa7a0bnG/q
+ +CqD430f+HEB8zsprJcynPfubGmH/6HEgThr06BvFvQ3724YC8ATdD5zEFlDIRk4
+ 8J78kvJh3q/Gh2eY9Uvaegs0wfViJk6DJcACD/KjYEK9vb79tU2TnMtZvoulIsnx
+ 232Vcbr2lGYZqcBtWveATB7FLuDPR0v/hLPmcw+AjACm9ELGIB8rOq3sMXZka2Hc
+ COmKL4XHW9plGPszoikCfvwOYwpFV6RD99q5fYQ6pG0dEXSZFAnQONyXy9rqYPHx
+ Vl6dhLQnwhUYHJUA0eqMSPmDG6GnV4qseZTmraq4UCo+Dw1IUdsi0sXAHKQTV5tq
+ GM57ssW6DHvw2+vYt7CW6oKaH5Afqhv7WrEhOf3Mfty4f/2XbAPtPEzgqBoVdKqo
+ 4rCZSks89e5V+8grh7SnBE30YPX4g9BVsF8tmqRwbezmQsss8bNYL3Aw7MFGHQQG
+ NyPlx3pf8k/7oUWQiiP2zfbxn8Y+2ryyKfpWbmXvaV64iQeh4Hsi4bg6tP8RwJol
+ Z8JJ3DaDjiFrzcPqnfUH+HYvO8mrFHVIoOgL9dkKVG9qBuMsg3Ft04Nty5i67TUe
+ ttN+Z5XEHBY8T/M2tYqw2n1LgZ/hxI3Y8lqNdseSuq+P3u7Mtv39GWlJdivbsS9C
+ ojKXP6++vrAzb5CVc4mt
+ =VEaO
+ -----END PGP SIGNATURE-----
+
+    [ML] Split persistent job params from action request and
+    introduced separate task names to register the persistent tasks executors and params.
+    
+    Also renamed start and stop datafeed action names to be singular in order to be consistent with open and close action names.

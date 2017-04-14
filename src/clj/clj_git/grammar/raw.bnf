@@ -4,31 +4,47 @@ git = commitLine <newline>
       [ parentLine <newline> ]
       authorLine <newline>
       committerLine <newline>
+      [ gpgsig <newline> ]
       <newline>
       msgTitle
       [ msgBody <newline> ]
+      [ <newline> ]
 
-commitLine = <"commit"> <sp> sha
-treeLine = <"tree"> <sp> sha
-parentLine = <["parent" sp sha newline]> (* In case of a merge commit, disregard
+commitLine = <'commit'> <sp> sha
+treeLine = <'tree'> <sp> sha
+parentLine = <['parent' sp sha newline]> (* In case of a merge commit, disregard
                                             the first parent.  Is this technically right? *)
-             <"parent"> <sp> sha
-authorLine = <"author"> <sp> name <bracket> emailAddr <bracket> <sp> time
-committerLine = <"committer"> <sp> name <bracket> emailAddr <bracket> <sp> time
+             <'parent'> <sp> sha
+authorLine = <'author'> <sp> name <bracket> emailAddr <bracket> <sp> time
+committerLine = <'committer'> <sp> name <bracket> emailAddr <bracket> <sp> time
+gpgsig = <'gpgsig'>
+         <oneSp> gpgPrefix newline
+         ( <oneSp> gpgHeader newline )*
+           <oneSp> newline
+         ( <oneSp> gpgData newline )+
+         <oneSp> gpgPostfix
 
-msgTitle = <indent> any*
-msgBody = ( newline <indent> any* )*
+msgTitle = <indent> nonNewline*
+msgBody = ( newline <indent> nonNewline* )*
 
-emailAddr = #"[^>]+"
-bracket = #"[<>]"
-name = #"[^<]+" (* trim this *)
+gpgPrefix = '-----BEGIN PGP SIGNATURE-----'
+gpgPostfix = '-----END PGP SIGNATURE-----'
+gpgData = base64+
+gpgHeader = gpgArmorHeaderKey nonNewline+
+gpgArmorHeaderKey = 'Version' | 'Comment' | 'MessageID' | 'Hash' | 'Charset'
+
+emailAddr = #'[^>]+'
+bracket = #'[<>]'
+name = #'[^<]+' (* trim this *)
 time = epoch <sp> offset
-epoch = #"[0-9]+"
-offset = ( '-' | '+' ) #"[0-9]{4}"
-date = #"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{2}:\d{2}"
-sha = #"[a-f0-9]+"
-sp = #"[ ]+"
+epoch = #'[0-9]+'
+offset = ( '-' | '+' ) #'[0-9]{4}'
+date = #'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{2}:\d{2}'
+sha = #'[a-f0-9]+'
+sp = #'[ ]+'
 oneSp = ' '
 indent = oneSp oneSp oneSp oneSp
+nonNewline = #'[^\n]'
 newline = '\n'
-any = #"."
+base64 = #'[A-Za-z0-9+/=]'
+any = #'.'

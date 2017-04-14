@@ -30,7 +30,7 @@
   ([cmd args]
    (run cmd args "."))
   ([cmd args dir]
-   (prn cmd args dir)
+   #_(prn cmd args dir)
    (let [res (apply sh/sh "git" cmd (concat args [:dir dir]))
          err (fn [r]
                (assert
@@ -67,18 +67,21 @@
 
 (def raw-transforms
   {:git
-   (fn root
-     ([commit tree author committer title body]
-      (root commit tree nil author committer title body))
-     ([commit tree parent author committer title body]
-      (map->Commit
-       (merge commit tree parent
-              {:author author
+   (fn root [& x]
+     (let [{:keys [commit parent author committer
+                   title body time tree] :as m} (apply merge x)
+           c (map->Commit
+              {:commit commit
+               :tree tree
+               :parent parent
+               :author author
                :committer committer
-               :message (map->Message (merge title body))
-               :commit-short (->> (:commit commit)
-                                  (take 7)
-                                  (apply str))}))))
+               :message (->Message title body)
+               :commit-short (->> commit (take 7) (apply str))})]
+       #_(clojure.pprint/pprint m)
+       #_(println (-> c :author :time str))
+       c
+       ))
 
    :name
    #(.trim %)
@@ -97,19 +100,51 @@
 
    :authorLine
    (fn [name [_ email] time]
-     (->Author name email time))
+     {:author
+      (->Author name email time)})
 
    :committerLine
    (fn [name [_ email] time]
-     (->Committer name email time))
+     {:committer
+      (->Committer name email time)})
 
    :msgTitle
    (fn [& x]
-     {:title (->> x (map second) (apply str))})
+     {:title (->> x (apply str) .trim)})
 
    :msgBody
    (fn [& x]
-     {:body (->> x (map second) (apply str) .trim)})
+     {:body (->> x (apply str) .trim)})
+
+   :gpgsig
+   (fn [& x]
+     {:gpgsig (apply str x)})
+
+   :gpgPrefix
+   (fn [x] x)
+
+   :gpgPostfix
+   (fn [x] x)
+
+   :gpgHeader
+   (fn [& x]
+     (apply str x))
+
+   :gpgArmorHeaderKey
+   (fn [x] x)
+
+   :gpgData
+   (fn [& x]
+     (apply str x))
+
+   :newline
+   (fn [x] x)
+
+   :nonNewline
+   (fn [x] x)
+
+   :base64
+   (fn [[x]] x)
 
    :time
    (fn [[_ epoch-str] [_ sign hours]]
@@ -125,7 +160,11 @@
    (:out (git repo "log" [sha "-1" "--pretty=raw"]))))
 
 (defn parse-raw-commit [s]
-  (i/transform raw-transforms (parse-log-raw s)))
+  (let [res (i/transform raw-transforms (parse-log-raw s))]
+    (if (instance? instaparse.gll.Failure res)
+      (throw (ex-info "parse failure" {:res res
+                                       :commit s}))
+      res)))
 
 (defn git-log-commit
   ([repo]
