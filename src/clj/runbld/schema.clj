@@ -454,7 +454,12 @@
                      :took-human s/Str
                      :failed s/Bool})
    :test     (s/maybe StoredTestSummary)
-   (s/optional-key :failures) [StoredFailure]})
+   (s/optional-key :tests)    s/Bool
+   (s/optional-key :failures) [StoredFailure]
+   (s/optional-key :no-output) s/Bool
+   (s/optional-key :log) {:present s/Bool
+                          :summary s/Str
+                          :lines [s/Str]}})
 
 (def EmailCtx
   (merge

@@ -13,6 +13,15 @@
 
 (use-fixtures :once schema.test/validate-schemas)
 
+(defn run [args]
+  (let [opts (opts/parse-args args)
+        res (apply main/-main args)
+        idx (-> res :store-result :addr :index)
+        t (-> res :store-result :addr :type)
+        id (-> res :store-result :addr :id)
+        build-doc (store/get (-> opts :es :conn) idx t id)]
+    [opts res build-doc]))
+
 ;; This is a waste until we dynamically generate test/context.edn
 #_(deftest render
     (let [f "tmp/runbld-email.html"]
@@ -35,24 +44,62 @@
 (deftest attached
   (testing "failures present"
     (let [email (atom [])]
-      (with-redefs [io/log (fn [& _] :noconsole)
-                    mail/send-message (fn [& args]
-                                        (swap! email concat args))]
+      (with-redefs [io/log (fn [& x] (prn x))
+                    mail/send-message (fn [conn msg]
+                                        (reset! email msg))]
         (git/with-tmp-repo [d "tmp/git/email-failures"]
           (io/run "rsync" "-a" "test/repo/java/some-errors/" d)
-          (let [args (conj
-                      ["-c" "test/config/main.yml"
-                       "-j" "elastic+foo+master"
-                       "-d" d]
-                      (if (opts/windows?)
-                        "test/fail.bat"
-                        "test/fail.bash"))
-                opts (opts/parse-args args)
-                res (apply main/-main args)
-                idx (-> res :store-result :addr :index)
-                t (-> res :store-result :addr :type)
-                id (-> res :store-result :addr :id)
-                build-doc (store/get (-> opts :es :conn) idx t id)]
+          (let [[opts res build-doc]
+                (run
+                  (conj
+                   ["-c" "test/config/main.yml"
+                    "-j" "elastic+foo+master"
+                    "-d" d]
+                   (if (opts/windows?)
+                     "test/fail.bat"
+                     "test/fail.bash")))]
             (is (= 1 (:exit-code res)))
             (is (= 1 (-> build-doc :process :exit-code)))
-            (is (= 2 (count (store/get-failures opts (:id build-doc)))))))))))
+            (is (= 2 (count (store/get-failures opts (:id build-doc)))))
+            (is (.contains (-> @email :body first :content)
+                           "com.example.AppTest <b>testBad</b>")
+                (with-out-str
+                  (clojure.pprint/pprint @email)))))))))
+
+(deftest log
+  (testing "log present"
+    (let [email (atom [])
+          out (java.io.StringWriter.)]
+      (binding [*out* out]
+        (with-redefs [io/log (fn [& x] (prn x))
+                      mail/send-message (fn [conn msg]
+                                          (reset! email msg))]
+          (git/with-tmp-repo [d "tmp/git/email-log"]
+            (testing "no gradle task"
+              (let [[opts res build-doc]
+                    (run
+                      (conj
+                       ["-c" "test/config/main.yml"
+                        "-j" "elastic+foo+master"
+                        "-d" d]
+                       (if (opts/windows?)
+                         "test/fail-gradle-no-task.bat"
+                         "test/fail-gradle-no-task.bash")))]
+                (is (= 1 (-> build-doc :process :exit-code)))
+                (is (.contains (-> @email :body first :content)
+                               "Cannot expand ZIP")
+                    (-> @email :body first :content))))
+            (testing "with gradle task"
+              (let [[opts res build-doc]
+                    (run
+                      (conj
+                       ["-c" "test/config/main.yml"
+                        "-j" "elastic+foo+master"
+                        "-d" d]
+                       (if (opts/windows?)
+                         "test/fail-gradle-with-task.bat"
+                         "test/fail-gradle-with-task.bash")))]
+                (is (= 1 (-> build-doc :process :exit-code)))
+                (is (.contains (-> @email :body first :content)
+                               ":core:integTest")
+                    (-> @email :body first :content))))))))))

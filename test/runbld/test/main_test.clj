@@ -19,6 +19,9 @@
 (def email (atom []))
 (def slack (atom []))
 
+(defn run [args]
+  [(opts/parse-args args) (apply main/-main args)])
+
 (defn slack-msg []
   (-> @slack
       json/decode
@@ -180,9 +183,6 @@
             (is (empty? @email))
             (is (empty? @slack))))))))
 
-(defn run [args]
-  [(opts/parse-args args) (apply main/-main args)])
-
 (s/deftest last-good-commit
   (testing "last-good-commit:"
     (testing "successful intake"
@@ -223,3 +223,5 @@
               (finally
                 (io/rmdir-r periodic-dir)
                 (io/rmdir-r intake-dir)))))))))
+
+
