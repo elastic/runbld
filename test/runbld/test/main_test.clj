@@ -19,6 +19,9 @@
 (def email (atom []))
 (def slack (atom []))
 
+(defn run [args]
+  [(opts/parse-args args) (apply main/-main args)])
+
 (defn slack-msg []
   (-> @slack
       json/decode
@@ -54,12 +57,10 @@
                                        (Exception.
                                         "boy that was unexpected")))]
     (git/with-tmp-repo [d "tmp/git/main-test-1"]
-      (let [args ["-c" "test/config/main.yml"
-                  "-j" "elastic+foo+master"
-                  "-d" d
-                  "/path/to/script.bash"]
-            opts (opts/parse-args args)
-            res (apply main/-main args)]
+      (let [[opts res] (run ["-c" "test/config/main.yml"
+                             "-j" "elastic+foo+master"
+                             "-d" d
+                             "/path/to/script.bash"])]
         (is (= String (type res)))
         (is (.startsWith res "#error {\n :cause boy that was "))))))
 
@@ -81,15 +82,14 @@
                                  (reset! slack js)))]
       (testing "build failure -- default notification settings"
         (git/with-tmp-repo [d "tmp/git/main-test-2"]
-          (let [args (conj
-                      ["-c" "test/config/main.yml"
-                       "-j" "elastic+foo+master"
-                       "-d" d]
-                      (if (opts/windows?)
-                        "test/fail.bat"
-                        "test/fail.bash"))
-                opts (opts/parse-args args)
-                res (apply main/-main args)]
+          (let [[opts res] (run
+                             (conj
+                              ["-c" "test/config/main.yml"
+                               "-j" "elastic+foo+master"
+                               "-d" d]
+                              (if (opts/windows?)
+                                "test/fail.bat"
+                                "test/fail.bash")))]
             (is (= 1 (:exit-code res)))
             (is (= 1 (-> (store/get (-> opts :es :conn)
                                     (-> res :store-result :addr :index)
@@ -104,13 +104,12 @@
         (reset! email [])
         (reset! slack [])
         (git/with-tmp-repo [d "tmp/git/main-test-3"]
-          (let [args (conj
-                      ["-c" "test/config/main.yml"
-                       "-j" "elastic+foo+master"
-                       "-d" d]
-                      "test/success.bash")
-                opts (opts/parse-args args)
-                res (apply main/-main args)]
+          (let [[opts res] (run
+                             (conj
+                              ["-c" "test/config/main.yml"
+                               "-j" "elastic+foo+master"
+                               "-d" d]
+                              "test/success.bash"))]
             (is (= 0 (:exit-code res)))
             (is (= 0 (-> (store/get (-> opts :es :conn)
                                     (-> res :store-result :addr :index)
@@ -142,13 +141,11 @@
         (reset! slack [])
         ;; fail first
         (git/with-tmp-repo [d "tmp/git/main-test-4"]
-          (let [args (conj
-                      ["-c" "test/config/slack.yml"
-                       "-j" "elastic+foo+master"
-                       "-d" d]
-                      "test/fail.bash")
-                opts (opts/parse-args args)
-                res (apply main/-main args)]))
+          (let [[opts res] (run (conj
+                                 ["-c" "test/config/slack.yml"
+                                  "-j" "elastic+foo+master"
+                                  "-d" d]
+                                 "test/fail.bash"))]))
         ;; then succeed
         (reset! email [])
         (reset! slack [])
@@ -170,25 +167,21 @@
         (reset! email [])
         (reset! slack [])
         (git/with-tmp-repo [d "tmp/git/main-test-6"]
-          (let [args (conj
-                      ["-c" "test/config/slack.yml"
-                       "-j" "elastic+foo+master"
-                       "-d" d]
-                      "test/success.bash")
-                res (apply main/-main args)]
+          (let [[opts res] (run (conj
+                                 ["-c" "test/config/slack.yml"
+                                  "-j" "elastic+foo+master"
+                                  "-d" d]
+                                 "test/success.bash"))]
             ;; we shouldn't get any more notifications
             (is (empty? @email))
             (is (empty? @slack))))))))
-
-(defn run [args]
-  [(opts/parse-args args) (apply main/-main args)])
 
 (s/deftest last-good-commit
   (testing "last-good-commit:"
     (testing "successful intake"
       (let [email-body (atom :no-email-body-yet)]
         (with-redefs [io/log (fn [& x] (prn x))
-                      email/send* (fn [_ _ _ _ _ html _]
+                      email/send* (fn [_ _ _ _ plain html attachments]
                                     (reset! email-body html)
                                     ;; to satisfy schema
                                     {})

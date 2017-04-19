@@ -4,6 +4,7 @@
   (:require [again.core :as again]
             [clojure.java.io :as jio]
             [clojure.java.shell :as sh]
+            [pallet.thread-expr :refer [when->]]
             [slingshot.slingshot :refer [throw+]])
   (:import (org.apache.commons.io FileUtils)))
 
@@ -185,8 +186,17 @@
          (rmdir-r
           ~(bindings 0))))))
 
-(defn make-tmp-file [pre post]
-  (java.io.File/createTempFile (format "runbld-%s-" pre) post))
+(defn make-tmp-file [pre post & {:keys [del?]}]
+  (let [f (java.io.File/createTempFile (format "runbld-%s-" pre) post)]
+    (when del? (.deleteOnExit f))
+    f))
+
+(defn make-tmp-attachment [pre post & {:keys [del?]}]
+  (let [f (java.io.File/createTempFile
+           (java.net.URLEncoder/encode (format "%s-" pre))
+           post)]
+    (when del? (.deleteOnExit f))
+    f))
 
 (s/defn same-file? :- s/Bool
   ([f1 :- java.io.File

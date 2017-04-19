@@ -78,8 +78,6 @@
                :committer committer
                :message (->Message title body)
                :commit-short (->> commit (take 7) (apply str))})]
-       #_(clojure.pprint/pprint m)
-       #_(println (-> c :author :time str))
        c
        ))
 

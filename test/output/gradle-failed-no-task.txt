@@ -1,0 +1,1183 @@
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/buildSrc/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/buildSrc/build.gradle' using BuildScriptTransformer.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+Evaluating project ':checkout-5.x:client' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/client/build.gradle'.
+Evaluating project ':checkout-5.x:core' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/core/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/core/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/core/build.gradle' using BuildScriptTransformer.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+Evaluating project ':checkout-5.x:distribution' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/distribution/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/distribution/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/distribution/build.gradle' using BuildScriptTransformer.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+Adding permissionGroup to org.gradle.api.internal.file.copy.SingleParentCopySpec@53ddfec8
+Adding createDirectoryEntry to org.gradle.api.internal.file.copy.SingleParentCopySpec@53ddfec8
+Adding fileType to org.gradle.api.internal.file.copy.SingleParentCopySpec@53ddfec8
+Adding fileType to org.gradle.api.internal.file.copy.SingleParentCopySpec@3b8a4abf
+Adding fileType to org.gradle.api.internal.file.copy.SingleParentCopySpec@3b7b382c
+Adding fileType to org.gradle.api.internal.file.copy.SingleParentCopySpec@3ea0554f
+Adding fileType to org.gradle.api.internal.file.copy.SingleParentCopySpec@e937dff
+Adding createDirectoryEntry to org.gradle.api.internal.file.copy.SingleParentCopySpec@7142d134
+Adding user to org.gradle.api.internal.file.copy.SingleParentCopySpec@7142d134
+Adding permissionGroup to org.gradle.api.internal.file.copy.SingleParentCopySpec@7142d134
+Adding createDirectoryEntry to org.gradle.api.internal.file.copy.SingleParentCopySpec@2b076596
+Adding user to org.gradle.api.internal.file.copy.SingleParentCopySpec@2b076596
+Adding permissionGroup to org.gradle.api.internal.file.copy.SingleParentCopySpec@2b076596
+Adding createDirectoryEntry to org.gradle.api.internal.file.copy.SingleParentCopySpec@7c2a654a
+Adding user to org.gradle.api.internal.file.copy.SingleParentCopySpec@7c2a654a
+Adding permissionGroup to org.gradle.api.internal.file.copy.SingleParentCopySpec@7c2a654a
+Adding createDirectoryEntry to org.gradle.api.internal.file.copy.SingleParentCopySpec@411a8b68
+Adding user to org.gradle.api.internal.file.copy.SingleParentCopySpec@411a8b68
+Adding permissionGroup to org.gradle.api.internal.file.copy.SingleParentCopySpec@411a8b68
+Adding permissionGroup to org.gradle.api.internal.file.copy.SingleParentCopySpec@96212c7
+Adding createDirectoryEntry to org.gradle.api.internal.file.copy.SingleParentCopySpec@96212c7
+Adding fileType to org.gradle.api.internal.file.copy.SingleParentCopySpec@96212c7
+Adding fileType to org.gradle.api.internal.file.copy.SingleParentCopySpec@453c2d1d
+Adding fileType to org.gradle.api.internal.file.copy.SingleParentCopySpec@21f1708e
+Adding fileType to org.gradle.api.internal.file.copy.SingleParentCopySpec@20078ad
+Adding fileType to org.gradle.api.internal.file.copy.SingleParentCopySpec@563d9df3
+Adding createDirectoryEntry to org.gradle.api.internal.file.copy.SingleParentCopySpec@5cb9d803
+Adding user to org.gradle.api.internal.file.copy.SingleParentCopySpec@5cb9d803
+Adding permissionGroup to org.gradle.api.internal.file.copy.SingleParentCopySpec@5cb9d803
+Adding createDirectoryEntry to org.gradle.api.internal.file.copy.SingleParentCopySpec@7666b61a
+Adding user to org.gradle.api.internal.file.copy.SingleParentCopySpec@7666b61a
+Adding permissionGroup to org.gradle.api.internal.file.copy.SingleParentCopySpec@7666b61a
+Adding createDirectoryEntry to org.gradle.api.internal.file.copy.SingleParentCopySpec@77226d6b
+Adding user to org.gradle.api.internal.file.copy.SingleParentCopySpec@77226d6b
+Adding permissionGroup to org.gradle.api.internal.file.copy.SingleParentCopySpec@77226d6b
+Adding createDirectoryEntry to org.gradle.api.internal.file.copy.SingleParentCopySpec@4dcaa479
+Adding user to org.gradle.api.internal.file.copy.SingleParentCopySpec@4dcaa479
+Adding permissionGroup to org.gradle.api.internal.file.copy.SingleParentCopySpec@4dcaa479
+Evaluating project ':checkout-5.x:docs' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/docs/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/docs/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/docs/build.gradle' using BuildScriptTransformer.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+Evaluating project ':checkout-5.x:modules' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/build.gradle' using BuildScriptTransformer.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+Evaluating project ':checkout-5.x:plugins' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/build.gradle' using BuildScriptTransformer.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+Evaluating project ':checkout-5.x:qa' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/build.gradle'.
+Evaluating project ':checkout-5.x:rest-api-spec' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/rest-api-spec/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/rest-api-spec/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/rest-api-spec/build.gradle' using BuildScriptTransformer.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+Evaluating project ':checkout-5.x:test' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/test/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/test/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/test/build.gradle' using BuildScriptTransformer.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+Evaluating project ':checkout-5.x:client:benchmark' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/client/benchmark/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/client/benchmark/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/client/benchmark/build.gradle' using BuildScriptTransformer.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+Evaluating project ':checkout-5.x:client:client-benchmark-noop-api-plugin' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/client/client-benchmark-noop-api-plugin/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/client/client-benchmark-noop-api-plugin/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/client/client-benchmark-noop-api-plugin/build.gradle' using BuildScriptTransformer.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+Evaluating project ':checkout-5.x:client:rest' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/client/rest/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/client/rest/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/client/rest/build.gradle' using BuildScriptTransformer.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+Evaluating project ':checkout-5.x:client:sniffer' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/client/sniffer/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/client/sniffer/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/client/sniffer/build.gradle' using BuildScriptTransformer.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+Evaluating project ':checkout-5.x:client:test' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/client/test/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/client/test/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/client/test/build.gradle' using BuildScriptTransformer.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+Evaluating project ':checkout-5.x:client:transport' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/client/transport/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/client/transport/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/client/transport/build.gradle' using BuildScriptTransformer.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+Evaluating project ':checkout-5.x:distribution:deb' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/distribution/deb/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/distribution/deb/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/distribution/deb/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:distribution:integ-test-zip' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/distribution/integ-test-zip/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/distribution/integ-test-zip/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/distribution/integ-test-zip/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:distribution:rpm' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/distribution/rpm/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/distribution/rpm/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/distribution/rpm/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:distribution:tar' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/distribution/tar/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/distribution/tar/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/distribution/tar/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:distribution:tools' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/distribution/tools/build.gradle'.
+Evaluating project ':checkout-5.x:distribution:zip' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/distribution/zip/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/distribution/zip/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/distribution/zip/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:modules:aggs-matrix-stats' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/aggs-matrix-stats/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/aggs-matrix-stats/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/aggs-matrix-stats/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:modules:ingest-common' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/ingest-common/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/ingest-common/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/ingest-common/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:modules:lang-expression' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/lang-expression/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/lang-expression/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/lang-expression/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:modules:lang-groovy' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/lang-groovy/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/lang-groovy/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/lang-groovy/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:modules:lang-mustache' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/lang-mustache/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/lang-mustache/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/lang-mustache/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:modules:lang-painless' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/lang-painless/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/lang-painless/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/lang-painless/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:modules:percolator' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/percolator/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/percolator/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/percolator/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:modules:reindex' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/reindex/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/reindex/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/reindex/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:modules:transport-netty3' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/transport-netty3/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/transport-netty3/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/transport-netty3/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:modules:transport-netty4' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/transport-netty4/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/transport-netty4/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/transport-netty4/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:plugins:analysis-icu' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/analysis-icu/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/analysis-icu/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/analysis-icu/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:plugins:analysis-kuromoji' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/analysis-kuromoji/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/analysis-kuromoji/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/analysis-kuromoji/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:plugins:analysis-phonetic' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/analysis-phonetic/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/analysis-phonetic/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/analysis-phonetic/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:plugins:analysis-smartcn' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/analysis-smartcn/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/analysis-smartcn/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/analysis-smartcn/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:plugins:analysis-stempel' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/analysis-stempel/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/analysis-stempel/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/analysis-stempel/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:plugins:analysis-ukrainian' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/analysis-ukrainian/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/analysis-ukrainian/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/analysis-ukrainian/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:plugins:discovery-azure-classic' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/discovery-azure-classic/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/discovery-azure-classic/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/discovery-azure-classic/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:plugins:discovery-ec2' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/discovery-ec2/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/discovery-ec2/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/discovery-ec2/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:plugins:discovery-file' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/discovery-file/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/discovery-file/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/discovery-file/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:plugins:discovery-gce' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/discovery-gce/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/discovery-gce/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/discovery-gce/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:plugins:ingest-attachment' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/ingest-attachment/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/ingest-attachment/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/ingest-attachment/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:plugins:ingest-geoip' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/ingest-geoip/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/ingest-geoip/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/ingest-geoip/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:plugins:ingest-user-agent' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/ingest-user-agent/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/ingest-user-agent/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/ingest-user-agent/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:plugins:jvm-example' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/jvm-example/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/jvm-example/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/jvm-example/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:plugins:lang-javascript' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/lang-javascript/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/lang-javascript/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/lang-javascript/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:plugins:lang-python' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/lang-python/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/lang-python/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/lang-python/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:plugins:mapper-attachments' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/mapper-attachments/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/mapper-attachments/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/mapper-attachments/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:plugins:mapper-murmur3' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/mapper-murmur3/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/mapper-murmur3/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/mapper-murmur3/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:plugins:mapper-size' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/mapper-size/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/mapper-size/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/mapper-size/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:plugins:repository-azure' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/repository-azure/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/repository-azure/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/repository-azure/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:plugins:repository-gcs' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/repository-gcs/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/repository-gcs/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/repository-gcs/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:plugins:repository-hdfs' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/repository-hdfs/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/repository-hdfs/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/repository-hdfs/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:plugins:repository-s3' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/repository-s3/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/repository-s3/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/repository-s3/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:plugins:store-smb' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/store-smb/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/store-smb/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/plugins/store-smb/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:qa:backwards-5.0' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/backwards-5.0/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/backwards-5.0/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/backwards-5.0/build.gradle' using BuildScriptTransformer.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+Evaluating project ':checkout-5.x:qa:evil-tests' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/evil-tests/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/evil-tests/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/evil-tests/build.gradle' using BuildScriptTransformer.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+Evaluating project ':checkout-5.x:qa:multi-cluster-search' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/multi-cluster-search/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/multi-cluster-search/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/multi-cluster-search/build.gradle' using BuildScriptTransformer.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+Evaluating project ':checkout-5.x:qa:no-bootstrap-tests' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/no-bootstrap-tests/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/no-bootstrap-tests/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/no-bootstrap-tests/build.gradle' using BuildScriptTransformer.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+Evaluating project ':checkout-5.x:qa:rolling-upgrade' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/rolling-upgrade/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/rolling-upgrade/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/rolling-upgrade/build.gradle' using BuildScriptTransformer.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+Evaluating project ':checkout-5.x:qa:smoke-test-client' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/smoke-test-client/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/smoke-test-client/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/smoke-test-client/build.gradle' using BuildScriptTransformer.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+Evaluating project ':checkout-5.x:qa:smoke-test-http' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/smoke-test-http/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/smoke-test-http/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/smoke-test-http/build.gradle' using BuildScriptTransformer.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+Evaluating project ':checkout-5.x:qa:smoke-test-ingest-disabled' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/smoke-test-ingest-disabled/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/smoke-test-ingest-disabled/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/smoke-test-ingest-disabled/build.gradle' using BuildScriptTransformer.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+Evaluating project ':checkout-5.x:qa:smoke-test-ingest-with-all-dependencies' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/smoke-test-ingest-with-all-dependencies/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/smoke-test-ingest-with-all-dependencies/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/smoke-test-ingest-with-all-dependencies/build.gradle' using BuildScriptTransformer.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+Evaluating project ':checkout-5.x:qa:smoke-test-multinode' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/smoke-test-multinode/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/smoke-test-multinode/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/smoke-test-multinode/build.gradle' using BuildScriptTransformer.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+Evaluating project ':checkout-5.x:qa:smoke-test-plugins' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/smoke-test-plugins/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/smoke-test-plugins/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/smoke-test-plugins/build.gradle' using BuildScriptTransformer.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+Evaluating project ':checkout-5.x:qa:smoke-test-reindex-with-painless' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/smoke-test-reindex-with-painless/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/smoke-test-reindex-with-painless/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/smoke-test-reindex-with-painless/build.gradle' using BuildScriptTransformer.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+Evaluating project ':checkout-5.x:qa:smoke-test-tribe-node' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/smoke-test-tribe-node/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/smoke-test-tribe-node/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/smoke-test-tribe-node/build.gradle' using BuildScriptTransformer.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+Evaluating project ':checkout-5.x:qa:vagrant' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/vagrant/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/vagrant/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/qa/vagrant/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:test:fixtures' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/test/fixtures/build.gradle'.
+Evaluating project ':checkout-5.x:test:framework' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/test/framework/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/test/framework/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/test/framework/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:test:logger-usage' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/test/logger-usage/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/test/logger-usage/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/test/logger-usage/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:distribution:tools:java-version-checker' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/distribution/tools/java-version-checker/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/distribution/tools/java-version-checker/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/distribution/tools/java-version-checker/build.gradle' using BuildScriptTransformer.
+You are running forbidden-apis in the Gradle Daemon; disabling classloading cache to work around resource leak.
+Evaluating project ':checkout-5.x:test:fixtures:example-fixture' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/test/fixtures/example-fixture/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/test/fixtures/example-fixture/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/test/fixtures/example-fixture/build.gradle' using BuildScriptTransformer.
+Evaluating project ':checkout-5.x:test:fixtures:hdfs-fixture' using build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/test/fixtures/hdfs-fixture/build.gradle'.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/test/fixtures/hdfs-fixture/build.gradle' using SubsetScriptTransformer.
+Compiling build file '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/test/fixtures/hdfs-fixture/build.gradle' using BuildScriptTransformer.
+Selected primary task ':distribution:zip:assemble' from project :distribution:zip
+Creating new cache for fileHashes, path /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/.gradle/3.3/taskArtifacts/fileHashes.bin, access org.gradle.cache.internal.DefaultCacheAccess@3dcbd2d8
+Creating new cache for fileSnapshots, path /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/.gradle/3.3/taskArtifacts/fileSnapshots.bin, access org.gradle.cache.internal.DefaultCacheAccess@3dcbd2d8
+Creating new cache for taskArtifacts, path /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/.gradle/3.3/taskArtifacts/taskArtifacts.bin, access org.gradle.cache.internal.DefaultCacheAccess@3dcbd2d8
+:core:compileJava (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:core:compileJava
+Putting task artifact state for task ':checkout-5.x:core:compileJava' into context took 0.004 secs.
+Task :core:compileJava class loader hash: 01d9458a7e5b59caccdb01424c57a842
+Task :core:compileJava actions class loader hash: 18198991b357e4282b88db10fdb1e992
+Executing task ':checkout-5.x:core:compileJava' (up-to-date check took 2.79 secs) due to:
+  No history is available.
+All input files are considered out-of-date for incremental task ':checkout-5.x:core:compileJava'.
+:core:compileJava - is not incremental (e.g. outputs have changed, no previous execution, etc.).
+Compiling with Java command line compiler '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac'.
+Starting process 'command '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac''. Working directory: /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/core Command: /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac -J-Xmx1g @/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/core/build/tmp/compileJava/java-compiler-args.txt
+Successfully started process 'command '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac''
+Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF8
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Note: Some input files use unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+Creating new cache for localClassSetAnalysis, path /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/.gradle/3.3/tasks/_core_compileJava/localClassSetAnalysis/localClassSetAnalysis.bin, access org.gradle.cache.internal.DefaultCacheAccess@2b61de3a
+Class dependency analysis for incremental compilation took 0.538 secs.
+Created jar classpath snapshot for incremental compilation in 0.014 secs.
+Creating new cache for localJarClasspathSnapshot, path /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/.gradle/3.3/tasks/_core_compileJava/localJarClasspathSnapshot/localJarClasspathSnapshot.bin, access org.gradle.cache.internal.DefaultCacheAccess@251048fe
+Written jar classpath snapshot for incremental compilation in 0.004 secs.
+:core:compileJava (Thread[Daemon worker,5,main]) completed. Took 37.484 secs.
+:core:generateModulesList (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:core:generateModulesList
+Putting task artifact state for task ':checkout-5.x:core:generateModulesList' into context took 0.04 secs.
+Task :core:generateModulesList class loader hash: 7064e588920e76a48571db060884e368
+Task :core:generateModulesList actions class loader hash: 7a2e3feb06c2cf5f0df52aec333cb064
+Executing task ':checkout-5.x:core:generateModulesList' (up-to-date check took 0.0 secs) due to:
+  No history is available.
+:core:generateModulesList (Thread[Daemon worker,5,main]) completed. Took 0.042 secs.
+:core:generatePluginsList (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:core:generatePluginsList
+Putting task artifact state for task ':checkout-5.x:core:generatePluginsList' into context took 0.002 secs.
+Task :core:generatePluginsList class loader hash: 7064e588920e76a48571db060884e368
+Task :core:generatePluginsList actions class loader hash: 7a2e3feb06c2cf5f0df52aec333cb064
+Executing task ':checkout-5.x:core:generatePluginsList' (up-to-date check took 0.0 secs) due to:
+  No history is available.
+:core:generatePluginsList (Thread[Daemon worker,5,main]) completed. Took 0.003 secs.
+:core:processResources (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:core:processResources
+Putting task artifact state for task ':checkout-5.x:core:processResources' into context took 0.003 secs.
+Task :core:processResources class loader hash: 01d9458a7e5b59caccdb01424c57a842
+Task :core:processResources actions class loader hash: e73b7abdd73d9346265974d08e88519c
+Executing task ':checkout-5.x:core:processResources' (up-to-date check took 0.009 secs) due to:
+  No history is available.
+:core:processResources (Thread[Daemon worker,5,main]) completed. Took 0.023 secs.
+:core:classes (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:core:classes
+Skipping task ':checkout-5.x:core:classes' as it has no actions.
+:core:classes (Thread[Daemon worker,5,main]) completed. Took 0.0 secs.
+:core:jar (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:core:jar
+Putting task artifact state for task ':checkout-5.x:core:jar' into context took 0.003 secs.
+Task :core:jar class loader hash: 01d9458a7e5b59caccdb01424c57a842
+Task :core:jar actions class loader hash: 2445deece03404f2d5fabf0b556f46b0
+Executing task ':checkout-5.x:core:jar' (up-to-date check took 0.051 secs) due to:
+  No history is available.
+:core:jar (Thread[Daemon worker,5,main]) completed. Took 1.179 secs.
+:distribution:buildFullNotice (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:distribution:buildFullNotice
+Putting task artifact state for task ':checkout-5.x:distribution:buildFullNotice' into context took 0.024 secs.
+Task :distribution:buildFullNotice class loader hash: bfea6e400fa5dc6b0c1d4e5665b9109c
+Task :distribution:buildFullNotice actions class loader hash: cfe9a7fbf0b674bab83e7e73ee331b2c
+Executing task ':checkout-5.x:distribution:buildFullNotice' (up-to-date check took 0.001 secs) due to:
+  No history is available.
+:distribution:buildFullNotice (Thread[Daemon worker,5,main]) completed. Took 0.035 secs.
+:modules:aggs-matrix-stats:compileJava (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:aggs-matrix-stats:compileJava
+Putting task artifact state for task ':checkout-5.x:modules:aggs-matrix-stats:compileJava' into context took 0.003 secs.
+Task :modules:aggs-matrix-stats:compileJava class loader hash: 01d9458a7e5b59caccdb01424c57a842
+Task :modules:aggs-matrix-stats:compileJava actions class loader hash: 18198991b357e4282b88db10fdb1e992
+Executing task ':checkout-5.x:modules:aggs-matrix-stats:compileJava' (up-to-date check took 0.011 secs) due to:
+  No history is available.
+All input files are considered out-of-date for incremental task ':checkout-5.x:modules:aggs-matrix-stats:compileJava'.
+:modules:aggs-matrix-stats:compileJava - is not incremental (e.g. outputs have changed, no previous execution, etc.).
+Compiling with Java command line compiler '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac'.
+Starting process 'command '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac''. Working directory: /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/aggs-matrix-stats Command: /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac -J-Xmx1g @/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/aggs-matrix-stats/build/tmp/compileJava/java-compiler-args.txt
+Successfully started process 'command '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac''
+Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF8
+Creating new cache for localClassSetAnalysis, path /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/.gradle/3.3/tasks/_modules_aggs-matrix-stats_compileJava/localClassSetAnalysis/localClassSetAnalysis.bin, access org.gradle.cache.internal.DefaultCacheAccess@4b15e8f0
+Class dependency analysis for incremental compilation took 0.007 secs.
+Created jar classpath snapshot for incremental compilation in 4.874 secs.
+Creating new cache for localJarClasspathSnapshot, path /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/.gradle/3.3/tasks/_modules_aggs-matrix-stats_compileJava/localJarClasspathSnapshot/localJarClasspathSnapshot.bin, access org.gradle.cache.internal.DefaultCacheAccess@5f6798b4
+Written jar classpath snapshot for incremental compilation in 0.004 secs.
+:modules:aggs-matrix-stats:compileJava (Thread[Daemon worker,5,main]) completed. Took 6.304 secs.
+:modules:aggs-matrix-stats:processResources (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:aggs-matrix-stats:processResources
+Putting task artifact state for task ':checkout-5.x:modules:aggs-matrix-stats:processResources' into context took 0.004 secs.
+file or directory '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/aggs-matrix-stats/src/main/resources', not found
+Skipping task ':checkout-5.x:modules:aggs-matrix-stats:processResources' as it has no source files and no previous output files.
+:checkout-5.x:modules:aggs-matrix-stats:processResources UP-TO-DATE
+:modules:aggs-matrix-stats:processResources (Thread[Daemon worker,5,main]) completed. Took 0.004 secs.
+:modules:aggs-matrix-stats:classes (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:aggs-matrix-stats:classes
+Skipping task ':checkout-5.x:modules:aggs-matrix-stats:classes' as it has no actions.
+:modules:aggs-matrix-stats:classes (Thread[Daemon worker,5,main]) completed. Took 0.0 secs.
+:modules:aggs-matrix-stats:jar (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:aggs-matrix-stats:jar
+Putting task artifact state for task ':checkout-5.x:modules:aggs-matrix-stats:jar' into context took 0.0 secs.
+Task :modules:aggs-matrix-stats:jar class loader hash: 01d9458a7e5b59caccdb01424c57a842
+Task :modules:aggs-matrix-stats:jar actions class loader hash: 2445deece03404f2d5fabf0b556f46b0
+Executing task ':checkout-5.x:modules:aggs-matrix-stats:jar' (up-to-date check took 0.001 secs) due to:
+  No history is available.
+:modules:aggs-matrix-stats:jar (Thread[Daemon worker,5,main]) completed. Took 0.011 secs.
+:modules:aggs-matrix-stats:copyPluginPropertiesTemplate (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:aggs-matrix-stats:copyPluginPropertiesTemplate
+Putting task artifact state for task ':checkout-5.x:modules:aggs-matrix-stats:copyPluginPropertiesTemplate' into context took 0.0 secs.
+Executing task ':checkout-5.x:modules:aggs-matrix-stats:copyPluginPropertiesTemplate' (up-to-date check took 0.0 secs) due to:
+  Task has not declared any outputs.
+:modules:aggs-matrix-stats:copyPluginPropertiesTemplate (Thread[Daemon worker,5,main]) completed. Took 0.002 secs.
+:modules:aggs-matrix-stats:pluginProperties (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:aggs-matrix-stats:pluginProperties
+Putting task artifact state for task ':checkout-5.x:modules:aggs-matrix-stats:pluginProperties' into context took 0.026 secs.
+Task :modules:aggs-matrix-stats:pluginProperties class loader hash: bfea6e400fa5dc6b0c1d4e5665b9109c
+Task :modules:aggs-matrix-stats:pluginProperties actions class loader hash: e73b7abdd73d9346265974d08e88519c
+Executing task ':checkout-5.x:modules:aggs-matrix-stats:pluginProperties' (up-to-date check took 0.0 secs) due to:
+  No history is available.
+:modules:aggs-matrix-stats:pluginProperties (Thread[Daemon worker,5,main]) completed. Took 0.035 secs.
+:modules:aggs-matrix-stats:bundlePlugin (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:aggs-matrix-stats:bundlePlugin
+Putting task artifact state for task ':checkout-5.x:modules:aggs-matrix-stats:bundlePlugin' into context took 0.003 secs.
+Task :modules:aggs-matrix-stats:bundlePlugin class loader hash: 7064e588920e76a48571db060884e368
+Task :modules:aggs-matrix-stats:bundlePlugin actions class loader hash: e73b7abdd73d9346265974d08e88519c
+Executing task ':checkout-5.x:modules:aggs-matrix-stats:bundlePlugin' (up-to-date check took 0.001 secs) due to:
+  No history is available.
+:modules:aggs-matrix-stats:bundlePlugin (Thread[Daemon worker,5,main]) completed. Took 0.01 secs.
+:modules:ingest-common:compileJava (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:ingest-common:compileJava
+Putting task artifact state for task ':checkout-5.x:modules:ingest-common:compileJava' into context took 0.004 secs.
+Task :modules:ingest-common:compileJava class loader hash: 01d9458a7e5b59caccdb01424c57a842
+Task :modules:ingest-common:compileJava actions class loader hash: 18198991b357e4282b88db10fdb1e992
+Executing task ':checkout-5.x:modules:ingest-common:compileJava' (up-to-date check took 0.025 secs) due to:
+  No history is available.
+All input files are considered out-of-date for incremental task ':checkout-5.x:modules:ingest-common:compileJava'.
+:modules:ingest-common:compileJava - is not incremental (e.g. outputs have changed, no previous execution, etc.).
+Compiling with Java command line compiler '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac'.
+Starting process 'command '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac''. Working directory: /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/ingest-common Command: /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac -J-Xmx1g @/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/ingest-common/build/tmp/compileJava/java-compiler-args.txt
+Successfully started process 'command '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac''
+Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF8
+Creating new cache for localClassSetAnalysis, path /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/.gradle/3.3/tasks/_modules_ingest-common_compileJava/localClassSetAnalysis/localClassSetAnalysis.bin, access org.gradle.cache.internal.DefaultCacheAccess@144819fa
+Class dependency analysis for incremental compilation took 0.021 secs.
+Created jar classpath snapshot for incremental compilation in 0.048 secs.
+Creating new cache for localJarClasspathSnapshot, path /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/.gradle/3.3/tasks/_modules_ingest-common_compileJava/localJarClasspathSnapshot/localJarClasspathSnapshot.bin, access org.gradle.cache.internal.DefaultCacheAccess@25625880
+Written jar classpath snapshot for incremental compilation in 0.004 secs.
+:modules:ingest-common:compileJava (Thread[Daemon worker,5,main]) completed. Took 1.586 secs.
+:modules:ingest-common:processResources (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:ingest-common:processResources
+Putting task artifact state for task ':checkout-5.x:modules:ingest-common:processResources' into context took 0.004 secs.
+Task :modules:ingest-common:processResources class loader hash: 01d9458a7e5b59caccdb01424c57a842
+Task :modules:ingest-common:processResources actions class loader hash: e73b7abdd73d9346265974d08e88519c
+Executing task ':checkout-5.x:modules:ingest-common:processResources' (up-to-date check took 0.011 secs) due to:
+  No history is available.
+:modules:ingest-common:processResources (Thread[Daemon worker,5,main]) completed. Took 0.029 secs.
+:modules:ingest-common:classes (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:ingest-common:classes
+Skipping task ':checkout-5.x:modules:ingest-common:classes' as it has no actions.
+:modules:ingest-common:classes (Thread[Daemon worker,5,main]) completed. Took 0.0 secs.
+:modules:ingest-common:jar (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:ingest-common:jar
+Putting task artifact state for task ':checkout-5.x:modules:ingest-common:jar' into context took 0.003 secs.
+Task :modules:ingest-common:jar class loader hash: 01d9458a7e5b59caccdb01424c57a842
+Task :modules:ingest-common:jar actions class loader hash: 2445deece03404f2d5fabf0b556f46b0
+Executing task ':checkout-5.x:modules:ingest-common:jar' (up-to-date check took 0.002 secs) due to:
+  No history is available.
+:modules:ingest-common:jar (Thread[Daemon worker,5,main]) completed. Took 0.019 secs.
+:modules:ingest-common:copyPluginPropertiesTemplate (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:ingest-common:copyPluginPropertiesTemplate
+Putting task artifact state for task ':checkout-5.x:modules:ingest-common:copyPluginPropertiesTemplate' into context took 0.0 secs.
+Executing task ':checkout-5.x:modules:ingest-common:copyPluginPropertiesTemplate' (up-to-date check took 0.0 secs) due to:
+  Task has not declared any outputs.
+:modules:ingest-common:copyPluginPropertiesTemplate (Thread[Daemon worker,5,main]) completed. Took 0.0 secs.
+:modules:ingest-common:pluginProperties (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:ingest-common:pluginProperties
+Putting task artifact state for task ':checkout-5.x:modules:ingest-common:pluginProperties' into context took 0.046 secs.
+Task :modules:ingest-common:pluginProperties class loader hash: bfea6e400fa5dc6b0c1d4e5665b9109c
+Task :modules:ingest-common:pluginProperties actions class loader hash: e73b7abdd73d9346265974d08e88519c
+Executing task ':checkout-5.x:modules:ingest-common:pluginProperties' (up-to-date check took 0.001 secs) due to:
+  No history is available.
+:modules:ingest-common:pluginProperties (Thread[Daemon worker,5,main]) completed. Took 0.056 secs.
+:modules:ingest-common:bundlePlugin (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:ingest-common:bundlePlugin
+Putting task artifact state for task ':checkout-5.x:modules:ingest-common:bundlePlugin' into context took 0.004 secs.
+Task :modules:ingest-common:bundlePlugin class loader hash: 7064e588920e76a48571db060884e368
+Task :modules:ingest-common:bundlePlugin actions class loader hash: e73b7abdd73d9346265974d08e88519c
+Executing task ':checkout-5.x:modules:ingest-common:bundlePlugin' (up-to-date check took 0.0 secs) due to:
+  No history is available.
+:modules:ingest-common:bundlePlugin (Thread[Daemon worker,5,main]) completed. Took 0.088 secs.
+:modules:lang-expression:compileJava (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:lang-expression:compileJava
+Putting task artifact state for task ':checkout-5.x:modules:lang-expression:compileJava' into context took 0.018 secs.
+Task :modules:lang-expression:compileJava class loader hash: 01d9458a7e5b59caccdb01424c57a842
+Task :modules:lang-expression:compileJava actions class loader hash: 18198991b357e4282b88db10fdb1e992
+Executing task ':checkout-5.x:modules:lang-expression:compileJava' (up-to-date check took 0.017 secs) due to:
+  No history is available.
+All input files are considered out-of-date for incremental task ':checkout-5.x:modules:lang-expression:compileJava'.
+:modules:lang-expression:compileJava - is not incremental (e.g. outputs have changed, no previous execution, etc.).
+Compiling with Java command line compiler '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac'.
+Starting process 'command '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac''. Working directory: /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/lang-expression Command: /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac -J-Xmx1g @/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/lang-expression/build/tmp/compileJava/java-compiler-args.txt
+Successfully started process 'command '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac''
+Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF8
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Creating new cache for localClassSetAnalysis, path /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/.gradle/3.3/tasks/_modules_lang-expression_compileJava/localClassSetAnalysis/localClassSetAnalysis.bin, access org.gradle.cache.internal.DefaultCacheAccess@44ff9c8a
+Class dependency analysis for incremental compilation took 0.007 secs.
+Created jar classpath snapshot for incremental compilation in 0.061 secs.
+Creating new cache for localJarClasspathSnapshot, path /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/.gradle/3.3/tasks/_modules_lang-expression_compileJava/localJarClasspathSnapshot/localJarClasspathSnapshot.bin, access org.gradle.cache.internal.DefaultCacheAccess@413b84d1
+Written jar classpath snapshot for incremental compilation in 0.015 secs.
+:modules:lang-expression:compileJava (Thread[Daemon worker,5,main]) completed. Took 1.391 secs.
+:modules:lang-expression:processResources (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:lang-expression:processResources
+Putting task artifact state for task ':checkout-5.x:modules:lang-expression:processResources' into context took 0.004 secs.
+file or directory '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/lang-expression/src/main/resources', not found
+Skipping task ':checkout-5.x:modules:lang-expression:processResources' as it has no source files and no previous output files.
+:checkout-5.x:modules:lang-expression:processResources UP-TO-DATE
+:modules:lang-expression:processResources (Thread[Daemon worker,5,main]) completed. Took 0.004 secs.
+:modules:lang-expression:classes (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:lang-expression:classes
+Skipping task ':checkout-5.x:modules:lang-expression:classes' as it has no actions.
+:modules:lang-expression:classes (Thread[Daemon worker,5,main]) completed. Took 0.0 secs.
+:modules:lang-expression:jar (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:lang-expression:jar
+Putting task artifact state for task ':checkout-5.x:modules:lang-expression:jar' into context took 0.001 secs.
+Task :modules:lang-expression:jar class loader hash: 01d9458a7e5b59caccdb01424c57a842
+Task :modules:lang-expression:jar actions class loader hash: 2445deece03404f2d5fabf0b556f46b0
+Executing task ':checkout-5.x:modules:lang-expression:jar' (up-to-date check took 0.002 secs) due to:
+  No history is available.
+:modules:lang-expression:jar (Thread[Daemon worker,5,main]) completed. Took 0.01 secs.
+:modules:lang-expression:copyPluginPropertiesTemplate (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:lang-expression:copyPluginPropertiesTemplate
+Putting task artifact state for task ':checkout-5.x:modules:lang-expression:copyPluginPropertiesTemplate' into context took 0.0 secs.
+Executing task ':checkout-5.x:modules:lang-expression:copyPluginPropertiesTemplate' (up-to-date check took 0.0 secs) due to:
+  Task has not declared any outputs.
+:modules:lang-expression:copyPluginPropertiesTemplate (Thread[Daemon worker,5,main]) completed. Took 0.001 secs.
+:modules:lang-expression:pluginProperties (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:lang-expression:pluginProperties
+Putting task artifact state for task ':checkout-5.x:modules:lang-expression:pluginProperties' into context took 0.004 secs.
+Task :modules:lang-expression:pluginProperties class loader hash: bfea6e400fa5dc6b0c1d4e5665b9109c
+Task :modules:lang-expression:pluginProperties actions class loader hash: e73b7abdd73d9346265974d08e88519c
+Executing task ':checkout-5.x:modules:lang-expression:pluginProperties' (up-to-date check took 0.0 secs) due to:
+  No history is available.
+:modules:lang-expression:pluginProperties (Thread[Daemon worker,5,main]) completed. Took 0.012 secs.
+:modules:lang-expression:bundlePlugin (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:lang-expression:bundlePlugin
+Putting task artifact state for task ':checkout-5.x:modules:lang-expression:bundlePlugin' into context took 0.004 secs.
+Task :modules:lang-expression:bundlePlugin class loader hash: 7064e588920e76a48571db060884e368
+Task :modules:lang-expression:bundlePlugin actions class loader hash: e73b7abdd73d9346265974d08e88519c
+Executing task ':checkout-5.x:modules:lang-expression:bundlePlugin' (up-to-date check took 0.001 secs) due to:
+  No history is available.
+:modules:lang-expression:bundlePlugin (Thread[Daemon worker,5,main]) completed. Took 0.028 secs.
+:modules:lang-groovy:compileJava (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:lang-groovy:compileJava
+Putting task artifact state for task ':checkout-5.x:modules:lang-groovy:compileJava' into context took 0.017 secs.
+Task :modules:lang-groovy:compileJava class loader hash: 01d9458a7e5b59caccdb01424c57a842
+Task :modules:lang-groovy:compileJava actions class loader hash: 18198991b357e4282b88db10fdb1e992
+Executing task ':checkout-5.x:modules:lang-groovy:compileJava' (up-to-date check took 0.029 secs) due to:
+  No history is available.
+All input files are considered out-of-date for incremental task ':checkout-5.x:modules:lang-groovy:compileJava'.
+:modules:lang-groovy:compileJava - is not incremental (e.g. outputs have changed, no previous execution, etc.).
+Compiling with Java command line compiler '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac'.
+Starting process 'command '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac''. Working directory: /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/lang-groovy Command: /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac -J-Xmx1g @/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/lang-groovy/build/tmp/compileJava/java-compiler-args.txt
+Successfully started process 'command '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac''
+Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF8
+Creating new cache for localClassSetAnalysis, path /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/.gradle/3.3/tasks/_modules_lang-groovy_compileJava/localClassSetAnalysis/localClassSetAnalysis.bin, access org.gradle.cache.internal.DefaultCacheAccess@77a67b8e
+Class dependency analysis for incremental compilation took 0.006 secs.
+Created jar classpath snapshot for incremental compilation in 0.042 secs.
+Creating new cache for localJarClasspathSnapshot, path /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/.gradle/3.3/tasks/_modules_lang-groovy_compileJava/localJarClasspathSnapshot/localJarClasspathSnapshot.bin, access org.gradle.cache.internal.DefaultCacheAccess@3c9a5342
+Written jar classpath snapshot for incremental compilation in 0.009 secs.
+:modules:lang-groovy:compileJava (Thread[Daemon worker,5,main]) completed. Took 1.073 secs.
+:modules:lang-groovy:processResources (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:lang-groovy:processResources
+Putting task artifact state for task ':checkout-5.x:modules:lang-groovy:processResources' into context took 0.004 secs.
+file or directory '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/lang-groovy/src/main/resources', not found
+Skipping task ':checkout-5.x:modules:lang-groovy:processResources' as it has no source files and no previous output files.
+:checkout-5.x:modules:lang-groovy:processResources UP-TO-DATE
+:modules:lang-groovy:processResources (Thread[Daemon worker,5,main]) completed. Took 0.004 secs.
+:modules:lang-groovy:classes (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:lang-groovy:classes
+Skipping task ':checkout-5.x:modules:lang-groovy:classes' as it has no actions.
+:modules:lang-groovy:classes (Thread[Daemon worker,5,main]) completed. Took 0.0 secs.
+:modules:lang-groovy:jar (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:lang-groovy:jar
+Putting task artifact state for task ':checkout-5.x:modules:lang-groovy:jar' into context took 0.0 secs.
+Task :modules:lang-groovy:jar class loader hash: 01d9458a7e5b59caccdb01424c57a842
+Task :modules:lang-groovy:jar actions class loader hash: 2445deece03404f2d5fabf0b556f46b0
+Executing task ':checkout-5.x:modules:lang-groovy:jar' (up-to-date check took 0.001 secs) due to:
+  No history is available.
+:modules:lang-groovy:jar (Thread[Daemon worker,5,main]) completed. Took 0.006 secs.
+:modules:lang-groovy:copyPluginPropertiesTemplate (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:lang-groovy:copyPluginPropertiesTemplate
+Putting task artifact state for task ':checkout-5.x:modules:lang-groovy:copyPluginPropertiesTemplate' into context took 0.0 secs.
+Executing task ':checkout-5.x:modules:lang-groovy:copyPluginPropertiesTemplate' (up-to-date check took 0.0 secs) due to:
+  Task has not declared any outputs.
+:modules:lang-groovy:copyPluginPropertiesTemplate (Thread[Daemon worker,5,main]) completed. Took 0.001 secs.
+:modules:lang-groovy:pluginProperties (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:lang-groovy:pluginProperties
+Putting task artifact state for task ':checkout-5.x:modules:lang-groovy:pluginProperties' into context took 0.004 secs.
+Task :modules:lang-groovy:pluginProperties class loader hash: bfea6e400fa5dc6b0c1d4e5665b9109c
+Task :modules:lang-groovy:pluginProperties actions class loader hash: e73b7abdd73d9346265974d08e88519c
+Executing task ':checkout-5.x:modules:lang-groovy:pluginProperties' (up-to-date check took 0.0 secs) due to:
+  No history is available.
+:modules:lang-groovy:pluginProperties (Thread[Daemon worker,5,main]) completed. Took 0.014 secs.
+:modules:lang-groovy:bundlePlugin (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:lang-groovy:bundlePlugin
+Putting task artifact state for task ':checkout-5.x:modules:lang-groovy:bundlePlugin' into context took 0.004 secs.
+Task :modules:lang-groovy:bundlePlugin class loader hash: 7064e588920e76a48571db060884e368
+Task :modules:lang-groovy:bundlePlugin actions class loader hash: e73b7abdd73d9346265974d08e88519c
+Executing task ':checkout-5.x:modules:lang-groovy:bundlePlugin' (up-to-date check took 0.0 secs) due to:
+  No history is available.
+:modules:lang-groovy:bundlePlugin (Thread[Daemon worker,5,main]) completed. Took 0.209 secs.
+:modules:lang-mustache:compileJava (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:lang-mustache:compileJava
+Putting task artifact state for task ':checkout-5.x:modules:lang-mustache:compileJava' into context took 0.005 secs.
+Task :modules:lang-mustache:compileJava class loader hash: 01d9458a7e5b59caccdb01424c57a842
+Task :modules:lang-mustache:compileJava actions class loader hash: 18198991b357e4282b88db10fdb1e992
+Executing task ':checkout-5.x:modules:lang-mustache:compileJava' (up-to-date check took 0.015 secs) due to:
+  No history is available.
+All input files are considered out-of-date for incremental task ':checkout-5.x:modules:lang-mustache:compileJava'.
+:modules:lang-mustache:compileJava - is not incremental (e.g. outputs have changed, no previous execution, etc.).
+Compiling with Java command line compiler '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac'.
+Starting process 'command '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac''. Working directory: /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/lang-mustache Command: /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac -J-Xmx1g @/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/lang-mustache/build/tmp/compileJava/java-compiler-args.txt
+Successfully started process 'command '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac''
+Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF8
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Creating new cache for localClassSetAnalysis, path /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/.gradle/3.3/tasks/_modules_lang-mustache_compileJava/localClassSetAnalysis/localClassSetAnalysis.bin, access org.gradle.cache.internal.DefaultCacheAccess@20db07ed
+Class dependency analysis for incremental compilation took 0.008 secs.
+Created jar classpath snapshot for incremental compilation in 0.03 secs.
+Creating new cache for localJarClasspathSnapshot, path /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/.gradle/3.3/tasks/_modules_lang-mustache_compileJava/localJarClasspathSnapshot/localJarClasspathSnapshot.bin, access org.gradle.cache.internal.DefaultCacheAccess@36893b07
+Written jar classpath snapshot for incremental compilation in 0.004 secs.
+:modules:lang-mustache:compileJava (Thread[Daemon worker,5,main]) completed. Took 1.663 secs.
+:modules:lang-mustache:processResources (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:lang-mustache:processResources
+Putting task artifact state for task ':checkout-5.x:modules:lang-mustache:processResources' into context took 0.003 secs.
+file or directory '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/lang-mustache/src/main/resources', not found
+Skipping task ':checkout-5.x:modules:lang-mustache:processResources' as it has no source files and no previous output files.
+:checkout-5.x:modules:lang-mustache:processResources UP-TO-DATE
+:modules:lang-mustache:processResources (Thread[Daemon worker,5,main]) completed. Took 0.004 secs.
+:modules:lang-mustache:classes (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:lang-mustache:classes
+Skipping task ':checkout-5.x:modules:lang-mustache:classes' as it has no actions.
+:modules:lang-mustache:classes (Thread[Daemon worker,5,main]) completed. Took 0.0 secs.
+:modules:lang-mustache:jar (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:lang-mustache:jar
+Putting task artifact state for task ':checkout-5.x:modules:lang-mustache:jar' into context took 0.0 secs.
+Task :modules:lang-mustache:jar class loader hash: 01d9458a7e5b59caccdb01424c57a842
+Task :modules:lang-mustache:jar actions class loader hash: 2445deece03404f2d5fabf0b556f46b0
+Executing task ':checkout-5.x:modules:lang-mustache:jar' (up-to-date check took 0.001 secs) due to:
+  No history is available.
+:modules:lang-mustache:jar (Thread[Daemon worker,5,main]) completed. Took 0.012 secs.
+:modules:lang-mustache:copyPluginPropertiesTemplate (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:lang-mustache:copyPluginPropertiesTemplate
+Putting task artifact state for task ':checkout-5.x:modules:lang-mustache:copyPluginPropertiesTemplate' into context took 0.0 secs.
+Executing task ':checkout-5.x:modules:lang-mustache:copyPluginPropertiesTemplate' (up-to-date check took 0.0 secs) due to:
+  Task has not declared any outputs.
+:modules:lang-mustache:copyPluginPropertiesTemplate (Thread[Daemon worker,5,main]) completed. Took 0.001 secs.
+:modules:lang-mustache:pluginProperties (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:lang-mustache:pluginProperties
+Putting task artifact state for task ':checkout-5.x:modules:lang-mustache:pluginProperties' into context took 0.011 secs.
+Task :modules:lang-mustache:pluginProperties class loader hash: bfea6e400fa5dc6b0c1d4e5665b9109c
+Task :modules:lang-mustache:pluginProperties actions class loader hash: e73b7abdd73d9346265974d08e88519c
+Executing task ':checkout-5.x:modules:lang-mustache:pluginProperties' (up-to-date check took 0.001 secs) due to:
+  No history is available.
+:modules:lang-mustache:pluginProperties (Thread[Daemon worker,5,main]) completed. Took 0.019 secs.
+:modules:lang-mustache:bundlePlugin (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:lang-mustache:bundlePlugin
+Putting task artifact state for task ':checkout-5.x:modules:lang-mustache:bundlePlugin' into context took 0.003 secs.
+Task :modules:lang-mustache:bundlePlugin class loader hash: 7064e588920e76a48571db060884e368
+Task :modules:lang-mustache:bundlePlugin actions class loader hash: e73b7abdd73d9346265974d08e88519c
+Executing task ':checkout-5.x:modules:lang-mustache:bundlePlugin' (up-to-date check took 0.0 secs) due to:
+  No history is available.
+:modules:lang-mustache:bundlePlugin (Thread[Daemon worker,5,main]) completed. Took 0.014 secs.
+:modules:lang-painless:compileJava (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:lang-painless:compileJava
+Putting task artifact state for task ':checkout-5.x:modules:lang-painless:compileJava' into context took 0.004 secs.
+Task :modules:lang-painless:compileJava class loader hash: 01d9458a7e5b59caccdb01424c57a842
+Task :modules:lang-painless:compileJava actions class loader hash: 18198991b357e4282b88db10fdb1e992
+Executing task ':checkout-5.x:modules:lang-painless:compileJava' (up-to-date check took 0.106 secs) due to:
+  No history is available.
+All input files are considered out-of-date for incremental task ':checkout-5.x:modules:lang-painless:compileJava'.
+:modules:lang-painless:compileJava - is not incremental (e.g. outputs have changed, no previous execution, etc.).
+Compiling with Java command line compiler '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac'.
+Starting process 'command '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac''. Working directory: /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/lang-painless Command: /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac -J-Xmx1g @/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/lang-painless/build/tmp/compileJava/java-compiler-args.txt
+Successfully started process 'command '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac''
+Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF8
+Creating new cache for localClassSetAnalysis, path /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/.gradle/3.3/tasks/_modules_lang-painless_compileJava/localClassSetAnalysis/localClassSetAnalysis.bin, access org.gradle.cache.internal.DefaultCacheAccess@51f0c5f3
+Class dependency analysis for incremental compilation took 0.022 secs.
+Created jar classpath snapshot for incremental compilation in 0.03 secs.
+Creating new cache for localJarClasspathSnapshot, path /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/.gradle/3.3/tasks/_modules_lang-painless_compileJava/localJarClasspathSnapshot/localJarClasspathSnapshot.bin, access org.gradle.cache.internal.DefaultCacheAccess@c5436fa
+Written jar classpath snapshot for incremental compilation in 0.013 secs.
+:modules:lang-painless:compileJava (Thread[Daemon worker,5,main]) completed. Took 3.803 secs.
+:modules:lang-painless:processResources (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:lang-painless:processResources
+Putting task artifact state for task ':checkout-5.x:modules:lang-painless:processResources' into context took 0.005 secs.
+Task :modules:lang-painless:processResources class loader hash: 01d9458a7e5b59caccdb01424c57a842
+Task :modules:lang-painless:processResources actions class loader hash: e73b7abdd73d9346265974d08e88519c
+Executing task ':checkout-5.x:modules:lang-painless:processResources' (up-to-date check took 0.024 secs) due to:
+  No history is available.
+:modules:lang-painless:processResources (Thread[Daemon worker,5,main]) completed. Took 0.042 secs.
+:modules:lang-painless:classes (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:lang-painless:classes
+Skipping task ':checkout-5.x:modules:lang-painless:classes' as it has no actions.
+:modules:lang-painless:classes (Thread[Daemon worker,5,main]) completed. Took 0.0 secs.
+:modules:lang-painless:jar (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:lang-painless:jar
+Putting task artifact state for task ':checkout-5.x:modules:lang-painless:jar' into context took 0.003 secs.
+Task :modules:lang-painless:jar class loader hash: 01d9458a7e5b59caccdb01424c57a842
+Task :modules:lang-painless:jar actions class loader hash: 2445deece03404f2d5fabf0b556f46b0
+Executing task ':checkout-5.x:modules:lang-painless:jar' (up-to-date check took 0.003 secs) due to:
+  No history is available.
+:modules:lang-painless:jar (Thread[Daemon worker,5,main]) completed. Took 0.062 secs.
+:modules:lang-painless:copyPluginPropertiesTemplate (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:lang-painless:copyPluginPropertiesTemplate
+Putting task artifact state for task ':checkout-5.x:modules:lang-painless:copyPluginPropertiesTemplate' into context took 0.0 secs.
+Executing task ':checkout-5.x:modules:lang-painless:copyPluginPropertiesTemplate' (up-to-date check took 0.0 secs) due to:
+  Task has not declared any outputs.
+:modules:lang-painless:copyPluginPropertiesTemplate (Thread[Daemon worker,5,main]) completed. Took 0.0 secs.
+:modules:lang-painless:pluginProperties (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:lang-painless:pluginProperties
+Putting task artifact state for task ':checkout-5.x:modules:lang-painless:pluginProperties' into context took 0.005 secs.
+Task :modules:lang-painless:pluginProperties class loader hash: bfea6e400fa5dc6b0c1d4e5665b9109c
+Task :modules:lang-painless:pluginProperties actions class loader hash: e73b7abdd73d9346265974d08e88519c
+Executing task ':checkout-5.x:modules:lang-painless:pluginProperties' (up-to-date check took 0.0 secs) due to:
+  No history is available.
+:modules:lang-painless:pluginProperties (Thread[Daemon worker,5,main]) completed. Took 0.013 secs.
+:modules:lang-painless:bundlePlugin (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:lang-painless:bundlePlugin
+Putting task artifact state for task ':checkout-5.x:modules:lang-painless:bundlePlugin' into context took 0.004 secs.
+Task :modules:lang-painless:bundlePlugin class loader hash: 7064e588920e76a48571db060884e368
+Task :modules:lang-painless:bundlePlugin actions class loader hash: e73b7abdd73d9346265974d08e88519c
+Executing task ':checkout-5.x:modules:lang-painless:bundlePlugin' (up-to-date check took 0.001 secs) due to:
+  No history is available.
+:modules:lang-painless:bundlePlugin (Thread[Daemon worker,5,main]) completed. Took 0.056 secs.
+:modules:percolator:compileJava (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:percolator:compileJava
+Putting task artifact state for task ':checkout-5.x:modules:percolator:compileJava' into context took 0.004 secs.
+Task :modules:percolator:compileJava class loader hash: 01d9458a7e5b59caccdb01424c57a842
+Task :modules:percolator:compileJava actions class loader hash: 18198991b357e4282b88db10fdb1e992
+Executing task ':checkout-5.x:modules:percolator:compileJava' (up-to-date check took 0.014 secs) due to:
+  No history is available.
+All input files are considered out-of-date for incremental task ':checkout-5.x:modules:percolator:compileJava'.
+:modules:percolator:compileJava - is not incremental (e.g. outputs have changed, no previous execution, etc.).
+Compiling with Java command line compiler '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac'.
+Starting process 'command '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac''. Working directory: /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/percolator Command: /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac -J-Xmx1g @/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/percolator/build/tmp/compileJava/java-compiler-args.txt
+Successfully started process 'command '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac''
+Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF8
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Creating new cache for localClassSetAnalysis, path /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/.gradle/3.3/tasks/_modules_percolator_compileJava/localClassSetAnalysis/localClassSetAnalysis.bin, access org.gradle.cache.internal.DefaultCacheAccess@4c180cb5
+Class dependency analysis for incremental compilation took 0.043 secs.
+Created jar classpath snapshot for incremental compilation in 0.052 secs.
+Creating new cache for localJarClasspathSnapshot, path /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/.gradle/3.3/tasks/_modules_percolator_compileJava/localJarClasspathSnapshot/localJarClasspathSnapshot.bin, access org.gradle.cache.internal.DefaultCacheAccess@31474f7c
+Written jar classpath snapshot for incremental compilation in 0.01 secs.
+:modules:percolator:compileJava (Thread[Daemon worker,5,main]) completed. Took 2.108 secs.
+:modules:percolator:processResources (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:percolator:processResources
+Putting task artifact state for task ':checkout-5.x:modules:percolator:processResources' into context took 0.019 secs.
+file or directory '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/percolator/src/main/resources', not found
+Skipping task ':checkout-5.x:modules:percolator:processResources' as it has no source files and no previous output files.
+:checkout-5.x:modules:percolator:processResources UP-TO-DATE
+:modules:percolator:processResources (Thread[Daemon worker,5,main]) completed. Took 0.019 secs.
+:modules:percolator:classes (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:percolator:classes
+Skipping task ':checkout-5.x:modules:percolator:classes' as it has no actions.
+:modules:percolator:classes (Thread[Daemon worker,5,main]) completed. Took 0.0 secs.
+:modules:percolator:jar (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:percolator:jar
+Putting task artifact state for task ':checkout-5.x:modules:percolator:jar' into context took 0.001 secs.
+Task :modules:percolator:jar class loader hash: 01d9458a7e5b59caccdb01424c57a842
+Task :modules:percolator:jar actions class loader hash: 2445deece03404f2d5fabf0b556f46b0
+Executing task ':checkout-5.x:modules:percolator:jar' (up-to-date check took 0.002 secs) due to:
+  No history is available.
+:modules:percolator:jar (Thread[Daemon worker,5,main]) completed. Took 0.016 secs.
+:modules:percolator:copyPluginPropertiesTemplate (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:percolator:copyPluginPropertiesTemplate
+Putting task artifact state for task ':checkout-5.x:modules:percolator:copyPluginPropertiesTemplate' into context took 0.0 secs.
+Executing task ':checkout-5.x:modules:percolator:copyPluginPropertiesTemplate' (up-to-date check took 0.0 secs) due to:
+  Task has not declared any outputs.
+:modules:percolator:copyPluginPropertiesTemplate (Thread[Daemon worker,5,main]) completed. Took 0.0 secs.
+:modules:percolator:pluginProperties (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:percolator:pluginProperties
+Putting task artifact state for task ':checkout-5.x:modules:percolator:pluginProperties' into context took 0.007 secs.
+Task :modules:percolator:pluginProperties class loader hash: bfea6e400fa5dc6b0c1d4e5665b9109c
+Task :modules:percolator:pluginProperties actions class loader hash: e73b7abdd73d9346265974d08e88519c
+Executing task ':checkout-5.x:modules:percolator:pluginProperties' (up-to-date check took 0.0 secs) due to:
+  No history is available.
+:modules:percolator:pluginProperties (Thread[Daemon worker,5,main]) completed. Took 0.018 secs.
+:modules:percolator:bundlePlugin (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:percolator:bundlePlugin
+Putting task artifact state for task ':checkout-5.x:modules:percolator:bundlePlugin' into context took 0.004 secs.
+Task :modules:percolator:bundlePlugin class loader hash: 7064e588920e76a48571db060884e368
+Task :modules:percolator:bundlePlugin actions class loader hash: e73b7abdd73d9346265974d08e88519c
+Executing task ':checkout-5.x:modules:percolator:bundlePlugin' (up-to-date check took 0.001 secs) due to:
+  No history is available.
+:modules:percolator:bundlePlugin (Thread[Daemon worker,5,main]) completed. Took 0.014 secs.
+:client:rest:compileJava (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:client:rest:compileJava
+Putting task artifact state for task ':checkout-5.x:client:rest:compileJava' into context took 0.014 secs.
+Task :client:rest:compileJava class loader hash: 01d9458a7e5b59caccdb01424c57a842
+Task :client:rest:compileJava actions class loader hash: 18198991b357e4282b88db10fdb1e992
+Executing task ':checkout-5.x:client:rest:compileJava' (up-to-date check took 0.019 secs) due to:
+  No history is available.
+All input files are considered out-of-date for incremental task ':checkout-5.x:client:rest:compileJava'.
+:client:rest:compileJava - is not incremental (e.g. outputs have changed, no previous execution, etc.).
+Compiling with Java command line compiler '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac'.
+Starting process 'command '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac''. Working directory: /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/client/rest Command: /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac -J-Xmx1g @/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/client/rest/build/tmp/compileJava/java-compiler-args.txt
+Successfully started process 'command '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac''
+Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF8
+Creating new cache for localClassSetAnalysis, path /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/.gradle/3.3/tasks/_client_rest_compileJava/localClassSetAnalysis/localClassSetAnalysis.bin, access org.gradle.cache.internal.DefaultCacheAccess@525f28f1
+Class dependency analysis for incremental compilation took 0.006 secs.
+Created jar classpath snapshot for incremental compilation in 0.002 secs.
+Creating new cache for localJarClasspathSnapshot, path /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/.gradle/3.3/tasks/_client_rest_compileJava/localJarClasspathSnapshot/localJarClasspathSnapshot.bin, access org.gradle.cache.internal.DefaultCacheAccess@71cd53da
+Written jar classpath snapshot for incremental compilation in 0.004 secs.
+:client:rest:compileJava (Thread[Daemon worker,5,main]) completed. Took 1.139 secs.
+:client:rest:processResources (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:client:rest:processResources
+Putting task artifact state for task ':checkout-5.x:client:rest:processResources' into context took 0.003 secs.
+file or directory '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/client/rest/src/main/resources', not found
+Skipping task ':checkout-5.x:client:rest:processResources' as it has no source files and no previous output files.
+:checkout-5.x:client:rest:processResources UP-TO-DATE
+:client:rest:processResources (Thread[Daemon worker,5,main]) completed. Took 0.003 secs.
+:client:rest:classes (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:client:rest:classes
+Skipping task ':checkout-5.x:client:rest:classes' as it has no actions.
+:client:rest:classes (Thread[Daemon worker,5,main]) completed. Took 0.001 secs.
+:client:rest:jar (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:client:rest:jar
+Putting task artifact state for task ':checkout-5.x:client:rest:jar' into context took 0.0 secs.
+Task :client:rest:jar class loader hash: 01d9458a7e5b59caccdb01424c57a842
+Task :client:rest:jar actions class loader hash: 2445deece03404f2d5fabf0b556f46b0
+Executing task ':checkout-5.x:client:rest:jar' (up-to-date check took 0.001 secs) due to:
+  No history is available.
+:client:rest:jar (Thread[Daemon worker,5,main]) completed. Took 0.007 secs.
+:modules:reindex:compileJava (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:reindex:compileJava
+Putting task artifact state for task ':checkout-5.x:modules:reindex:compileJava' into context took 0.008 secs.
+Task :modules:reindex:compileJava class loader hash: 01d9458a7e5b59caccdb01424c57a842
+Task :modules:reindex:compileJava actions class loader hash: 18198991b357e4282b88db10fdb1e992
+Executing task ':checkout-5.x:modules:reindex:compileJava' (up-to-date check took 0.022 secs) due to:
+  No history is available.
+All input files are considered out-of-date for incremental task ':checkout-5.x:modules:reindex:compileJava'.
+:modules:reindex:compileJava - is not incremental (e.g. outputs have changed, no previous execution, etc.).
+Compiling with Java command line compiler '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac'.
+Starting process 'command '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac''. Working directory: /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/reindex Command: /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac -J-Xmx1g @/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/reindex/build/tmp/compileJava/java-compiler-args.txt
+Successfully started process 'command '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac''
+Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF8
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Creating new cache for localClassSetAnalysis, path /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/.gradle/3.3/tasks/_modules_reindex_compileJava/localClassSetAnalysis/localClassSetAnalysis.bin, access org.gradle.cache.internal.DefaultCacheAccess@7fb67d7b
+Class dependency analysis for incremental compilation took 0.007 secs.
+Created jar classpath snapshot for incremental compilation in 0.061 secs.
+Creating new cache for localJarClasspathSnapshot, path /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/.gradle/3.3/tasks/_modules_reindex_compileJava/localJarClasspathSnapshot/localJarClasspathSnapshot.bin, access org.gradle.cache.internal.DefaultCacheAccess@44b744d7
+Written jar classpath snapshot for incremental compilation in 0.011 secs.
+:modules:reindex:compileJava (Thread[Daemon worker,5,main]) completed. Took 2.007 secs.
+:modules:reindex:processResources (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:reindex:processResources
+Putting task artifact state for task ':checkout-5.x:modules:reindex:processResources' into context took 0.004 secs.
+file or directory '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/reindex/src/main/resources', not found
+Skipping task ':checkout-5.x:modules:reindex:processResources' as it has no source files and no previous output files.
+:checkout-5.x:modules:reindex:processResources UP-TO-DATE
+:modules:reindex:processResources (Thread[Daemon worker,5,main]) completed. Took 0.004 secs.
+:modules:reindex:classes (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:reindex:classes
+Skipping task ':checkout-5.x:modules:reindex:classes' as it has no actions.
+:modules:reindex:classes (Thread[Daemon worker,5,main]) completed. Took 0.0 secs.
+:modules:reindex:jar (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:reindex:jar
+Putting task artifact state for task ':checkout-5.x:modules:reindex:jar' into context took 0.001 secs.
+Task :modules:reindex:jar class loader hash: 01d9458a7e5b59caccdb01424c57a842
+Task :modules:reindex:jar actions class loader hash: 2445deece03404f2d5fabf0b556f46b0
+Executing task ':checkout-5.x:modules:reindex:jar' (up-to-date check took 0.002 secs) due to:
+  No history is available.
+:modules:reindex:jar (Thread[Daemon worker,5,main]) completed. Took 0.015 secs.
+:modules:reindex:copyPluginPropertiesTemplate (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:reindex:copyPluginPropertiesTemplate
+Putting task artifact state for task ':checkout-5.x:modules:reindex:copyPluginPropertiesTemplate' into context took 0.0 secs.
+Executing task ':checkout-5.x:modules:reindex:copyPluginPropertiesTemplate' (up-to-date check took 0.0 secs) due to:
+  Task has not declared any outputs.
+:modules:reindex:copyPluginPropertiesTemplate (Thread[Daemon worker,5,main]) completed. Took 0.001 secs.
+:modules:reindex:pluginProperties (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:reindex:pluginProperties
+Putting task artifact state for task ':checkout-5.x:modules:reindex:pluginProperties' into context took 0.006 secs.
+Task :modules:reindex:pluginProperties class loader hash: bfea6e400fa5dc6b0c1d4e5665b9109c
+Task :modules:reindex:pluginProperties actions class loader hash: e73b7abdd73d9346265974d08e88519c
+Executing task ':checkout-5.x:modules:reindex:pluginProperties' (up-to-date check took 0.0 secs) due to:
+  No history is available.
+:modules:reindex:pluginProperties (Thread[Daemon worker,5,main]) completed. Took 0.013 secs.
+:modules:reindex:bundlePlugin (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:reindex:bundlePlugin
+Putting task artifact state for task ':checkout-5.x:modules:reindex:bundlePlugin' into context took 0.004 secs.
+Task :modules:reindex:bundlePlugin class loader hash: 7064e588920e76a48571db060884e368
+Task :modules:reindex:bundlePlugin actions class loader hash: e73b7abdd73d9346265974d08e88519c
+Executing task ':checkout-5.x:modules:reindex:bundlePlugin' (up-to-date check took 0.001 secs) due to:
+  No history is available.
+:modules:reindex:bundlePlugin (Thread[Daemon worker,5,main]) completed. Took 0.101 secs.
+:modules:transport-netty3:compileJava (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:transport-netty3:compileJava
+Putting task artifact state for task ':checkout-5.x:modules:transport-netty3:compileJava' into context took 0.021 secs.
+Task :modules:transport-netty3:compileJava class loader hash: 01d9458a7e5b59caccdb01424c57a842
+Task :modules:transport-netty3:compileJava actions class loader hash: 18198991b357e4282b88db10fdb1e992
+Executing task ':checkout-5.x:modules:transport-netty3:compileJava' (up-to-date check took 0.022 secs) due to:
+  No history is available.
+All input files are considered out-of-date for incremental task ':checkout-5.x:modules:transport-netty3:compileJava'.
+:modules:transport-netty3:compileJava - is not incremental (e.g. outputs have changed, no previous execution, etc.).
+Compiling with Java command line compiler '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac'.
+Starting process 'command '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac''. Working directory: /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/transport-netty3 Command: /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac -J-Xmx1g @/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/transport-netty3/build/tmp/compileJava/java-compiler-args.txt
+Successfully started process 'command '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac''
+Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF8
+Note: /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/transport-netty3/src/main/java/org/elasticsearch/http/netty3/Netty3HttpChannel.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Creating new cache for localClassSetAnalysis, path /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/.gradle/3.3/tasks/_modules_transport-netty3_compileJava/localClassSetAnalysis/localClassSetAnalysis.bin, access org.gradle.cache.internal.DefaultCacheAccess@48e3ee61
+Class dependency analysis for incremental compilation took 0.007 secs.
+Created jar classpath snapshot for incremental compilation in 0.035 secs.
+Creating new cache for localJarClasspathSnapshot, path /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/.gradle/3.3/tasks/_modules_transport-netty3_compileJava/localJarClasspathSnapshot/localJarClasspathSnapshot.bin, access org.gradle.cache.internal.DefaultCacheAccess@24812f8f
+Written jar classpath snapshot for incremental compilation in 0.009 secs.
+:modules:transport-netty3:compileJava (Thread[Daemon worker,5,main]) completed. Took 1.929 secs.
+:modules:transport-netty3:processResources (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:transport-netty3:processResources
+Putting task artifact state for task ':checkout-5.x:modules:transport-netty3:processResources' into context took 0.004 secs.
+file or directory '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/transport-netty3/src/main/resources', not found
+Skipping task ':checkout-5.x:modules:transport-netty3:processResources' as it has no source files and no previous output files.
+:checkout-5.x:modules:transport-netty3:processResources UP-TO-DATE
+:modules:transport-netty3:processResources (Thread[Daemon worker,5,main]) completed. Took 0.005 secs.
+:modules:transport-netty3:classes (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:transport-netty3:classes
+Skipping task ':checkout-5.x:modules:transport-netty3:classes' as it has no actions.
+:modules:transport-netty3:classes (Thread[Daemon worker,5,main]) completed. Took 0.0 secs.
+:modules:transport-netty3:jar (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:transport-netty3:jar
+Putting task artifact state for task ':checkout-5.x:modules:transport-netty3:jar' into context took 0.0 secs.
+Task :modules:transport-netty3:jar class loader hash: 01d9458a7e5b59caccdb01424c57a842
+Task :modules:transport-netty3:jar actions class loader hash: 2445deece03404f2d5fabf0b556f46b0
+Executing task ':checkout-5.x:modules:transport-netty3:jar' (up-to-date check took 0.002 secs) due to:
+  No history is available.
+:modules:transport-netty3:jar (Thread[Daemon worker,5,main]) completed. Took 0.015 secs.
+:modules:transport-netty3:copyPluginPropertiesTemplate (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:transport-netty3:copyPluginPropertiesTemplate
+Putting task artifact state for task ':checkout-5.x:modules:transport-netty3:copyPluginPropertiesTemplate' into context took 0.0 secs.
+Executing task ':checkout-5.x:modules:transport-netty3:copyPluginPropertiesTemplate' (up-to-date check took 0.0 secs) due to:
+  Task has not declared any outputs.
+:modules:transport-netty3:copyPluginPropertiesTemplate (Thread[Daemon worker,5,main]) completed. Took 0.001 secs.
+:modules:transport-netty3:pluginProperties (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:transport-netty3:pluginProperties
+Putting task artifact state for task ':checkout-5.x:modules:transport-netty3:pluginProperties' into context took 0.005 secs.
+Task :modules:transport-netty3:pluginProperties class loader hash: bfea6e400fa5dc6b0c1d4e5665b9109c
+Task :modules:transport-netty3:pluginProperties actions class loader hash: e73b7abdd73d9346265974d08e88519c
+Executing task ':checkout-5.x:modules:transport-netty3:pluginProperties' (up-to-date check took 0.0 secs) due to:
+  No history is available.
+:modules:transport-netty3:pluginProperties (Thread[Daemon worker,5,main]) completed. Took 0.013 secs.
+:modules:transport-netty3:bundlePlugin (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:transport-netty3:bundlePlugin
+Putting task artifact state for task ':checkout-5.x:modules:transport-netty3:bundlePlugin' into context took 0.017 secs.
+Task :modules:transport-netty3:bundlePlugin class loader hash: 7064e588920e76a48571db060884e368
+Task :modules:transport-netty3:bundlePlugin actions class loader hash: e73b7abdd73d9346265974d08e88519c
+Executing task ':checkout-5.x:modules:transport-netty3:bundlePlugin' (up-to-date check took 0.001 secs) due to:
+  No history is available.
+:modules:transport-netty3:bundlePlugin (Thread[Daemon worker,5,main]) completed. Took 0.078 secs.
+:modules:transport-netty4:compileJava (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:transport-netty4:compileJava
+Putting task artifact state for task ':checkout-5.x:modules:transport-netty4:compileJava' into context took 0.005 secs.
+Task :modules:transport-netty4:compileJava class loader hash: 01d9458a7e5b59caccdb01424c57a842
+Task :modules:transport-netty4:compileJava actions class loader hash: 18198991b357e4282b88db10fdb1e992
+Executing task ':checkout-5.x:modules:transport-netty4:compileJava' (up-to-date check took 0.027 secs) due to:
+  No history is available.
+All input files are considered out-of-date for incremental task ':checkout-5.x:modules:transport-netty4:compileJava'.
+:modules:transport-netty4:compileJava - is not incremental (e.g. outputs have changed, no previous execution, etc.).
+Compiling with Java command line compiler '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac'.
+Starting process 'command '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac''. Working directory: /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/transport-netty4 Command: /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac -J-Xmx1g @/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/transport-netty4/build/tmp/compileJava/java-compiler-args.txt
+Successfully started process 'command '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac''
+Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF8
+Note: /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/transport-netty4/src/main/java/org/elasticsearch/http/netty4/Netty4HttpChannel.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Creating new cache for localClassSetAnalysis, path /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/.gradle/3.3/tasks/_modules_transport-netty4_compileJava/localClassSetAnalysis/localClassSetAnalysis.bin, access org.gradle.cache.internal.DefaultCacheAccess@36e2aadf
+Class dependency analysis for incremental compilation took 0.007 secs.
+Created jar classpath snapshot for incremental compilation in 0.054 secs.
+Creating new cache for localJarClasspathSnapshot, path /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/.gradle/3.3/tasks/_modules_transport-netty4_compileJava/localJarClasspathSnapshot/localJarClasspathSnapshot.bin, access org.gradle.cache.internal.DefaultCacheAccess@664e8cb0
+Written jar classpath snapshot for incremental compilation in 0.026 secs.
+:modules:transport-netty4:compileJava (Thread[Daemon worker,5,main]) completed. Took 1.92 secs.
+:modules:transport-netty4:processResources (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:transport-netty4:processResources
+Putting task artifact state for task ':checkout-5.x:modules:transport-netty4:processResources' into context took 0.006 secs.
+file or directory '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/modules/transport-netty4/src/main/resources', not found
+Skipping task ':checkout-5.x:modules:transport-netty4:processResources' as it has no source files and no previous output files.
+:checkout-5.x:modules:transport-netty4:processResources UP-TO-DATE
+:modules:transport-netty4:processResources (Thread[Daemon worker,5,main]) completed. Took 0.006 secs.
+:modules:transport-netty4:classes (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:transport-netty4:classes
+Skipping task ':checkout-5.x:modules:transport-netty4:classes' as it has no actions.
+:modules:transport-netty4:classes (Thread[Daemon worker,5,main]) completed. Took 0.0 secs.
+:modules:transport-netty4:jar (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:transport-netty4:jar
+Putting task artifact state for task ':checkout-5.x:modules:transport-netty4:jar' into context took 0.0 secs.
+Task :modules:transport-netty4:jar class loader hash: 01d9458a7e5b59caccdb01424c57a842
+Task :modules:transport-netty4:jar actions class loader hash: 2445deece03404f2d5fabf0b556f46b0
+Executing task ':checkout-5.x:modules:transport-netty4:jar' (up-to-date check took 0.002 secs) due to:
+  No history is available.
+:modules:transport-netty4:jar (Thread[Daemon worker,5,main]) completed. Took 0.014 secs.
+:modules:transport-netty4:copyPluginPropertiesTemplate (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:transport-netty4:copyPluginPropertiesTemplate
+Putting task artifact state for task ':checkout-5.x:modules:transport-netty4:copyPluginPropertiesTemplate' into context took 0.0 secs.
+Executing task ':checkout-5.x:modules:transport-netty4:copyPluginPropertiesTemplate' (up-to-date check took 0.0 secs) due to:
+  Task has not declared any outputs.
+:modules:transport-netty4:copyPluginPropertiesTemplate (Thread[Daemon worker,5,main]) completed. Took 0.001 secs.
+:modules:transport-netty4:pluginProperties (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:transport-netty4:pluginProperties
+Putting task artifact state for task ':checkout-5.x:modules:transport-netty4:pluginProperties' into context took 0.005 secs.
+Task :modules:transport-netty4:pluginProperties class loader hash: bfea6e400fa5dc6b0c1d4e5665b9109c
+Task :modules:transport-netty4:pluginProperties actions class loader hash: e73b7abdd73d9346265974d08e88519c
+Executing task ':checkout-5.x:modules:transport-netty4:pluginProperties' (up-to-date check took 0.0 secs) due to:
+  No history is available.
+:modules:transport-netty4:pluginProperties (Thread[Daemon worker,5,main]) completed. Took 0.013 secs.
+:modules:transport-netty4:bundlePlugin (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:modules:transport-netty4:bundlePlugin
+Putting task artifact state for task ':checkout-5.x:modules:transport-netty4:bundlePlugin' into context took 0.004 secs.
+Task :modules:transport-netty4:bundlePlugin class loader hash: 7064e588920e76a48571db060884e368
+Task :modules:transport-netty4:bundlePlugin actions class loader hash: e73b7abdd73d9346265974d08e88519c
+Executing task ':checkout-5.x:modules:transport-netty4:bundlePlugin' (up-to-date check took 0.001 secs) due to:
+  No history is available.
+:modules:transport-netty4:bundlePlugin (Thread[Daemon worker,5,main]) completed. Took 0.115 secs.
+:distribution:buildModules (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:distribution:buildModules
+Putting task artifact state for task ':checkout-5.x:distribution:buildModules' into context took 0.004 secs.
+Task :distribution:buildModules class loader hash: 7064e588920e76a48571db060884e368
+Task :distribution:buildModules actions class loader hash: e73b7abdd73d9346265974d08e88519c
+Executing task ':checkout-5.x:distribution:buildModules' (up-to-date check took 0.001 secs) due to:
+  No history is available.
+:distribution:buildModules (Thread[Daemon worker,5,main]) completed. Took 0.254 secs.
+:distribution:zip:createPluginsDir (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:distribution:zip:createPluginsDir
+Putting task artifact state for task ':checkout-5.x:distribution:zip:createPluginsDir' into context took 0.0 secs.
+Executing task ':checkout-5.x:distribution:zip:createPluginsDir' (up-to-date check took 0.0 secs) due to:
+  Task has not declared any outputs.
+:distribution:zip:createPluginsDir (Thread[Daemon worker,5,main]) completed. Took 0.001 secs.
+:distribution:tools:java-version-checker:compileJava (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:distribution:tools:java-version-checker:compileJava
+Putting task artifact state for task ':checkout-5.x:distribution:tools:java-version-checker:compileJava' into context took 0.023 secs.
+Task :distribution:tools:java-version-checker:compileJava class loader hash: 01d9458a7e5b59caccdb01424c57a842
+Task :distribution:tools:java-version-checker:compileJava actions class loader hash: 18198991b357e4282b88db10fdb1e992
+Executing task ':checkout-5.x:distribution:tools:java-version-checker:compileJava' (up-to-date check took 0.001 secs) due to:
+  No history is available.
+All input files are considered out-of-date for incremental task ':checkout-5.x:distribution:tools:java-version-checker:compileJava'.
+:distribution:tools:java-version-checker:compileJava - is not incremental (e.g. outputs have changed, no previous execution, etc.).
+Compiling with Java command line compiler '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac'.
+Starting process 'command '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac''. Working directory: /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/distribution/tools/java-version-checker Command: /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac -J-Xmx1g -source 1.6 -target 1.6 -d /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/distribution/tools/java-version-checker/build/classes/main -g -encoding UTF-8 -Werror -Xlint:all,-path,-serial,-options,-deprecation -Xdoclint:all -Xdoclint:-missing -proc:none /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/distribution/tools/java-version-checker/src/main/java/org/elasticsearch/tools/JavaVersionChecker.java /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/distribution/tools/java-version-checker/src/main/java/org/elasticsearch/tools/SuppressForbidden.java -XDuseUnsharedTable=true
+Successfully started process 'command '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/bin/javac''
+Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF8
+Creating new cache for localClassSetAnalysis, path /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/.gradle/3.3/tasks/_distribution_tools_java-version-checker_compileJava/localClassSetAnalysis/localClassSetAnalysis.bin, access org.gradle.cache.internal.DefaultCacheAccess@503b96f3
+Class dependency analysis for incremental compilation took 0.007 secs.
+Created jar classpath snapshot for incremental compilation in 0.0 secs.
+Creating new cache for localJarClasspathSnapshot, path /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/.gradle/3.3/tasks/_distribution_tools_java-version-checker_compileJava/localJarClasspathSnapshot/localJarClasspathSnapshot.bin, access org.gradle.cache.internal.DefaultCacheAccess@271ec8e3
+Written jar classpath snapshot for incremental compilation in 0.004 secs.
+:distribution:tools:java-version-checker:compileJava (Thread[Daemon worker,5,main]) completed. Took 0.702 secs.
+:distribution:tools:java-version-checker:processResources (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:distribution:tools:java-version-checker:processResources
+Putting task artifact state for task ':checkout-5.x:distribution:tools:java-version-checker:processResources' into context took 0.004 secs.
+file or directory '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/distribution/tools/java-version-checker/src/main/resources', not found
+Skipping task ':checkout-5.x:distribution:tools:java-version-checker:processResources' as it has no source files and no previous output files.
+:checkout-5.x:distribution:tools:java-version-checker:processResources UP-TO-DATE
+:distribution:tools:java-version-checker:processResources (Thread[Daemon worker,5,main]) completed. Took 0.004 secs.
+:distribution:tools:java-version-checker:classes (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:distribution:tools:java-version-checker:classes
+Skipping task ':checkout-5.x:distribution:tools:java-version-checker:classes' as it has no actions.
+:distribution:tools:java-version-checker:classes (Thread[Daemon worker,5,main]) completed. Took 0.0 secs.
+:distribution:tools:java-version-checker:jar (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:distribution:tools:java-version-checker:jar
+Putting task artifact state for task ':checkout-5.x:distribution:tools:java-version-checker:jar' into context took 0.001 secs.
+Task :distribution:tools:java-version-checker:jar class loader hash: 01d9458a7e5b59caccdb01424c57a842
+Task :distribution:tools:java-version-checker:jar actions class loader hash: 2445deece03404f2d5fabf0b556f46b0
+Executing task ':checkout-5.x:distribution:tools:java-version-checker:jar' (up-to-date check took 0.001 secs) due to:
+  No history is available.
+:distribution:tools:java-version-checker:jar (Thread[Daemon worker,5,main]) completed. Took 0.005 secs.
+:distribution:zip:buildZip (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:distribution:zip:buildZip
+Putting task artifact state for task ':checkout-5.x:distribution:zip:buildZip' into context took 0.021 secs.
+Task :distribution:zip:buildZip class loader hash: 7064e588920e76a48571db060884e368
+Task :distribution:zip:buildZip actions class loader hash: e73b7abdd73d9346265974d08e88519c
+Executing task ':checkout-5.x:distribution:zip:buildZip' (up-to-date check took 0.03 secs) due to:
+  No history is available.
+:distribution:zip:buildZip (Thread[Daemon worker,5,main]) completed. Took 1.653 secs.
+:distribution:zip:generatePomFileForNebulaPublication (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:distribution:zip:generatePomFileForNebulaPublication
+Putting task artifact state for task ':checkout-5.x:distribution:zip:generatePomFileForNebulaPublication' into context took 0.013 secs.
+Executing task ':checkout-5.x:distribution:zip:generatePomFileForNebulaPublication' (up-to-date check took 0.0 secs) due to:
+  Task.upToDateWhen is false.
+Unable to convert /var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake to https form in MavenScmPlugin. Using original value.
+Task :distribution:zip:generatePomFileForNebulaPublication class loader hash: 01d9458a7e5b59caccdb01424c57a842
+Task :distribution:zip:generatePomFileForNebulaPublication actions class loader hash: 18198991b357e4282b88db10fdb1e992
+:distribution:zip:generatePomFileForNebulaPublication (Thread[Daemon worker,5,main]) completed. Took 0.023 secs.
+:distribution:zip:generatePomFileForNebulaRealPomPublication (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:distribution:zip:generatePomFileForNebulaRealPomPublication
+Putting task artifact state for task ':checkout-5.x:distribution:zip:generatePomFileForNebulaRealPomPublication' into context took 0.014 secs.
+Executing task ':checkout-5.x:distribution:zip:generatePomFileForNebulaRealPomPublication' (up-to-date check took 0.0 secs) due to:
+  Task.upToDateWhen is false.
+Task :distribution:zip:generatePomFileForNebulaRealPomPublication class loader hash: 01d9458a7e5b59caccdb01424c57a842
+Task :distribution:zip:generatePomFileForNebulaRealPomPublication actions class loader hash: 18198991b357e4282b88db10fdb1e992
+:distribution:zip:generatePomFileForNebulaRealPomPublication (Thread[Daemon worker,5,main]) completed. Took 0.019 secs.
+:distribution:zip:assemble (Thread[Daemon worker,5,main]) started.
+:checkout-5.x:distribution:zip:assemble
+Skipping task ':checkout-5.x:distribution:zip:assemble' as it has no actions.
+:distribution:zip:assemble (Thread[Daemon worker,5,main]) completed. Took 0.0 secs.
+Stopped 1 worker daemon(s).
+:distribution:bwc-zip:buildBwcVersion (Thread[Daemon worker,5,main]) completed. Took 1 mins 24.295 secs.
+:qa:backwards-5.0:copyRestSpec (Thread[Daemon worker,5,main]) started.
+:qa:backwards-5.0:copyRestSpec
+Putting task artifact state for task ':qa:backwards-5.0:copyRestSpec' into context took 0.0 secs.
+Task :qa:backwards-5.0:copyRestSpec class loader hash: 7064e588920e76a48571db060884e368
+Task :qa:backwards-5.0:copyRestSpec actions class loader hash: e73b7abdd73d9346265974d08e88519c
+Executing task ':qa:backwards-5.0:copyRestSpec' (up-to-date check took 0.0 secs) due to:
+  No history is available.
+:qa:backwards-5.0:copyRestSpec (Thread[Daemon worker,5,main]) completed. Took 0.432 secs.
+:qa:backwards-5.0:integTestCluster#init (Thread[Daemon worker,5,main]) started.
+:qa:backwards-5.0:integTestCluster#init
+Skipping task ':qa:backwards-5.0:integTestCluster#init' as it has no actions.
+:qa:backwards-5.0:integTestCluster#init (Thread[Daemon worker,5,main]) completed. Took 0.0 secs.
+:qa:backwards-5.0:integTestCluster#prepareCluster.cleanShared (Thread[Daemon worker,5,main]) started.
+:qa:backwards-5.0:integTestCluster#prepareCluster.cleanShared
+Putting task artifact state for task ':qa:backwards-5.0:integTestCluster#prepareCluster.cleanShared' into context took 0.0 secs.
+Executing task ':qa:backwards-5.0:integTestCluster#prepareCluster.cleanShared' (up-to-date check took 0.0 secs) due to:
+  Task has not declared any outputs.
+:qa:backwards-5.0:integTestCluster#prepareCluster.cleanShared (Thread[Daemon worker,5,main]) completed. Took 0.0 secs.
+:qa:backwards-5.0:integTestCluster#node0.clean (Thread[Daemon worker,5,main]) started.
+:qa:backwards-5.0:integTestCluster#node0.clean
+Putting task artifact state for task ':qa:backwards-5.0:integTestCluster#node0.clean' into context took 0.0 secs.
+Executing task ':qa:backwards-5.0:integTestCluster#node0.clean' (up-to-date check took 0.0 secs) due to:
+  Task has not declared any outputs.
+:qa:backwards-5.0:integTestCluster#node0.clean (Thread[Daemon worker,5,main]) completed. Took 0.001 secs.
+:qa:backwards-5.0:integTestCluster#node0.checkPrevious (Thread[Daemon worker,5,main]) started.
+:qa:backwards-5.0:integTestCluster#node0.checkPrevious
+Skipping task ':qa:backwards-5.0:integTestCluster#node0.checkPrevious' as task onlyIf is false.
+:qa:backwards-5.0:integTestCluster#node0.checkPrevious SKIPPED
+:qa:backwards-5.0:integTestCluster#node0.checkPrevious (Thread[Daemon worker,5,main]) completed. Took 0.0 secs.
+:qa:backwards-5.0:integTestCluster#node0.stopPrevious (Thread[Daemon worker,5,main]) started.
+:qa:backwards-5.0:integTestCluster#node0.stopPrevious
+Skipping task ':qa:backwards-5.0:integTestCluster#node0.stopPrevious' as task onlyIf is false.
+:qa:backwards-5.0:integTestCluster#node0.stopPrevious SKIPPED
+:qa:backwards-5.0:integTestCluster#node0.stopPrevious (Thread[Daemon worker,5,main]) completed. Took 0.0 secs.
+:qa:backwards-5.0:integTestCluster#node0.extract (Thread[Daemon worker,5,main]) started.
+:qa:backwards-5.0:integTestCluster#node0.extract
+Putting task artifact state for task ':qa:backwards-5.0:integTestCluster#node0.extract' into context took 0.004 secs.
+:qa:backwards-5.0:integTestCluster#node0.extract FAILED
+:qa:backwards-5.0:integTestCluster#node0.extract (Thread[Daemon worker,5,main]) completed. Took 0.005 secs.
+
+FAILURE: Build failed with an exception.
+
+
+* What went wrong:
+Cannot expand ZIP '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/distribution/zip/build/distributions/elasticsearch-5.4.0-SNAPSHOT.zip' as it does not exist.
+
+BUILD FAILED
+* Try:
+Run with --stacktrace option to get the stack trace. Run with --debug option to get more log output.
+
+Total time: 43 mins 14.483 secs
+Stopped 1 worker daemon(s).
+Received result Failure[value=org.gradle.initialization.ReportedException: org.gradle.internal.exceptions.LocationAwareException: Cannot expand ZIP '/var/lib/jenkins/workspace/elastic+elasticsearch+master+multijob-intake/distribution/bwc-zip/build/bwc/checkout-5.x/distribution/zip/build/distributions/elasticsearch-5.4.0-SNAPSHOT.zip' as it does not exist.] from daemon DaemonInfo{pid=2214, address=[7df540bd-ba39-415f-b0fa-ca6b59eee783 port:39539, addresses:[/0:0:0:0:0:0:0:1, /127.0.0.1]], state=Busy, lastBusy=1492027343665, context=DefaultDaemonContext[uid=415295c2-f3a3-43c7-8d7a-e5143bb54a4a,javaHome=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64,daemonRegistryDir=/var/lib/jenkins/.gradle/daemon,pid=2214,idleTimeout=120000,daemonOpts=-XX:MaxPermSize=256m,-XX:+HeapDumpOnOutOfMemoryError,-Xmx1024m,-Dfile.encoding=UTF8,-Duser.country=US,-Duser.language=en,-Duser.variant]} (build should be done).

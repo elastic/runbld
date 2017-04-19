@@ -27,6 +27,8 @@
    (when strmsg
      (println strmsg))
    (shutdown-agents)
+   ;; Give stdout a chance to finish.  Jenkins can wait.
+   (Thread/sleep 5000)
    (System/exit code)))
 
 (defn die
