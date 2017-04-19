@@ -17,12 +17,11 @@
 
 (s/defn make-context :- NotifyCtx
   [opts build failures]
-  (let [test-results? (boolean
-                       (or
-                        (and (number? (-> build :test :errors))
-                             (pos? (-> build :test :errors)))
-                        (and (number? (-> build :test :failures))
-                         (pos? (-> build :test :failures)))))
+  (let [test-results? (or
+                       (and (number? (-> build :test :errors))
+                            (pos? (-> build :test :errors)))
+                       (and (number? (-> build :test :failures))
+                            (pos? (-> build :test :failures))))
         last-success (build/find-build
                       opts (-> build :build :last-success :id))
         results-summary (when-not test-results?

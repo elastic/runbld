@@ -181,9 +181,9 @@
   ([filename :- s/Str
     rdr :- java.io.Reader]
    (if (= filename "-")
-     (let [tmp (doto (io/make-tmp-file "stdin" (if (windows?)
-                                                 ".bat" ".program"))
-                 .deleteOnExit)]
+     (let [tmp (io/make-tmp-file
+                "stdin" (if (windows?) ".bat" ".program")
+                :del? true)]
        (spit tmp (slurp rdr))
        (str tmp))
      filename)))

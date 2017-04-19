@@ -31,7 +31,7 @@
           res (-> (es.doc/search conn idx T {:body q})
                   :hits :hits first :_source :log)]
       #_(clojure.pprint/pprint
-       ['went-wrong wwl res])
+         ['went-wrong wwl res])
       res)))
 
 (defn failed-task [conn idx build-id]
@@ -40,7 +40,7 @@
              {:bool
               {:must
                [{:match {:build-id build-id}}
-                {:match {:stream :stderr}}
+                #_{:match {:stream :stderr}}
                 {:match {:log "execution failed"}}
                 {:range
                  {:ord.total
@@ -90,7 +90,7 @@
                     {:range
                      {:ord.total {:gte start-line
                                   :lte end-line}}}]}}
-                 :size 500
+                 :size 3000
                  :sort {:ord.total :desc}}
               res (es.doc/search conn idx {:body q})]
           (->> (-> res :hits :hits)

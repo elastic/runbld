@@ -27,21 +27,38 @@
        (apply str)
        .toUpperCase))
 
-(s/defn attach-failure :- {:type s/Keyword
-                           :content java.io.File
-                           :content-type s/Str}
+(def Attachment
+  {:type s/Keyword
+   :content java.io.File
+   :content-type s/Str})
+
+(s/defn attach-failure :- Attachment
   [failure :- StoredFailure]
-  (let [basename (java.net.URLEncoder/encode
-                  (format "%s-%s-%s-%s.txt"
-                          (:build-id failure)
-                          (:class failure)
-                          (:test failure)
-                          (entropy)))
-        f (io/file "/tmp" basename)]
+  (let [f (io/make-tmp-attachment
+           (format "%s-%s-%s-%s"
+                   (:build-id failure)
+                   (:class failure)
+                   (:test failure)
+                   (entropy))
+           ".txt"
+           :del? true)]
     (spit f (:stacktrace failure))
     {:type :attachment
      :content f
      :content-type "text/plain"}))
+
+(s/defn attach-log :- (s/maybe Attachment)
+  [id :- s/Str
+   log-lines :- [s/Str]]
+  (when (pos? (count log-lines))
+    (let [f (io/make-tmp-attachment
+             (format "%s-log-%s" id (entropy))
+             ".txt"
+             :del? true)]
+      (spit f (->> log-lines (interpose "\n") (apply str)))
+      {:type :attachment
+       :content f
+       :content-type "text/plain"})))
 
 (s/defn send* :- s/Any
   [conn     :- {s/Keyword s/Any}
@@ -50,14 +67,14 @@
    subject  :- s/Str
    plain    :- s/Str
    html     :- (s/maybe s/Str)
-   failures :- [StoredFailure]]
-  (let [failure-attachments (map attach-failure failures)
-        body (if html
-               [{:type "text/html; charset=utf-8"
-                 :content html}]
-               [{:type "text/plain; charset=utf-8"
-                 :content plain}])
-        body (concat body failure-attachments)]
+   attachments :- [s/Any]]
+  (let [body (concat
+              [(if html
+                 {:type "text/html; charset=utf-8"
+                  :content html}
+                 {:type "text/plain; charset=utf-8"
+                  :content plain})]
+              attachments)]
     (mail/send-message
      conn
      {:from from
@@ -88,15 +105,21 @@
   (let [rcpts (split-addr (-> opts :email :to))]
     ((opts :logger) "MAILING:" (str/join ", "
                                          (map obfuscate-addr rcpts)))
-    (send* (opts :email)
-           (-> opts :email :from)
-           rcpts
-           (-> ctx :email :subject)
-           (render (-> opts :email :template-txt) ctx)
-           (when (and (-> opts :email :template-html)
-                      (not (-> opts :email :text-only)))
-             (render (-> opts :email :template-html) ctx))
-           (:failures ctx))))
+    ((opts :logger)
+     (with-out-str
+       (clojure.pprint/pprint
+        (send* (opts :email)
+               (-> opts :email :from)
+               rcpts
+               (-> ctx :email :subject)
+               (render (-> opts :email :template-txt) ctx)
+               (when (and (-> opts :email :template-html)
+                          (not (-> opts :email :text-only)))
+                 (render (-> opts :email :template-html) ctx))
+               (concat
+                (map attach-failure (:failures ctx))
+                (when-let [a (attach-log (:id ctx) (-> ctx :log :lines))]
+                  [a]))))))))
 
 (s/defn make-context :- EmailCtx
   [opts build failures]

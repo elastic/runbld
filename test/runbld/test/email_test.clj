@@ -68,15 +68,16 @@
 
 (deftest log
   (testing "log present"
-    (let [email (atom [])
-          out (java.io.StringWriter.)]
-      (binding [*out* out]
-        (with-redefs [io/log (fn [& x] (prn x))
-                      mail/send-message (fn [conn msg]
-                                          (reset! email msg))]
-          (git/with-tmp-repo [d "tmp/git/email-log"]
-            (testing "no gradle task"
-              (let [[opts res build-doc]
+    (let [email (atom [])]
+      (with-redefs [io/log (fn [& x] (prn x))
+                    mail/send-message (fn [conn msg]
+                                        (reset! email msg))]
+        (git/with-tmp-repo [d "tmp/git/email-log"]
+          (testing "no gradle task"
+            (let [out (java.io.StringWriter.)
+                  [opts res build-doc]
+                  (binding [*out* out
+                            *err* out]
                     (run
                       (conj
                        ["-c" "test/config/main.yml"
@@ -84,13 +85,16 @@
                         "-d" d]
                        (if (opts/windows?)
                          "test/fail-gradle-no-task.bat"
-                         "test/fail-gradle-no-task.bash")))]
-                (is (= 1 (-> build-doc :process :exit-code)))
-                (is (.contains (-> @email :body first :content)
-                               "Cannot expand ZIP")
-                    (-> @email :body first :content))))
-            (testing "with gradle task"
-              (let [[opts res build-doc]
+                         "test/fail-gradle-no-task.bash"))))]
+              (is (= 1 (-> build-doc :process :exit-code)))
+              (is (.contains (-> @email :body first :content)
+                             "Cannot expand ZIP")
+                  (-> @email :body first :content))))
+          (testing "with gradle task"
+            (let [out (java.io.StringWriter.)
+                  [opts res build-doc]
+                  (binding [*out* out
+                            *err* out]
                     (run
                       (conj
                        ["-c" "test/config/main.yml"
@@ -98,8 +102,10 @@
                         "-d" d]
                        (if (opts/windows?)
                          "test/fail-gradle-with-task.bat"
-                         "test/fail-gradle-with-task.bash")))]
-                (is (= 1 (-> build-doc :process :exit-code)))
-                (is (.contains (-> @email :body first :content)
-                               ":core:integTest")
-                    (-> @email :body first :content))))))))))
+                         "test/fail-gradle-with-task.bash"))))]
+              (is (= 1 (-> build-doc :process :exit-code)))
+              (is (.contains (-> @email :body first :content)
+                             ":core:integTest")
+                  (-> @email :body first :content))
+              (is (= 2 (count (:body @email)))
+                  (pr-str @email)))))))))

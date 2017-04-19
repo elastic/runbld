@@ -2600,7 +2600,3 @@ Total time: 20 mins 18.303 secs
 * Try:
 Run with --stacktrace option to get the stack trace. Run with --debug option to get more log output.
 Stopped 1 worker daemon(s).
-runbld>>> <<<<<<<<<<<< SCRIPT EXECUTION END <<<<<<<<<<<<
-runbld>>> DURATION: 1240743ms
-runbld>>> STDOUT: 2530358 bytes
-runbld>>> STDERR: 24767 bytes
