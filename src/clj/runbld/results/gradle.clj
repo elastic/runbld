@@ -12,7 +12,9 @@
 (defn went-wrong-line [conn idx build-id]
   (let [q {:query
            {:bool
-            {:must [{:match {:log "what went wrong"}}
+            {:must [{:match {:log "what"}}
+                    {:match {:log "went"}}
+                    {:match {:log "wrong"}}
                     {:match {:build-id build-id}}]}}
            :size 1}
         res (-> (es.doc/search conn idx T {:body q})
