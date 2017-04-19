@@ -1,4 +1,6 @@
 * runbld changes
+** 1.2.1
+   - Fix bug in gradle log discovery heuristic query
 ** 1.2.0
    - [#57](elastic/runbld#57) Add gradle log information to emails
 ** 1.1.3
