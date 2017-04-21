@@ -1,10 +1,5 @@
 .PHONY: package test
 
-package:
-	./check.sh
-	git rev-parse HEAD >resources/build.txt
-	LEIN_SNAPSHOTS_IN_RELEASE=whynot lein do clean, test :all, package
-
 test:
 	cd test/repo/java/no-errors && mvn test
 	-cd test/repo/java/some-errors && mvn test
@@ -16,4 +11,10 @@ test:
 	go test -v | go-junit-report > TEST-no-errors.xml
 	-cd test/repo/go/some-errors && \
 	go test -v | go-junit-report > TEST-some-errors.xml
-	lein test
+	lein do clean, test
+
+package: test
+	./check.sh
+	git rev-parse HEAD >resources/build.txt
+	LEIN_SNAPSHOTS_IN_RELEASE=whynot lein package
+
