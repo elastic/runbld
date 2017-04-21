@@ -6,7 +6,10 @@
 (deftest parse-commit
   (time
    (testing "the first thousand commits can parse"
-     (is (= 1000 (->> "/home/aar/src/elastic/elasticsearch"
+     (is (= 1000 (->> (io/file
+                       (System/getProperty "user.home")
+                       "src" "elastic" "elasticsearch")
+                      str
                       git/load-repo
                       git/git-log
                       (take 1000)
