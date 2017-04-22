@@ -46,7 +46,8 @@
                  {:size 2
                   :query {:term {:build.job-name job}}
                   :sort {:process.time-end {:order "desc"}}}}
-          previous (doc/search (-> opts :es :conn) query)]
+          previous (doc/search (-> opts :es :conn)
+                               (-> opts :es :build-index-search) query)]
       (-> previous
           :hits
           :hits
