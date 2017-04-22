@@ -61,6 +61,7 @@
      (when-not (= (get-in e [:body :error :type])
                   "index_already_exists_exception")
        (throw+ e))))
+  (indices/wait-for-health conn :yellow idx)
   idx)
 
 (s/defn create-timestamped-index :- s/Str
