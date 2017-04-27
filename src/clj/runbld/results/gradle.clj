@@ -9,41 +9,66 @@
 (def T
   (name runbld.schema/DocType))
 
-(defn went-wrong-line [conn idx build-id]
+(defn went-wrong-start [conn idx build-id]
   (let [q {:query
            {:bool
             {:must [{:match {:log "what"}}
                     {:match {:log "went"}}
                     {:match {:log "wrong"}}
+                    {:match {:stream :stderr}}
                     {:match {:build-id build-id}}]}}
            :size 1}
         res (-> (es.doc/search conn idx T {:body q})
                 :hits :hits first :_source)]
-    (-> res :ord :total)))
+    (when (= (:log res) "* What went wrong:")
+      (-> res :ord))))
 
-(defn went-wrong [conn idx build-id]
-  (when-let [wwl (went-wrong-line conn idx build-id)]
+(defn went-wrong-end [conn idx build-id start]
+  (when-let [wwl (:stream
+                  (went-wrong-start conn idx build-id))]
     (let [q {:query
              {:bool
               {:must [{:match {:build-id build-id}}
-                      {:match {:ord.total (inc wwl)}}]}}
+                      {:match {:log "try"}}
+                      {:match {:stream :stderr}}
+                      {:range {:ord.stream {:gte wwl}}}]}}
              :size 1}
           res (-> (es.doc/search conn idx T {:body q})
-                  :hits :hits first :_source :log)]
-      res)))
+                  :hits :hits first :_source)]
+      (when (= (:log res) "* Try:")
+        (-> res :ord)))))
+
+(defn went-wrong-lines [conn idx build-id]
+  (when-let [wwl-start (:stream
+                        (went-wrong-start conn idx build-id))]
+    (when-let [wwl-end (:stream
+                        (went-wrong-end conn idx build-id wwl-start))]
+      (let [q {:query
+               {:bool
+                {:must [{:match {:build-id build-id}}
+                        {:match {:stream :stderr}}
+                        {:range {:ord.stream {:gte wwl-start
+                                              :lt (dec wwl-end)}}}]}}
+               :sort {:ord.stream :asc}
+               :size 20}
+            res (es.doc/search conn idx T {:body q})]
+        (->> res
+             :hits
+             :hits
+             (map #(get-in % [:_source :log])))))))
 
 (defn failed-task [conn idx build-id]
-  (when-let [went-wrong-line (went-wrong-line conn idx build-id)]
+  (when-let [wwl (:stream
+                  (went-wrong-start conn idx build-id))]
     (let [q {:query
              {:bool
               {:must
                [{:match {:build-id build-id}}
+                {:match {:stream :stderr}}
                 {:match {:log "execution failed"}}
-                {:range
-                 {:ord.total
-                  {:gte (inc went-wrong-line)}}}]}}
-             :sort {:ord.total :asc}
-             :size 1}
+                {:range {:ord.stream {:gte wwl}}}]}}
+             :sort {:ord.stream :asc}
+             :size 3}
           res (es.doc/search conn idx {:body q})]
       (when-let [log (-> res :hits :hits first :_source :log)]
         (let [[_ taskname] (re-find #"'([^']+)'" log)]
