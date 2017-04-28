@@ -86,9 +86,14 @@
    :bucket     s/Str
    :prefix     s/Str})
 
+(def OptsScm
+  {:clone s/Bool
+   :remote s/Str})
+
 (def Opts
   {:job-name   s/Str
    (s/optional-key :last-good-commit) s/Str
+   (s/optional-key :scm) OptsScm
    :version    VersionInfo
    :configfile (s/maybe s/Str)
    :email      OptsEmail
