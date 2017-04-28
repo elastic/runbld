@@ -13,6 +13,9 @@
 
 (use-fixtures :once schema.test/validate-schemas)
 
+(defn contains-string [s expected]
+  (is (.contains s expected) s))
+
 (defn run [args]
   (let [opts (opts/parse-args args)
         res (apply main/-main args)
@@ -73,7 +76,7 @@
                     mail/send-message (fn [conn msg]
                                         (reset! email msg))]
         (git/with-tmp-repo [d "tmp/git/email-log"]
-          (testing "no gradle task"
+          (testing "compilation fail"
             (let [out (java.io.StringWriter.)
                   [opts res build-doc]
                   (binding [*out* out
@@ -82,30 +85,21 @@
                       (conj
                        ["-c" "test/config/main.yml"
                         "-j" "elastic+foo+master"
+                        "-a" "+x"
                         "-d" d]
                        (if (opts/windows?)
-                         "test/fail-gradle-no-task.bat"
-                         "test/fail-gradle-no-task.bash"))))]
+                         "test/script/gradle/fail-compilation/run.bat"
+                         "test/script/gradle/fail-compilation/run.bash"))))]
               (is (= 1 (-> build-doc :process :exit-code)))
-              (is (.contains (-> @email :body first :content)
-                             "Cannot expand ZIP")
-                  (-> @email :body first :content))))
-          (testing "with gradle task"
-            (let [out (java.io.StringWriter.)
-                  [opts res build-doc]
-                  (binding [*out* out
-                            *err* out]
-                    (run
-                      (conj
-                       ["-c" "test/config/main.yml"
-                        "-j" "elastic+foo+master"
-                        "-d" d]
-                       (if (opts/windows?)
-                         "test/fail-gradle-with-task.bat"
-                         "test/fail-gradle-with-task.bash"))))]
-              (is (= 1 (-> build-doc :process :exit-code)))
-              (is (.contains (-> @email :body first :content)
-                             ":core:integTest")
-                  (-> @email :body first :content))
-              (is (= 2 (count (:body @email)))
-                  (pr-str @email)))))))))
+              (contains-string
+               (-> @email :body first :content)
+               "Execution failed for task ':core:compileJava'")
+              (contains-string
+               (-> @email :body first :content)
+               "PrimaryShardAllocator.NODE_INITIAL_SHARDS_SETTING")
+              (contains-string
+               (-> @email :body first :content)
+               "                    ^")
+              (contains-string
+               (-> @email :body first :content)
+               "  symbol:   variable PrimaryShardAllocator"))))))))

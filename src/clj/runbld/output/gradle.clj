@@ -64,10 +64,10 @@
              {:bool
               {:must
                [{:match {:build-id build-id}}
-                {:match {:stream :stderr}}
                 {:match {:log "execution failed"}}
+                {:match {:stream :stderr}}
                 {:range {:ord.stream {:gte wwl}}}]}}
-             :sort {:ord.stream :asc}
+             :sort {:ord.total :asc}
              :size 3}
           res (es.doc/search conn idx {:body q})]
       (when-let [log (-> res :hits :hits first :_source :log)]
@@ -94,7 +94,8 @@
                [{:match {:build-id build-id}}
                 {:match {:log task}}
                 {:match {:log "failed"}}]}}
-             :size 1}
+             :size 1
+             :sort {:ord.total :asc}}
           res (es.doc/search conn idx {:body q})]
       (-> res :hits :hits first :_source :ord :total))))
 
@@ -117,5 +118,3 @@
                (map :_source)
                (map :log)
                reverse))))))
-
-
