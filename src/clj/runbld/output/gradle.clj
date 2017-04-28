@@ -1,4 +1,4 @@
-(ns runbld.results.gradle
+(ns runbld.output.gradle
   (:require [clojure.spec :as s]
             [runbld.schema])
   (:require [elasticsearch.connection.http :as es.conn]

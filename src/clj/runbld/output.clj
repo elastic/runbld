@@ -1,4 +1,4 @@
-(ns runbld.results
+(ns runbld.output
   (:require [clojure.string :as str]
             [elasticsearch.connection.http :as es.conn]
             [elasticsearch.document :as es.doc]
