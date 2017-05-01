@@ -89,7 +89,7 @@
 (def OptsScm
   {:clone s/Bool
    :url s/Str
-   :reference-repo s/Str})
+   (s/optional-key :reference-repo) s/Str
 
 (def Opts
   {:job-name   s/Str
