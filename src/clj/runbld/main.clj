@@ -44,11 +44,13 @@
 
 (defn bootstrap-workspace [raw-opts]
   (let [clone? (boolean (-> raw-opts :scm :clone))
+        reference (-> raw-opts :scm :reference-repo)
         local (-> raw-opts :process :cwd)
-        remote (-> raw-opts :scm :remote)]
+        remote (-> raw-opts :scm :url)]
     (when clone?
       (io/log "cloning" remote)
-      (git/git-clone local remote)
+      (git/git-clone local remote (when reference
+                                    ["--reference" reference]))
       (io/log "done cloning"))))
 
 (def make-opts

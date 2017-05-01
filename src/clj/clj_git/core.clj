@@ -200,7 +200,10 @@
 (defn git-checkout [repo sha-ish]
   (git repo "checkout" ["-f" sha-ish]))
 
-(defn git-clone [local remote]
-  (.mkdirs (io/file (parent-dir local)))
-  ;; don't worry about local/remote & hardlinks for now
-  (run "clone" [remote local]))
+(defn git-clone
+  ([local remote]
+   (git-clone local remote []))
+  ([local remote args]
+   (.mkdirs (io/file (parent-dir local)))
+   ;; don't worry about local/remote & hardlinks for now
+   (run "clone" (concat [remote local] args))))
