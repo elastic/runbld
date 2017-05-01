@@ -90,6 +90,8 @@
   {:clone s/Bool
    :url s/Str
    (s/optional-key :reference-repo) s/Str
+   :branch s/Str
+   :wipe-workspace s/Bool})
 
 (def Opts
   {:job-name   s/Str

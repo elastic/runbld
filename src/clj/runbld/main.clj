@@ -44,14 +44,22 @@
 
 (defn bootstrap-workspace [raw-opts]
   (let [clone? (boolean (-> raw-opts :scm :clone))
-        reference (-> raw-opts :scm :reference-repo)
+        wipe-workspace? (boolean (-> raw-opts :scm :wipe-workspace))
         local (-> raw-opts :process :cwd)
-        remote (-> raw-opts :scm :url)]
+        remote (-> raw-opts :scm :url)
+        reference (-> raw-opts :scm :reference-repo)
+        branch (-> raw-opts :scm :branch)]
     (when clone?
-      (io/log "cloning" remote)
-      (git/git-clone local remote (when reference
-                                    ["--reference" reference]))
-      (io/log "done cloning"))))
+      (let [clone-args (->> [(when reference ["--reference" reference])
+                             (when branch ["--branch" branch])]
+                            (filter identity)
+                            (apply concat))]
+        (when wipe-workspace?
+          (io/log "wiping workspace")
+          (clojure.java.shell/sh "find" local "-mindepth" "1" "-delete"))
+        (io/log "cloning" remote)
+        (git/git-clone local remote clone-args )
+        (io/log "done cloning")))))
 
 (def make-opts
   (-> #'identity
