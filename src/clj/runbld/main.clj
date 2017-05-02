@@ -55,8 +55,9 @@
                             (filter identity)
                             (apply concat))]
         (when wipe-workspace?
-          (io/log "wiping workspace")
-          (clojure.java.shell/sh "find" local "-mindepth" "1" "-delete"))
+          (let [workspace (System/getenv "WORKSPACE")]
+            (io/log "wiping workspace" workspace)
+            (clojure.java.shell/sh "find" workspace "-mindepth" "1" "-delete")))
         (io/log "cloning" remote)
         (git/git-clone local remote clone-args)
         (io/log "done cloning")))))
