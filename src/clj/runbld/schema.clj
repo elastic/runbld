@@ -91,7 +91,8 @@
    :url s/Str
    (s/optional-key :reference-repo) s/Str
    :branch s/Str
-   :wipe-workspace s/Bool})
+   :wipe-workspace s/Bool
+   (s/optional-key :depth) s/Int})
 
 (def Opts
   {:job-name   s/Str

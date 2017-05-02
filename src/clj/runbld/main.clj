@@ -48,10 +48,12 @@
         local (-> raw-opts :process :cwd)
         remote (-> raw-opts :scm :url)
         reference (-> raw-opts :scm :reference-repo)
-        branch (-> raw-opts :scm :branch)]
+        branch (-> raw-opts :scm :branch)
+        depth (-> raw-opts :scm :depth)]
     (when clone?
       (let [clone-args (->> [(when reference ["--reference" reference])
-                             (when branch ["--branch" branch])]
+                             (when branch ["--branch" branch])
+                             (when depth ["--depth" (str depth)])]
                             (filter identity)
                             (apply concat))]
         (when wipe-workspace?
