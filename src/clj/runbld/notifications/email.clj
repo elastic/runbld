@@ -69,11 +69,10 @@
    html     :- (s/maybe s/Str)
    attachments :- [s/Any]]
   (let [body (concat
-              [(if html
-                 {:type "text/html; charset=utf-8"
-                  :content html}
-                 {:type "text/plain; charset=utf-8"
-                  :content plain})]
+              [{:type "text/html; charset=utf-8"
+                :content html}
+               {:type "text/plain; charset=utf-8"
+                :content plain}]
               attachments)]
     (mail/send-message
      conn
