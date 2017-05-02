@@ -58,7 +58,7 @@
           (io/log "wiping workspace")
           (clojure.java.shell/sh "find" local "-mindepth" "1" "-delete"))
         (io/log "cloning" remote)
-        (git/git-clone local remote clone-args )
+        (git/git-clone local remote clone-args)
         (io/log "done cloning")))))
 
 (def make-opts
