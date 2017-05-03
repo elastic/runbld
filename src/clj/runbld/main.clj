@@ -10,6 +10,7 @@
             [runbld.opts :as opts]
             [runbld.process :as proc]
             [runbld.scheduler.middleware :as scheduler]
+            [runbld.schema :refer :all]
             [runbld.store :as store]
             [runbld.system :as system]
             [runbld.tests :as tests]
@@ -42,27 +43,28 @@
      ;; for tests when #'really-die is redefed
      msg*)))
 
-(defn bootstrap-workspace [raw-opts]
-  (let [clone? (boolean (-> raw-opts :scm :clone))
-        wipe-workspace? (boolean (-> raw-opts :scm :wipe-workspace))
-        local (-> raw-opts :process :cwd)
-        remote (-> raw-opts :scm :url)
-        reference (-> raw-opts :scm :reference-repo)
-        branch (-> raw-opts :scm :branch)
-        depth (-> raw-opts :scm :depth)]
-    (when clone?
-      (let [clone-args (->> [(when reference ["--reference" reference])
-                             (when branch ["--branch" branch])
-                             (when depth ["--depth" (str depth)])]
-                            (filter identity)
-                            (apply concat))]
-        (when wipe-workspace?
-          (let [workspace (System/getenv "WORKSPACE")]
-            (io/log "wiping workspace" workspace)
-            (clojure.java.shell/sh "find" workspace "-mindepth" "1" "-delete")))
-        (io/log "cloning" remote)
-        (git/git-clone local remote clone-args)
-        (io/log "done cloning")))))
+(s/defn bootstrap-workspace
+  ([raw-opts :- OptsWithLogger]
+   (let [clone? (boolean (-> raw-opts :scm :clone))
+         wipe-workspace? (boolean (-> raw-opts :scm :wipe-workspace))
+         local (-> raw-opts :process :cwd)
+         remote (-> raw-opts :scm :url)
+         reference (-> raw-opts :scm :reference-repo)
+         branch (-> raw-opts :scm :branch)
+         depth (-> raw-opts :scm :depth)]
+     (when clone?
+       (let [clone-args (->> [(when reference ["--reference" reference])
+                              (when branch ["--branch" branch])
+                              (when depth ["--depth" (str depth)])]
+                             (filter identity)
+                             (apply concat))]
+         (when wipe-workspace?
+           (let [workspace (System/getenv "WORKSPACE")]
+             (io/log "wiping workspace" workspace)
+             (clojure.java.shell/sh "find" workspace "-mindepth" "1" "-delete")))
+         (io/log "cloning" remote)
+         (git/git-clone local remote clone-args)
+         (io/log "done cloning"))))))
 
 (def make-opts
   (-> #'identity

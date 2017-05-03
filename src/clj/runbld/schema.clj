@@ -170,6 +170,9 @@
    (s/optional-key :node)      s/Str
    (s/optional-key :last-success) LastGoodBuild})
 
+(def OptsWithLogger
+  (merge Opts {:logger clojure.lang.IFn}))
+
 (def OptsWithSys
   (merge Opts {:sys    BuildSystem
                :logger clojure.lang.IFn}))
