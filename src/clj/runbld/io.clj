@@ -46,13 +46,23 @@
                                       (:err res)))
     res))
 
-(defn rmdir-r [dir]
-  (let [listing (->> dir
-                     jio/file
-                     file-seq
-                     reverse)]
-    (doseq [f listing]
-      (jio/delete-file f))))
+(defn lsdir [dir]
+  (->> dir
+       jio/file
+       file-seq
+       reverse))
+
+(defn rmdir-contents
+  "Recursively deletes all files in dir, but not dir itself."
+  [dir]
+  (doseq [f (butlast (lsdir dir))]
+    (jio/delete-file f)))
+
+(defn rmdir-r
+  "Recursively deletes all files in dir, including dir itself."
+  [dir]
+  (doseq [f (lsdir dir)]
+    (jio/delete-file f)))
 
 (defn mkdir-p [dir]
   (.mkdirs (jio/file dir)))
