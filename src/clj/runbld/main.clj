@@ -43,10 +43,15 @@
      ;; for tests when #'really-die is redefed
      msg*)))
 
+(defn wipe-workspace [workspace]
+  (io/log "wiping workspace" workspace)
+  (io/rmdir-contents workspace))
+
 (s/defn bootstrap-workspace
   ([raw-opts :- OptsWithLogger]
    (let [clone? (boolean (-> raw-opts :scm :clone))
          wipe-workspace? (boolean (-> raw-opts :scm :wipe-workspace))
+         workspace (System/getenv "WORKSPACE")
          local (-> raw-opts :process :cwd)
          remote (-> raw-opts :scm :url)
          reference (-> raw-opts :scm :reference-repo)
@@ -59,9 +64,7 @@
                              (filter identity)
                              (apply concat))]
          (when wipe-workspace?
-           (let [workspace (System/getenv "WORKSPACE")]
-             (io/log "wiping workspace" workspace)
-             (clojure.java.shell/sh "find" workspace "-mindepth" "1" "-delete")))
+           (wipe-workspace workspace))
          (io/log "cloning" remote)
          (git/git-clone local remote clone-args)
          (io/log "done cloning"))))))
