@@ -200,6 +200,11 @@
 (defn git-checkout [repo sha-ish]
   (git repo "checkout" ["-f" sha-ish]))
 
+(defn git-branch [repo]
+  (-> (git repo "rev-parse" ["--abbrev-ref" "HEAD"])
+      :out
+      str/trim-newline))
+
 (defn git-clone
   ([local remote]
    (git-clone local remote []))
