@@ -47,27 +47,12 @@
     res))
 
 (defn rmdir-r [dir]
-  (let [f (fn [[x & xs]]
-            (when x
-              (cond
-                ;; Leaf (file or empty directory)
-                (or (.isFile x)
-                    (and (.isDirectory x)
-                         (zero? (count (.listFiles x)))))
-                (do
-                  (when (windows?)
-                    (System/gc)
-                    (.setWritable x true))
-                  (again/with-retries [100 500 500]
-                    (jio/delete-file x))
-                  (recur xs))
-
-                ;; Node (non-empty directory)
-                (and (.isDirectory x)
-                     (pos? (count (.listFiles x))))
-                (recur
-                 (concat (.listFiles x) [x] xs)))))]
-    (f [(jio/file dir)])))
+  (let [listing (->> dir
+                     jio/file
+                     file-seq
+                     reverse)]
+    (doseq [f listing]
+      (jio/delete-file f))))
 
 (defn mkdir-p [dir]
   (.mkdirs (jio/file dir)))
