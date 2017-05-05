@@ -41,6 +41,12 @@
   (is (= "foo@q***.dom"
          (email/obfuscate-addr "foo@bar.quux.dom"))))
 
+(defn find-content [body]
+  (:content (some #(and (map? %)
+                        (.contains (:type %) "text/html")
+                        %)
+                  body)))
+
 (deftest attached
   (testing "failures present"
     (let [email (atom [])]
@@ -61,10 +67,13 @@
             (is (= 1 (:exit-code res)))
             (is (= 1 (-> build-doc :process :exit-code)))
             (is (= 2 (count (store/get-failures opts (:id build-doc)))))
-            (is (.contains (-> @email :body first :content)
-                           "com.example.AppTest <b>testBad</b>")
-                (with-out-str
-                  (clojure.pprint/pprint @email)))))))))
+            (let [body (:body @email)
+                  content (find-content body)]
+              (when (is content body)
+                (is (.contains content
+                               "com.example.AppTest <b>testBad</b>")
+                    (with-out-str
+                      (clojure.pprint/pprint @email)))))))))))
 
 (deftest log
   (testing "log present"
@@ -87,9 +96,12 @@
                          "test/fail-gradle-no-task.bat"
                          "test/fail-gradle-no-task.bash"))))]
               (is (= 1 (-> build-doc :process :exit-code)))
-              (is (.contains (-> @email :body first :content)
-                             "Cannot expand ZIP")
-                  (-> @email :body first :content))))
+              (let [body (:body @email)
+                    content (find-content body)]
+                (when (is content body)
+                  (is (.contains content "Cannot expand ZIP")))
+                (is (= 3 (count body))
+                    (pr-str @email)))))
           (testing "with gradle task"
             (let [out (java.io.StringWriter.)
                   [opts res build-doc]
@@ -104,8 +116,9 @@
                          "test/fail-gradle-with-task.bat"
                          "test/fail-gradle-with-task.bash"))))]
               (is (= 1 (-> build-doc :process :exit-code)))
-              (is (.contains (-> @email :body first :content)
-                             ":core:integTest")
-                  (-> @email :body first :content))
-              (is (= 2 (count (:body @email)))
-                  (pr-str @email)))))))))
+              (let [body (:body @email)
+                    content (find-content body)]
+                (when (is content body)
+                  (is (.contains content ":core:integTest")))
+                (is (= 4 (count body))
+                    (pr-str @email))))))))))
