@@ -86,9 +86,18 @@
    :bucket     s/Str
    :prefix     s/Str})
 
+(def OptsScm
+  {:clone s/Bool
+   :url s/Str
+   (s/optional-key :reference-repo) s/Str
+   :branch s/Str
+   :wipe-workspace s/Bool
+   (s/optional-key :depth) s/Int})
+
 (def Opts
   {:job-name   s/Str
    (s/optional-key :last-good-commit) s/Str
+   (s/optional-key :scm) OptsScm
    :version    VersionInfo
    :configfile (s/maybe s/Str)
    :email      OptsEmail
@@ -160,6 +169,9 @@
    (s/optional-key :executor)  s/Str
    (s/optional-key :node)      s/Str
    (s/optional-key :last-success) LastGoodBuild})
+
+(def OptsWithLogger
+  (merge Opts {:logger clojure.lang.IFn}))
 
 (def OptsWithSys
   (merge Opts {:sys    BuildSystem

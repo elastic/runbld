@@ -1,6 +1,8 @@
 (ns runbld.test.main-test
   (:require [schema.test :as s])
-  (:require [clojure.test :refer :all]
+  (:require [clj-git.core :refer [git-branch git-log load-repo]]
+            [clojure.java.io :as jio]
+            [clojure.test :refer :all]
             [clojure.walk :refer [keywordize-keys]]
             [runbld.build :as build]
             [runbld.notifications.email :as email]
@@ -216,3 +218,55 @@
               (finally
                 (io/rmdir-r periodic-dir)
                 (io/rmdir-r intake-dir)))))))))
+
+(s/deftest ^:integration execution-with-scm
+  (testing "real execution all the way through with cloning via scm config"
+    (let [wipe-workspace-orig main/wipe-workspace
+          workspace "tmp/git/elastic+foo+master"]
+      (with-redefs [io/log (fn [& x] (prn x))
+                    email/send* (fn [& args]
+                                  (swap! email concat args)
+                                  ;; to satisfy schema
+                                  {})
+                    slack/send (fn [opts ctx]
+                                 (let [f (-> opts :slack :template)
+                                       tmpl (-> f io/resolve-resource slurp)
+                                       color (if (-> ctx :process :failed)
+                                               "danger"
+                                               "good")
+                                       js (mustache/render-string
+                                           tmpl (assoc ctx :color color))]
+                                   (reset! slack js)))
+                    main/wipe-workspace (fn [workspace] nil)]
+        (try
+          (let [[opts res] (run
+                             (conj
+                              ["-c" "test/config/scm.yml"
+                               "-j" "elastic+foo+master"
+                               "-d" workspace]
+                              (if (opts/windows?)
+                                "test/fail.bat"
+                                "test/fail.bash")))]
+            (testing "the elasticsearch repo was cloned correctly"
+              (let [branch (-> opts :scm :branch)
+                    depth (-> opts :scm :depth)
+                    repo (load-repo workspace)]
+                (is (= branch (git-branch repo)))
+                (is (= depth (count (git-log repo)))))
+              (testing "scm doesn't break anything else"
+                (is (= 1 (:exit-code res)))
+                (is (= 1 (-> (store/get (-> opts :es :conn)
+                                        (-> res :store-result :addr :index)
+                                        (-> res :store-result :addr :type)
+                                        (-> res :store-result :addr :id))
+                             :process
+                             :exit-code)))
+                (is (.startsWith
+                     (let [[_ _ _ subj _ _] @email] subj) "FAILURE"))
+                (is (.contains (slack-msg) "FAILURE")))
+              (testing "wiping the workspace"
+                (wipe-workspace-orig workspace)
+                ;; Should only have the top-level workspace dir left
+                (is (= [workspace] (map str (file-seq (jio/file workspace))))))))
+          (finally
+            (io/rmdir-r workspace)))))))

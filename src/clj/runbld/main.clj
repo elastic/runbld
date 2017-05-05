@@ -1,6 +1,7 @@
 (ns runbld.main
   (:gen-class)
-  (:require [clojure.pprint :refer [pprint]]
+  (:require [clj-git.core :as git]
+            [clojure.pprint :refer [pprint]]
             [environ.core :as environ]
             [runbld.build :as build]
             [runbld.notifications.email :as email]
@@ -9,6 +10,7 @@
             [runbld.opts :as opts]
             [runbld.process :as proc]
             [runbld.scheduler.middleware :as scheduler]
+            [runbld.schema :refer :all]
             [runbld.store :as store]
             [runbld.system :as system]
             [runbld.tests :as tests]
@@ -41,6 +43,32 @@
      ;; for tests when #'really-die is redefed
      msg*)))
 
+(defn wipe-workspace [workspace]
+  (io/log "wiping workspace" workspace)
+  (io/rmdir-contents workspace))
+
+(s/defn bootstrap-workspace
+  ([raw-opts :- OptsWithLogger]
+   (let [clone? (boolean (-> raw-opts :scm :clone))
+         wipe-workspace? (boolean (-> raw-opts :scm :wipe-workspace))
+         workspace (System/getenv "WORKSPACE")
+         local (-> raw-opts :process :cwd)
+         remote (-> raw-opts :scm :url)
+         reference (-> raw-opts :scm :reference-repo)
+         branch (-> raw-opts :scm :branch)
+         depth (-> raw-opts :scm :depth)]
+     (when clone?
+       (let [clone-args (->> [(when reference ["--reference" reference])
+                              (when branch ["--branch" branch])
+                              (when depth ["--depth" (str depth)])]
+                             (filter identity)
+                             (apply concat))]
+         (when wipe-workspace?
+           (wipe-workspace workspace))
+         (io/log "cloning" remote)
+         (git/git-clone local remote clone-args)
+         (io/log "done cloning"))))))
+
 (def make-opts
   (-> #'identity
       vcs/wrap-vcs-info
@@ -49,30 +77,35 @@
       java/wrap-java
       system/wrap-system))
 
+(defn maybe-log-last-success [opts]
+  (when (-> opts :build :last-success :checked-out)
+    (let [b (build/find-build opts (-> opts :build :last-success :id))
+          commit (-> b :vcs :commit-short)]
+      (io/log "using last successful commit"
+              commit
+              "from"
+              (-> b :build :job-name) (-> b :id)
+              (-> b :process :time-start)
+              (date/human-duration
+               (date/iso-diff-secs
+                (date/from-iso
+                 ;; notify on time-end because it makes more
+                 ;; logical sense to report on the last
+                 ;; completed build's end time, I think
+                 (-> b :process :time-end))
+                (date/now)))
+              "ago"))))
+
 ;; -main :: IO ()
 (defn -main [& args]
   (try+
-   (let [opts (make-opts
-               (assoc
-                (opts/parse-args args)
-                :logger io/log))
+   (let [raw-opts (assoc
+                   (opts/parse-args args)
+                   :logger io/log)
          _ (io/log (version/string))
-         _ (when (-> opts :build :last-success :checked-out)
-             (let [b (build/find-build opts (-> opts :build :last-success :id))]
-               (io/log "using last successful commit"
-                       (-> b :vcs :commit-short)
-                       "from"
-                       (-> b :build :job-name) (-> b :id)
-                       (-> b :process :time-start)
-                       (date/human-duration
-                        (date/iso-diff-secs
-                         (date/from-iso
-                          ;; notify on time-end because it makes more
-                          ;; logical sense to report on the last
-                          ;; completed build's end time, I think
-                          (-> b :process :time-end))
-                         (date/now)))
-                       "ago")))
+         _ (bootstrap-workspace raw-opts)
+         opts (make-opts raw-opts)
+         _ (maybe-log-last-success opts)
          _ (io/log ">>>>>>>>>>>> SCRIPT EXECUTION BEGIN >>>>>>>>>>>>")
          {:keys [opts process-result]} (proc/run opts)
          _ (io/log "<<<<<<<<<<<< SCRIPT EXECUTION END <<<<<<<<<<<<")
@@ -84,8 +117,7 @@
          test-report (tests/report (-> opts :process :cwd))
          store-result (store/save! opts process-result test-report)
          slack-result (io/try-log (slack/maybe-send! opts (:addr store-result)))
-         email-result (io/try-log (email/maybe-send! opts (:addr store-result)))
-         ]
+         email-result (io/try-log (email/maybe-send! opts (:addr store-result)))]
 
      (if (environ/env :dev)
        (assoc process-result

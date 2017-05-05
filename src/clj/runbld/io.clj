@@ -46,28 +46,23 @@
                                       (:err res)))
     res))
 
-(defn rmdir-r [dir]
-  (let [f (fn [[x & xs]]
-            (when x
-              (cond
-                ;; Leaf (file or empty directory)
-                (or (.isFile x)
-                    (and (.isDirectory x)
-                         (zero? (count (.listFiles x)))))
-                (do
-                  (when (windows?)
-                    (System/gc)
-                    (.setWritable x true))
-                  (again/with-retries [100 500 500]
-                    (jio/delete-file x))
-                  (recur xs))
+(defn lsdir [dir]
+  (->> dir
+       jio/file
+       file-seq
+       reverse))
 
-                ;; Node (non-empty directory)
-                (and (.isDirectory x)
-                     (pos? (count (.listFiles x))))
-                (recur
-                 (concat (.listFiles x) [x] xs)))))]
-    (f [(jio/file dir)])))
+(defn rmdir-contents
+  "Recursively deletes all files in dir, but not dir itself."
+  [dir]
+  (doseq [f (butlast (lsdir dir))]
+    (jio/delete-file f)))
+
+(defn rmdir-r
+  "Recursively deletes all files in dir, including dir itself."
+  [dir]
+  (doseq [f (lsdir dir)]
+    (jio/delete-file f)))
 
 (defn mkdir-p [dir]
   (.mkdirs (jio/file dir)))
