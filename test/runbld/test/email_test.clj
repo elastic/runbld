@@ -41,11 +41,10 @@
   (is (= "foo@q***.dom"
          (email/obfuscate-addr "foo@bar.quux.dom"))))
 
-(defn find-content [body]
-  (:content (some #(and (map? %)
-                        (.contains (:type %) "text/html")
-                        %)
-                  body)))
+(defn find-contents [body]
+  (->> body
+       (filter #(and (map? %) (not (= :attachment (:type %)))))
+       (map :content)))
 
 (deftest attached
   (testing "failures present"
@@ -68,12 +67,11 @@
             (is (= 1 (-> build-doc :process :exit-code)))
             (is (= 2 (count (store/get-failures opts (:id build-doc)))))
             (let [body (:body @email)
-                  content (find-content body)]
-              (when (is content body)
-                (is (.contains content
-                               "com.example.AppTest <b>testBad</b>")
-                    (with-out-str
-                      (clojure.pprint/pprint @email)))))))))))
+                  contents (find-contents body)]
+              (is (= 2 (count contents))
+                  body)
+              (doseq [content contents]
+                (is (re-find #"com\.example\.AppTest.*testBad" content))))))))))
 
 (deftest log
   (testing "log present"
@@ -97,8 +95,9 @@
                          "test/fail-gradle-no-task.bash"))))]
               (is (= 1 (-> build-doc :process :exit-code)))
               (let [body (:body @email)
-                    content (find-content body)]
-                (when (is content body)
+                    contents (find-contents body)]
+                (is (= 2 (count contents)) body)
+                (doseq [content contents]
                   (is (.contains content "Cannot expand ZIP")))
                 (is (= 3 (count body))
                     (pr-str @email)))))
@@ -117,8 +116,9 @@
                          "test/fail-gradle-with-task.bash"))))]
               (is (= 1 (-> build-doc :process :exit-code)))
               (let [body (:body @email)
-                    content (find-content body)]
-                (when (is content body)
+                    contents (find-contents body)]
+                (is (= 2 (count contents)) body)
+                (doseq [content contents]
                   (is (.contains content ":core:integTest")))
                 (is (= 4 (count body))
                     (pr-str @email))))))))))
