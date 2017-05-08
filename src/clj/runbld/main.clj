@@ -59,7 +59,7 @@
          depth (-> raw-opts :scm :depth)]
      (when clone?
        (let [clone-args (->> [(when reference ["--reference" reference])
-                              (when branch ["--branch" branch])
+                              (when branch ["--branch" (str branch)])
                               (when depth ["--depth" (str depth)])]
                              (filter identity)
                              (apply concat))]
