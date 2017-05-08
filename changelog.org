@@ -1,4 +1,7 @@
 * runbld changes
+** 1.3.0
+   - Add source control management.
+   - Send plaintext emails in addition to HTML.
 ** 1.2.1
    - Fix bug in gradle log discovery heuristic query
 ** 1.2.0
