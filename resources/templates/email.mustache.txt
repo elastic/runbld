@@ -3,13 +3,44 @@
 ===============
 {{ build.org }}/{{ build.project }}
 {{ build.branch }} {{ build.branch-url }}
+{{#process.failed}}
+{{#no-output}}
+This build failed, but the output was unrecognized. Please visit
+the console log to see what happened.
 
+{{build.console-url}}
+{{/no-output}}
+{{#log.present}}
+{{log.summary}}
+{{/log.present}}
+
+{{#tests}}
+Stacktraces attached for these tests:
+
+{{#test.failed-testcases}}
+{{class}}  {{test}}
+{{/test.failed-testcases}}
+{{/tests}}
+{{/process.failed}}
+
+{{#tests}}
+FAILED:     {{ test.failures }}
+ERROR:      {{ test.errors }}
+SKIPPED:    {{ test.skipped }}
+TOTAL:      {{ test.tests }}
+{{/tests}}
+
+===============
+BUILD INFO
+===============
 Build                {{ id }}
 Log                  {{ build.console-url }}
 Duration             {{ process.took-human }} ({{ process.took }}ms)
 Started              {{ process.time-start }}
 Ended                {{ process.time-end }}
+Exit Code            {{ process.exit-code }}
 Host                 {{ sys.hostname }} (up {{ sys.uptime }})
+IPv4                 {{ sys.ip4 }}
 OS                   {{ sys.os }} {{ sys.os-version }}, {{ sys.kernel-name }} {{ sys.kernel-release }}
 Specs                {{ sys.cpus }} CPUs, {{ sys.ram-gb }}GB RAM
 java.version         {{ java.version }}
@@ -17,40 +48,25 @@ java.vm.name         {{ java.vm.name }}
 java.vm.version      {{ java.vm.version }}
 java.runtime.version {{ java.runtime.version }}
 java.home            {{ java.home }}
-===============
 
+{{#build.last-success.checked-out}}
+using successful commit from
+  {{ build.last-success.id }}
+  {{ build.last-success.job-name }}
+  {{ build.last-success.time-end }} ({{ build.last-success.age }} ago)
+{{/build.last-success.checked-out}}
+Branch: {{ build.branch }} - {{vcs.branch-url}}
+Commit: {{ vcs.commit-id }} - {{vcs.commit-url}}
+Author: {{ vcs.author-name }} <{{ vcs.author-email }}>
+Date:   {{ vcs.commit-time }}
+
+{{ vcs.message }}
 
 ===============
-HEAD {{ vcs.commit-url }}
+PROCESS SOURCE
 ===============
-{{{ vcs.log-pretty }}}
-===============
-
-
-===============
-BUILD (exit: {{ process.exit-code }})
-===============
-```
 {{{ process.cmd-source }}}
-```
-===============
 
-
-{{#test}}
-===============
-SUMMARY
-===============
-Tests RUN:         {{ test.tests }}
-Tests FAILED:      {{ test.failures }}
-Tests with ERRORs: {{ test.errors }}
-Tests SKIPPED:     {{ test.skipped }}
-===============
-{{#test.failed-testcases}}
-{{summary}}
-{{/test.failed-testcases}}
-===============
-{{/test}}
-
-
+--
 runbld {{ version.string }}/{{ version.hash }}
 https://github.com/elastic/runbld

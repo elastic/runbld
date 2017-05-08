@@ -17,5 +17,5 @@ email:
   pass: pass!
   from: default@example.com
   to: default@example.com
-  template-txt: test/templates/default.mustache
+  template-txt: templates/email.mustache.txt
   template-html: templates/email.mustache.html
