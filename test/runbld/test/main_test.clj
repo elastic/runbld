@@ -12,6 +12,7 @@
             [runbld.process :as proc]
             [runbld.store :as store]
             [runbld.io :as io]
+            [runbld.test.support :as ts]
             [runbld.vcs.git :as git]
             [runbld.version :as version]
             [stencil.core :as mustache]
@@ -32,12 +33,12 @@
       first
       :title))
 
+(use-fixtures :each ts/redirect-logging-fixture)
+
 (s/deftest main
   ;; Change root bindings for these Vars, affects any execution no
   ;; matter what thread
-  (with-redefs [;; Don't pollute the console
-                io/log (fn [& _] :noconsole)
-                ;; Don't really kill the JVM
+  (with-redefs [;; Don't really kill the JVM
                 main/really-die (fn [& args] :dontdie)
                 ;; Don't really execute an external process
                 proc/run (fn [& args] :bogus)]
@@ -53,8 +54,7 @@
                                    "/path/to/script.bash") "config file ")))))
 
 (s/deftest unexpected
-  (with-redefs [io/log (fn [& _] :noconsole)
-                main/really-die (fn [& args] :dontdie)
+  (with-redefs [main/really-die (fn [& args] :dontdie)
                 proc/run (fn [& args] (throw
                                        (Exception.
                                         "boy that was unexpected")))]
@@ -68,8 +68,7 @@
 
 (s/deftest execution-with-defaults
   (testing "real execution all the way through"
-    (with-redefs [io/log (fn [& x] (prn x))
-                  email/send* (fn [& args]
+    (with-redefs [email/send* (fn [& args]
                                 (swap! email concat args)
                                 ;; to satisfy schema
                                 {})
@@ -124,8 +123,7 @@
 
 (s/deftest execution-with-slack-overrides
   (testing "slack overrides:"
-    (with-redefs [io/log (fn [& _] :noconsole)
-                  email/send* (fn [& args]
+    (with-redefs [email/send* (fn [& args]
                                 (swap! email concat args)
                                 ;; to satisfy schema
                                 {})
@@ -182,8 +180,7 @@
   (testing "last-good-commit:"
     (testing "successful intake"
       (let [email-body (atom :no-email-body-yet)]
-        (with-redefs [io/log (fn [& x] (prn x))
-                      email/send* (fn [_ _ _ _ plain html attachments]
+        (with-redefs [email/send* (fn [_ _ _ _ plain html attachments]
                                     (reset! email-body html)
                                     ;; to satisfy schema
                                     {})
@@ -223,8 +220,7 @@
   (testing "real execution all the way through with cloning via scm config"
     (let [wipe-workspace-orig main/wipe-workspace
           workspace "tmp/git/elastic+foo+master"]
-      (with-redefs [io/log (fn [& x] (prn x))
-                    email/send* (fn [& args]
+      (with-redefs [email/send* (fn [& args]
                                   (swap! email concat args)
                                   ;; to satisfy schema
                                   {})

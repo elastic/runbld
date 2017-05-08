@@ -1,5 +1,6 @@
 (ns runbld.test.process-test
   (:require [clojure.test :refer :all]
+            [runbld.test.support :as ts]
             [schema.test])
   (:require [cheshire.core :as json]
             [runbld.java :as java]
@@ -10,6 +11,7 @@
             [runbld.io :as io] :reload-all))
 
 (use-fixtures :once schema.test/validate-schemas)
+(use-fixtures :each ts/redirect-logging-fixture)
 
 (deftest output-io
   (io/with-tmp-dir [dir ["tmp" (str *ns* "-")]]

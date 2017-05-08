@@ -16,3 +16,5 @@ target/
 /envg*
 *.pyc
 TEST-*
+/test.log
+/.cider-history

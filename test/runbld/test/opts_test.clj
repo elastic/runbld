@@ -1,5 +1,6 @@
 (ns runbld.test.opts-test
   (:require [clojure.test :refer :all]
+            [runbld.test.support :as ts]
             [schema.test])
   (:require [clj-time.core :as t]
             [runbld.io :as io]
@@ -7,6 +8,7 @@
             [runbld.java :as java] :reload-all))
 
 (use-fixtures :once schema.test/validate-schemas)
+(use-fixtures :each ts/redirect-logging-fixture)
 
 (deftest basic
   (let [java-home (:home (java/jvm-facts))
