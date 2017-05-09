@@ -1,4 +1,7 @@
 * runbld changes
+** 1.3.3
+   - Correctly order attachments and email bodies.
+   - Ignore unavailable reference repositories.
 ** 1.3.2
    - Ensure that branches are parsed as strings.
 ** 1.3.1
