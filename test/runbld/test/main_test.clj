@@ -1,22 +1,25 @@
 (ns runbld.test.main-test
-  (:require [schema.test :as s])
-  (:require [clj-git.core :refer [git-branch git-log load-repo]]
+  (:require [cheshire.core :as json]
+            [clj-git.core :refer [git-branch git-log load-repo]]
+            [clj-http.client :as http]
+            [clj-http.core :as http-core]
             [clojure.java.io :as jio]
             [clojure.test :refer :all]
             [clojure.walk :refer [keywordize-keys]]
             [runbld.build :as build]
+            [runbld.env :as env]
+            [runbld.io :as io]
             [runbld.notifications.email :as email]
             [runbld.notifications.slack :as slack]
-            [runbld.env :as env]
             [runbld.opts :as opts]
             [runbld.process :as proc]
             [runbld.store :as store]
-            [runbld.io :as io]
             [runbld.test.support :as ts]
+            [runbld.util.http :refer [wrap-retries]]
             [runbld.vcs.git :as git]
             [runbld.version :as version]
-            [stencil.core :as mustache]
-            [cheshire.core :as json])
+            [schema.test :as s]
+            [stencil.core :as mustache])
   (:require [runbld.main :as main] :reload-all))
 
 (def email (atom []))
@@ -263,6 +266,62 @@
               (testing "wiping the workspace"
                 (wipe-workspace-orig workspace)
                 ;; Should only have the top-level workspace dir left
-                (is (= [workspace] (map str (file-seq (jio/file workspace))))))))
+                (is (= [workspace]
+                       (map str (file-seq (jio/file workspace))))))))
           (finally
             (io/rmdir-r workspace)))))))
+
+(deftest http-retries
+  (let [call-count (atom 0)]
+    (with-redefs [http-core/http-client (fn [& _]
+                                          (swap! call-count inc)
+                                          (throw (Exception. "oh noes!")))
+                  email/send* (fn [& args]
+                                (swap! email concat args)
+                                ;; to satisfy schema
+                                {})
+                  slack/send (fn [opts ctx]
+                               (let [f (-> opts :slack :template)
+                                     tmpl (-> f io/resolve-resource slurp)
+                                     color (if (-> ctx :process :failed)
+                                             "danger"
+                                             "good")
+                                     js (mustache/render-string
+                                         tmpl (assoc ctx :color color))]
+                                 (reset! slack js)))]
+      (testing "The live path will retry correctly"
+        (is (thrown-with-msg? Exception #"oh noes"
+                              (git/with-tmp-repo [d "tmp/git/main-test-3"]
+                                ;; this call to run will fail b/c of
+                                ;; the redefined http-client call
+                                ;; above
+                                (run (conj ["-c" "test/config/main.yml"
+                                            "-j" "elastic+foo+master"
+                                            "-d" d]
+                                           "test/success.bash")))))
+        (is (= 20 @call-count)
+            "Should've retried the default number of times"))
+      (testing "Can configure the number of retries"
+        (reset! call-count 0)
+        (let [settings (merge
+                        (:es opts/config-file-defaults)
+                        {:url (str "http://" (java.util.UUID/randomUUID) ".io")
+                         :additional-middleware [wrap-retries]
+                         :retries-config {:sleep 50
+                                          :tries 5}})
+              conn (store/make-connection settings)]
+          (is (thrown-with-msg? Exception #"oh noes"
+                                (store/get conn "index" "type" 1234)))
+          (is (= 5 @call-count))))
+      (testing "Can configure the retried exceptions"
+        (reset! call-count 0)
+        (let [settings (merge
+                        (:es opts/config-file-defaults)
+                        {:url (str "http://" (java.util.UUID/randomUUID) ".io")
+                         :additional-middleware [wrap-retries]
+                         :retries-config {:sleep 50
+                                          :tries 5}})
+              conn (store/make-connection settings)]
+          (is (thrown-with-msg? Exception #"oh noes"
+                                (store/get conn "index" "type" 1234)))
+          (is (= 5 @call-count)))))))
