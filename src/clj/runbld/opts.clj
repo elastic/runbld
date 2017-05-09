@@ -11,6 +11,7 @@
             [runbld.store :as store]
             [runbld.util.data :refer [deep-merge-with deep-merge]]
             [runbld.util.date :as date]
+            [runbld.util.http :refer [wrap-retries]]
             [runbld.io :as io]
             [runbld.version :as version]))
 
@@ -153,7 +154,9 @@
                            log-index
                            max-index-bytes] :as opts}]
   (let [conn (store/make-connection
-              (select-keys opts [:url :http-opts]))
+              (assoc (select-keys opts [:url :http-opts])
+                     :additional-middleware
+                     [wrap-retries]))
         build-index-write (store/set-up-index
                            conn build-index
                            StoredBuildIndexSettings
