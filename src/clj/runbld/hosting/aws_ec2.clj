@@ -1,5 +1,6 @@
 (ns runbld.hosting.aws-ec2
-  (:require [runbld.schema :refer :all]
+  (:require [robert.bruce :refer [try-try-again]]
+            [runbld.schema :refer :all]
             [schema.core :as s]
             [slingshot.slingshot :refer [try+ throw+]])
   (:require [clj-http.client :as http]
@@ -16,16 +17,19 @@
   ([]
    (ec2-meta "/"))
   ([postfix]
-   (try+
-    (:body
-     (http/get (str "http://169.254.169.254/latest/meta-data" postfix)
-               {:socket-timeout 500 :conn-timeout 500}))
-    (catch java.net.SocketTimeoutException _)
-    (catch org.apache.http.conn.ConnectTimeoutException _)
-    (catch java.net.ConnectException _)
-    ;; Non-AWS Windows
-    (catch java.net.SocketException _)
-    (catch java.net.UnknownHostException _))))
+   (try-try-again
+    {:sleep 500
+     :tries 20}
+    #(try+
+      (:body
+       (http/get (str "http://169.254.169.254/latest/meta-data" postfix)
+                 {:socket-timeout 500 :conn-timeout 500}))
+      (catch java.net.SocketTimeoutException _)
+      (catch org.apache.http.conn.ConnectTimeoutException _)
+      (catch java.net.ConnectException _)
+      ;; Non-AWS Windows
+      (catch java.net.SocketException _)
+      (catch java.net.UnknownHostException _)))))
 
 (s/defn this-host? :- s/Bool
   "Is this host in AWS EC2?"

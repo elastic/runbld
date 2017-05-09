@@ -1,25 +1,23 @@
 (ns runbld.notifications.slack
   (:refer-clojure :exclude [send])
-  (:require [runbld.schema :refer :all]
-            [schema.core :as s]
-            [cheshire.core :as json]
+  (:require [cheshire.core :as json]
             [clj-http.client :as http]
+            [elasticsearch.document :as doc]
             [runbld.io :as io]
             [runbld.notifications :as n]
+            [runbld.schema :refer :all]
             [runbld.store :as store]
-            [stencil.core :as mustache]
-            [elasticsearch.document :as doc]
-            [robert.bruce :refer [try-try-again] :as try]))
+            [runbld.util.http :refer [wrap-retries]]
+            [schema.core :as s]
+            [stencil.core :as mustache]))
 
 (defn api-send
   "Make the Slack REST API call"
   [opts js hook]
   (do
     ((opts :logger) "NOTIFYING SLACK")
-    (try-try-again
-     {:sleep 500 :tries 20}
-     #(http/post hook
-                 {:body js}))))
+    (http/with-additional-middleware [wrap-retries]
+      (http/post hook {:body js}))))
 
 (s/defn send :- s/Any
   "Format and send the Slack notifcation"
