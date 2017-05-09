@@ -58,7 +58,8 @@
          branch (-> raw-opts :scm :branch)
          depth (-> raw-opts :scm :depth)]
      (when clone?
-       (let [clone-args (->> [(when reference ["--reference" reference])
+       (let [clone-args (->> [(when reference
+                                ["--reference-if-able" reference])
                               (when branch ["--branch" (str branch)])
                               (when depth ["--depth" (str depth)])]
                              (filter identity)
