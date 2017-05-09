@@ -68,15 +68,17 @@
    plain    :- s/Str
    html     :- (s/maybe s/Str)
    attachments :- [s/Any]]
-  (let [body (concat
-              [:alternative
-               ;; With multipart/alternative, the earlier the part, the lower
-               ;; the priority, so place the plaintext first and the HTML last
-               {:type "text/plain; charset=utf-8"
-                :content plain}
-               {:type "text/html; charset=utf-8"
-                :content html}]
-              attachments)]
+  (let [body
+        ;; With multipart/alternative, the earlier the part, the lower
+        ;; the priority, so place attachments first, plain text next,
+        ;; and the HTML last
+        (concat
+         [:alternative]
+         attachments
+         [{:type "text/plain; charset=utf-8"
+           :content plain}
+          {:type "text/html; charset=utf-8"
+           :content html}])]
     (mail/send-message
      conn
      {:from from
