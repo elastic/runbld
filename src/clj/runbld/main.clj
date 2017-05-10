@@ -1,6 +1,7 @@
 (ns runbld.main
   (:gen-class)
   (:require [clj-git.core :as git]
+            [clojure.java.io :as jio]
             [clojure.pprint :refer [pprint]]
             [environ.core :as environ]
             [runbld.build :as build]
@@ -58,8 +59,9 @@
          branch (-> raw-opts :scm :branch)
          depth (-> raw-opts :scm :depth)]
      (when clone?
-       (let [clone-args (->> [(when reference
-                                ["--reference-if-able" reference])
+       (let [clone-args (->> [(when (and reference
+                                         (.exists (jio/as-file reference)))
+                                ["--reference" reference])
                               (when branch ["--branch" (str branch)])
                               (when depth ["--depth" (str depth)])]
                              (filter identity)
