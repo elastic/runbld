@@ -16,9 +16,9 @@
   :source-paths ["src/clj"]
   :java-source-paths ["src/java"]
   :javac-options ["-Xlint:unchecked"]
-  :dependencies [[clj-time "0.11.0"]
-                 [circleci/clj-yaml "0.5.4"]
-                 [com.draines/postal "1.11.3"
+  :dependencies [[clj-time "0.13.0"]
+                 [circleci/clj-yaml "0.5.5"]
+                 [com.draines/postal "2.0.2"
                   :exclusions
                   [ ;; Newer one comes from clj-http
                    commons-codec
@@ -30,18 +30,18 @@
                  [log4j/log4j "1.2.17"]
 
                  [com.palletops/thread-expr "1.3.0"]
-                 [elastic/elasticsearch-clojure "0.99.5-SNAPSHOT"
+                 [elastic/elasticsearch-clojure "0.99.5"
                   :exclusions [prismatic/schema]]
                  [enlive "1.1.6"]
-                 [environ "1.0.3"]
+                 [environ "1.1.0"]
                  [listora/again "0.1.0"]
-                 [org.clojure/clojure "1.9.0-alpha14"]
-                 [org.clojure/core.async "0.2.374"]
-                 [org.clojure/tools.cli "0.3.3"]
+                 [org.clojure/clojure "1.9.0-alpha16"]
+                 [org.clojure/core.async "0.3.442"]
+                 [org.clojure/tools.cli "0.3.5"]
 
                  ;; Use 1.7 because the Jenkins plugin is pinned to 1.7
-                 [org.tmatesoft.svnkit/svnkit "1.7.8"]
-                 [prismatic/schema "1.1.1"]
+                 [org.tmatesoft.svnkit/svnkit "1.8.14"]
+                 [prismatic/schema "1.1.5"]
                  [robert/bruce "0.8.0"]
                  [slingshot "0.12.2"]
                  [stencil "0.5.0"]]

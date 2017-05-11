@@ -4,8 +4,7 @@
 
 It wraps!
 
-[![Other Wrappers](https://upload.wikimedia.org/wikipedia/en/1/1f/Rundmc_2.jpg)]
-(https://en.wikipedia.org/wiki/Run%E2%80%93D.M.C.)
+[![Other Wrappers](https://upload.wikimedia.org/wikipedia/en/1/1f/Rundmc_2.jpg)](https://en.wikipedia.org/wiki/Run%E2%80%93D.M.C.)
 
 When you need the power of Jenkins, but the sanity of change
 management.
@@ -55,8 +54,90 @@ WRAPPER: FAILURE (1)
 %
 ```
 
+## Development
 
-## License
+To see all of the tests passing there are several dependencies that
+need to be installed.
+
+### Java
+
+#### Maven
+
+Install via `apt-get`, `brew`, or whatever package manager your
+system uses.  You can also install [manually](https://maven.apache.org/install.html).
+
+#### Elasticsearch
+
+Download the latest Elasticsearch from [here](https://www.elastic.co/downloads/elasticsearch) and start it via
+`bin/elasticsearch`.
+
+### Python
+
+#### nose
+
+<http://nose.readthedocs.io/en/latest/>
+
+### go
+
+[Install Go](https://golang.org/doc/install)
+
+#### go-junit-report
+
+<https://github.com/jstemmer/go-junit-report>
+
+(Don't forget to add `$GOPATH/bin` to your path.)
+
+### facter
+
+`facter` is a command written by Puppet to gather data about the
+machine on which it is run.  You have a few options to install this
+one.
+
+#### Install the Puppet agent
+
+It is packaged with the puppet agent and Puppet supplies
+installers and instructions for various operating systems are at
+<https://docs.puppet.com/puppet/latest/>
+
+It appears that the `facter` executable will end up in
+`/opt/puppetlabs/puppet/bin` or someplace similar.
+
+#### Build and install manually
+
+The other option you have is to build facter by hand.  It requires
+2 other Puppet libraries be installed first.  I built specific
+tags in order to get a final bin that was reasonably close to what
+we need.  Facter's master branch has bumped the version to `4.0.0`
+which is untested and not supported in `runbld` at the moment.
+
+-   <https://github.com/puppetlabs/leatherman> - Tag: 0.11.2
+-   <https://github.com/puppetlabs/cpp-hocon> - Tag: 0.1.5
+-   <https://github.com/puppetlabs/facter> - Tag: 3.6.4
+
+The instructions in the repos worked reasonably well.  I had one
+issue with running `make` in the `facter` repo due to some issue
+with copying a ruby file to Mac OS X's default Ruby location.  I
+failed to figure out why and eventually worked around it by
+removing the Ruby deploy directives from the cmake files.
+
+### Elasticsearch source
+
+One test checks the most recent thousand commits from the
+Elasticsearch repo.  The repo should be checked out to
+`$HOME/src/elastic/elasticsearch`
+
+## Running tests
+
+Once all of the dependencies are installed go to the `runbld`
+directory and run `make`.  This will run a few sample projects and
+produce various Maven formatted XML test output files.  It finishes
+by running the Clojure tests, which should print a bunch of output
+but ultimately pass.
+
+Future test runs can skip the `make` step and run `lein test`
+directly.
+
+# License
 
 ```
 This software is licensed under the Apache License, version 2 ("ALv2"), quoted below.

@@ -1,21 +1,25 @@
 (ns runbld.test.main-test
-  (:require [schema.test :as s])
-  (:require [clj-git.core :refer [git-branch git-log load-repo]]
+  (:require [cheshire.core :as json]
+            [clj-git.core :refer [git-branch git-log load-repo]]
+            [clj-http.client :as http]
+            [clj-http.core :as http-core]
             [clojure.java.io :as jio]
             [clojure.test :refer :all]
             [clojure.walk :refer [keywordize-keys]]
             [runbld.build :as build]
+            [runbld.env :as env]
+            [runbld.io :as io]
             [runbld.notifications.email :as email]
             [runbld.notifications.slack :as slack]
-            [runbld.env :as env]
             [runbld.opts :as opts]
             [runbld.process :as proc]
             [runbld.store :as store]
-            [runbld.io :as io]
+            [runbld.test.support :as ts]
+            [runbld.util.http :refer [wrap-retries]]
             [runbld.vcs.git :as git]
             [runbld.version :as version]
-            [stencil.core :as mustache]
-            [cheshire.core :as json])
+            [schema.test :as s]
+            [stencil.core :as mustache])
   (:require [runbld.main :as main] :reload-all))
 
 (def email (atom []))
@@ -32,12 +36,12 @@
       first
       :title))
 
+(use-fixtures :each ts/redirect-logging-fixture)
+
 (s/deftest main
   ;; Change root bindings for these Vars, affects any execution no
   ;; matter what thread
-  (with-redefs [;; Don't pollute the console
-                io/log (fn [& _] :noconsole)
-                ;; Don't really kill the JVM
+  (with-redefs [;; Don't really kill the JVM
                 main/really-die (fn [& args] :dontdie)
                 ;; Don't really execute an external process
                 proc/run (fn [& args] :bogus)]
@@ -53,8 +57,7 @@
                                    "/path/to/script.bash") "config file ")))))
 
 (s/deftest unexpected
-  (with-redefs [io/log (fn [& _] :noconsole)
-                main/really-die (fn [& args] :dontdie)
+  (with-redefs [main/really-die (fn [& args] :dontdie)
                 proc/run (fn [& args] (throw
                                        (Exception.
                                         "boy that was unexpected")))]
@@ -68,8 +71,7 @@
 
 (s/deftest execution-with-defaults
   (testing "real execution all the way through"
-    (with-redefs [io/log (fn [& x] (prn x))
-                  email/send* (fn [& args]
+    (with-redefs [email/send* (fn [& args]
                                 (swap! email concat args)
                                 ;; to satisfy schema
                                 {})
@@ -124,8 +126,7 @@
 
 (s/deftest execution-with-slack-overrides
   (testing "slack overrides:"
-    (with-redefs [io/log (fn [& _] :noconsole)
-                  email/send* (fn [& args]
+    (with-redefs [email/send* (fn [& args]
                                 (swap! email concat args)
                                 ;; to satisfy schema
                                 {})
@@ -182,8 +183,7 @@
   (testing "last-good-commit:"
     (testing "successful intake"
       (let [email-body (atom :no-email-body-yet)]
-        (with-redefs [io/log (fn [& x] (prn x))
-                      email/send* (fn [_ _ _ _ plain html attachments]
+        (with-redefs [email/send* (fn [_ _ _ _ plain html attachments]
                                     (reset! email-body html)
                                     ;; to satisfy schema
                                     {})
@@ -223,8 +223,7 @@
   (testing "real execution all the way through with cloning via scm config"
     (let [wipe-workspace-orig main/wipe-workspace
           workspace "tmp/git/elastic+foo+master"]
-      (with-redefs [io/log (fn [& x] (prn x))
-                    email/send* (fn [& args]
+      (with-redefs [email/send* (fn [& args]
                                   (swap! email concat args)
                                   ;; to satisfy schema
                                   {})
@@ -267,6 +266,62 @@
               (testing "wiping the workspace"
                 (wipe-workspace-orig workspace)
                 ;; Should only have the top-level workspace dir left
-                (is (= [workspace] (map str (file-seq (jio/file workspace))))))))
+                (is (= [workspace]
+                       (map str (file-seq (jio/file workspace))))))))
           (finally
             (io/rmdir-r workspace)))))))
+
+(deftest http-retries
+  (let [call-count (atom 0)]
+    (with-redefs [http-core/http-client (fn [& _]
+                                          (swap! call-count inc)
+                                          (throw (Exception. "oh noes!")))
+                  email/send* (fn [& args]
+                                (swap! email concat args)
+                                ;; to satisfy schema
+                                {})
+                  slack/send (fn [opts ctx]
+                               (let [f (-> opts :slack :template)
+                                     tmpl (-> f io/resolve-resource slurp)
+                                     color (if (-> ctx :process :failed)
+                                             "danger"
+                                             "good")
+                                     js (mustache/render-string
+                                         tmpl (assoc ctx :color color))]
+                                 (reset! slack js)))]
+      (testing "The live path will retry correctly"
+        (is (thrown-with-msg? Exception #"oh noes"
+                              (git/with-tmp-repo [d "tmp/git/main-test-3"]
+                                ;; this call to run will fail b/c of
+                                ;; the redefined http-client call
+                                ;; above
+                                (run (conj ["-c" "test/config/main.yml"
+                                            "-j" "elastic+foo+master"
+                                            "-d" d]
+                                           "test/success.bash")))))
+        (is (= 20 @call-count)
+            "Should've retried the default number of times"))
+      (testing "Can configure the number of retries"
+        (reset! call-count 0)
+        (let [settings (merge
+                        (:es opts/config-file-defaults)
+                        {:url (str "http://" (java.util.UUID/randomUUID) ".io")
+                         :additional-middleware [wrap-retries]
+                         :retries-config {:sleep 50
+                                          :tries 5}})
+              conn (store/make-connection settings)]
+          (is (thrown-with-msg? Exception #"oh noes"
+                                (store/get conn "index" "type" 1234)))
+          (is (= 5 @call-count))))
+      (testing "Can configure the retried exceptions"
+        (reset! call-count 0)
+        (let [settings (merge
+                        (:es opts/config-file-defaults)
+                        {:url (str "http://" (java.util.UUID/randomUUID) ".io")
+                         :additional-middleware [wrap-retries]
+                         :retries-config {:sleep 50
+                                          :tries 5}})
+              conn (store/make-connection settings)]
+          (is (thrown-with-msg? Exception #"oh noes"
+                                (store/get conn "index" "type" 1234)))
+          (is (= 5 @call-count)))))))
