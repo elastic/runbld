@@ -120,12 +120,6 @@ with copying a ruby file to Mac OS X's default Ruby location.  I
 failed to figure out why and eventually worked around it by
 removing the Ruby deploy directives from the cmake files.
 
-### Elasticsearch source
-
-One test checks the most recent thousand commits from the
-Elasticsearch repo.  The repo should be checked out to
-`$HOME/src/elastic/elasticsearch`
-
 ## Running tests
 
 Once all of the dependencies are installed go to the `runbld`

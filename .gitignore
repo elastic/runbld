@@ -18,3 +18,4 @@ target/
 TEST-*
 /test.log
 /.cider-history
+/test/elasticsearch-src
