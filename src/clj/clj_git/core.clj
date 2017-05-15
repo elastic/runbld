@@ -206,9 +206,31 @@
       str/trim-newline))
 
 (defn git-clone
+  "Clones a git repository.  `local' is either a path that is fully
+  qualified or relative to the current working directory that
+  specifies to where the `remote' repository will be cloned.  `remote'
+  is a standard Git URL.
+
+  The following two are equivalent:
+  clj: (git-clone \"/home/user/src/elasticsearch-source\"
+        \"git@github.com:elastic/elasticsearch.git\")
+
+  cli: git clone git@github.com:elastic/elasticsearch.git \\
+         /home/user/src/elasticsearch-source"
   ([local remote]
    (git-clone local remote []))
   ([local remote args]
    (.mkdirs (io/file (parent-dir local)))
    ;; don't worry about local/remote & hardlinks for now
    (run "clone" (concat [remote local] args))))
+
+(defn git-pull
+  "Runs `git pull' on the provided repo.  `args' is a vector of
+  options as they would be specified on the command line.
+
+  clj: (git-pull repo [\"--rebase\"])
+  cli: git pull --rebase"
+  ([repo]
+   (git-pull repo []))
+  ([repo args]
+   (git repo "pull" args)))
