@@ -21,7 +21,7 @@
       (flush)
       (git/git-clone
        dir
-       "git@github.com:elastic/elasticsearch.git")))
+       "https://github.com/elastic/elasticsearch.git")))
   (println "  Done."))
 
 (deftest parse-commit
