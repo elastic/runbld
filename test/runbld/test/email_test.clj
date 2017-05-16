@@ -7,11 +7,13 @@
             [runbld.notifications.email :as email]
             [runbld.opts :as opts]
             [runbld.store :as store]
+            [runbld.test.support :as ts]
             [runbld.vcs.git :as git]
             [schema.test]
             [stencil.core :as mustache]))
 
 (use-fixtures :once schema.test/validate-schemas)
+(use-fixtures :each ts/redirect-logging-fixture)
 
 (defn run [args]
   (let [opts (opts/parse-args args)
@@ -47,10 +49,20 @@
        (map :content)))
 
 (deftest attached
+  (testing "attachment filenames are trimmed correctly"
+    (with-redefs [email/entropy (constantly "ABCD")]
+      (let [test-msg "thisTestFailed"
+            failure-1 {:build-id "1234-4321"
+                       :class "some.java.class.SingletonFactoryObserver"
+                       :test test-msg}
+            failure-2 (assoc failure-1
+                             :test
+                             (str test-msg " {but there more text, too}"))]
+        (is (= (email/attachment-filename failure-1)
+               (email/attachment-filename failure-2))))))
   (testing "failures present"
     (let [email (atom [])]
-      (with-redefs [io/log (fn [& x] (prn x))
-                    mail/send-message (fn [conn msg]
+      (with-redefs [mail/send-message (fn [conn msg]
                                         (reset! email msg))]
         (git/with-tmp-repo [d "tmp/git/email-failures"]
           (io/run "rsync" "-a" "test/repo/java/some-errors/" d)
@@ -76,8 +88,7 @@
 (deftest log
   (testing "log present"
     (let [email (atom [])]
-      (with-redefs [io/log (fn [& x] (prn x))
-                    mail/send-message (fn [conn msg]
+      (with-redefs [mail/send-message (fn [conn msg]
                                         (reset! email msg))]
         (git/with-tmp-repo [d "tmp/git/email-log"]
           (testing "no gradle task"

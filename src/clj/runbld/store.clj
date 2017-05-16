@@ -67,8 +67,7 @@
 (s/defn create-timestamped-index :- s/Str
   [conn :- Connection
    prefix :- s/Str
-   body :- {s/Keyword s/Any}
-   ]
+   body :- {s/Keyword s/Any}]
   (let [idx (format "%s%d" prefix (System/currentTimeMillis))]
     (create-index conn idx body)))
 

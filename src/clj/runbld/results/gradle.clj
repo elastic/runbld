@@ -1,5 +1,5 @@
 (ns runbld.results.gradle
-  (:require [clojure.spec :as s]
+  (:require [clojure.spec.alpha :as s]
             [runbld.schema])
   (:require [elasticsearch.connection.http :as es.conn]
             [elasticsearch.document :as es.doc]
