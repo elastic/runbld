@@ -1,4 +1,10 @@
 * runbld changes
+** 1.3.5
+   - Trim the text from a failed testcase when creating the attachment
+     filename
+   - Always use -server jvm-arg to work around a limitation of the JVM
+     on ARM
+   - Retry all HTTP requests
 ** 1.3.4
    - Ensure that ignoring unavailable reference repositories works with older
      versions of Git.
