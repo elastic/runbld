@@ -27,6 +27,13 @@
        (apply str)
        .toUpperCase))
 
+(defn attachment-filename [failure]
+  (format "%s-%s-%s-%s"
+          (:build-id failure)
+          (:class failure)
+          (first (str/split (:test failure) #" " 2))
+          (entropy)))
+
 (def Attachment
   {:type s/Keyword
    :content java.io.File
@@ -34,14 +41,8 @@
 
 (s/defn attach-failure :- Attachment
   [failure :- StoredFailure]
-  (let [f (io/make-tmp-attachment
-           (format "%s-%s-%s-%s"
-                   (:build-id failure)
-                   (:class failure)
-                   (first (str/split (:test failure) #" " 2))
-                   (entropy))
-           ".txt"
-           :del? true)]
+  (let [f (io/make-tmp-attachment (attachment-filename failure) ".txt"
+                                  :del? true)]
     (spit f (:stacktrace failure))
     {:type :attachment
      :content f

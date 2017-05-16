@@ -49,6 +49,17 @@
        (map :content)))
 
 (deftest attached
+  (testing "attachment filenames are trimmed correctly"
+    (with-redefs [email/entropy (constantly "ABCD")]
+      (let [test-msg "thisTestFailed"
+            failure-1 {:build-id "1234-4321"
+                       :class "some.java.class.SingletonFactoryObserver"
+                       :test test-msg}
+            failure-2 (assoc failure-1
+                             :test
+                             (str test-msg " {but there more text, too}"))]
+        (is (= (email/attachment-filename failure-1)
+               (email/attachment-filename failure-2))))))
   (testing "failures present"
     (let [email (atom [])]
       (with-redefs [mail/send-message (fn [conn msg]
