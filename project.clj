@@ -16,6 +16,7 @@
   :source-paths ["src/clj"]
   :java-source-paths ["src/java"]
   :javac-options ["-Xlint:unchecked"]
+  :jvm-opts ["-server"]
   :dependencies [[clj-time "0.13.0"]
                  [circleci/clj-yaml "0.5.5"]
                  [com.draines/postal "2.0.2"
