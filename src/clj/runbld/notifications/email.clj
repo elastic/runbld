@@ -38,7 +38,7 @@
            (format "%s-%s-%s-%s"
                    (:build-id failure)
                    (:class failure)
-                   (:test failure)
+                   (first (str/split (:test failure) #" " 2))
                    (entropy))
            ".txt"
            :del? true)]
