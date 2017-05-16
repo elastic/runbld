@@ -34,7 +34,6 @@
                   :exclusions [prismatic/schema]]
                  [enlive "1.1.6"]
                  [environ "1.0.3"]
-                 [listora/again "0.1.0"]
                  [org.clojure/clojure "1.9.0-alpha14"]
                  [org.clojure/core.async "0.2.374"]
                  [org.clojure/tools.cli "0.3.3"]
