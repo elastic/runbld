@@ -1,6 +1,6 @@
 (ns runbld.test.main-test
   (:require [cheshire.core :as json]
-            [clj-git.core :refer [git-branch git-log load-repo]]
+            [clj-git.core :refer [git-branch git-clone git-log load-repo]]
             [clj-http.client :as http]
             [clj-http.core :as http-core]
             [clojure.java.io :as jio]
@@ -218,6 +218,44 @@
               (finally
                 (io/rmdir-r periodic-dir)
                 (io/rmdir-r intake-dir)))))))))
+
+(s/deftest set-scm-build
+  (testing "the scm build can be set multiple ways:"
+    (let [args (atom [])]
+      (with-redefs [git-clone (fn [_ _ clone-args]
+                                (reset! args clone-args))]
+        (testing "supplying branch in yml"
+          (git/with-tmp-repo [d "tmp/git/owner+project+branch"]
+            (let [raw-opts (-> (opts/parse-args
+                                ["-c" "test/config/scm.yml"
+                                 "-j" "owner+project+master"
+                                 "-d" "tmp/git/owner+project+branch"
+                                 "test/fail.bash"])
+                               (assoc :logger runbld.io/log))
+                  opts (runbld.main/make-opts raw-opts)]
+              (main/bootstrap-workspace
+               (assoc-in opts [:scm :wipe-workspace] false))
+              (is (= "master"
+                     (-> opts :scm :branch)
+                     (-> opts :build :branch)
+                     (get (apply hash-map @args) "--branch"))))))
+        (testing "extracting branch from job"
+          (git/with-tmp-repo [d "tmp/git/owner+project+branch"]
+            (let [raw-opts (-> (conj
+                                ["-c" "test/config/scm.yml"
+                                 ;; NOTE: the job name changed
+                                 "-j" "owner+project+branch"
+                                 "-d" "tmp/git/owner+project+branch"]
+                                "test/fail.bash")
+                               opts/parse-args
+                               (assoc :logger runbld.io/log))
+                  opts (runbld.main/make-opts raw-opts)]
+              (main/bootstrap-workspace
+               (assoc-in opts [:scm :wipe-workspace] false))
+              (is (nil? (-> opts :scm :branch)))
+              (is (= "branch"
+                     (-> opts :build :branch)
+                     (get (apply hash-map @args) "--branch"))))))))))
 
 (s/deftest ^:integration execution-with-scm
   (testing "real execution all the way through with cloning via scm config"
