@@ -49,14 +49,15 @@
   (io/rmdir-contents workspace))
 
 (s/defn bootstrap-workspace
-  ([raw-opts :- OptsWithLogger]
+  ([raw-opts :- MainOpts]
    (let [clone? (boolean (-> raw-opts :scm :clone))
          wipe-workspace? (boolean (-> raw-opts :scm :wipe-workspace))
          workspace (System/getenv "WORKSPACE")
          local (-> raw-opts :process :cwd)
          remote (-> raw-opts :scm :url)
          reference (-> raw-opts :scm :reference-repo)
-         branch (-> raw-opts :scm :branch)
+         branch (or (-> raw-opts :scm :branch)
+                    (-> raw-opts :build :branch))
          depth (-> raw-opts :scm :depth)]
      (when clone?
        (let [clone-args (->> [(when (and reference
@@ -106,8 +107,8 @@
                    (opts/parse-args args)
                    :logger io/log)
          _ (io/log (version/string))
-         _ (bootstrap-workspace raw-opts)
          opts (make-opts raw-opts)
+         _ (bootstrap-workspace opts)
          _ (maybe-log-last-success opts)
          _ (io/log ">>>>>>>>>>>> SCRIPT EXECUTION BEGIN >>>>>>>>>>>>")
          {:keys [opts process-result]} (proc/run opts)
