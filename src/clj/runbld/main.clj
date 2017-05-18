@@ -49,29 +49,29 @@
   (io/rmdir-contents workspace))
 
 (s/defn bootstrap-workspace
-  ([raw-opts :- MainOpts]
-   (let [clone? (boolean (-> raw-opts :scm :clone))
-         wipe-workspace? (boolean (-> raw-opts :scm :wipe-workspace))
-         workspace (System/getenv "WORKSPACE")
-         local (-> raw-opts :process :cwd)
-         remote (-> raw-opts :scm :url)
-         reference (-> raw-opts :scm :reference-repo)
-         branch (or (-> raw-opts :scm :branch)
-                    (-> raw-opts :build :branch))
-         depth (-> raw-opts :scm :depth)]
-     (when clone?
-       (let [clone-args (->> [(when (and reference
-                                         (.exists (jio/as-file reference)))
-                                ["--reference" reference])
-                              (when branch ["--branch" (str branch)])
-                              (when depth ["--depth" (str depth)])]
-                             (filter identity)
-                             (apply concat))]
-         (when wipe-workspace?
-           (wipe-workspace workspace))
-         (io/log "cloning" remote)
-         (git/git-clone local remote clone-args)
-         (io/log "done cloning"))))))
+  [opts :- MainOpts]
+  (let [clone? (boolean (-> opts :scm :clone))
+        wipe-workspace? (boolean (-> opts :scm :wipe-workspace))
+        workspace (System/getenv "WORKSPACE")
+        local (-> opts :process :cwd)
+        remote (-> opts :scm :url)
+        reference (-> opts :scm :reference-repo)
+        branch (or (-> opts :scm :branch)
+                   (-> opts :build :branch))
+        depth (-> opts :scm :depth)]
+    (when clone?
+      (let [clone-args (->> [(when (and reference
+                                        (.exists (jio/as-file reference)))
+                               ["--reference" reference])
+                             (when branch ["--branch" (str branch)])
+                             (when depth ["--depth" (str depth)])]
+                            (filter identity)
+                            (apply concat))]
+        (when wipe-workspace?
+          (wipe-workspace workspace))
+        (io/log "cloning" remote)
+        (git/git-clone local remote clone-args)
+        (io/log "done cloning")))))
 
 (def make-opts
   (-> #'identity
@@ -103,9 +103,7 @@
 ;; -main :: IO ()
 (defn -main [& args]
   (try+
-   (let [raw-opts (assoc
-                   (opts/parse-args args)
-                   :logger io/log)
+   (let [raw-opts (assoc (opts/parse-args args) :logger io/log)
          _ (io/log (version/string))
          opts (make-opts raw-opts)
          _ (bootstrap-workspace opts)
