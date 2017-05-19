@@ -101,13 +101,17 @@
      "/etc/runbld/runbld.conf")))
 
 (s/defn assemble-all-opts :- java.util.Map
+  "Merge the options gathered from defaults, system config, the config
+  file specified on the command line, and any separate opts specified
+  by command line arguments"
   [{:keys [job-name] :as opts} :- {(s/required-key :job-name) s/Str
                                    s/Keyword s/Any}]
   (deep-merge-with deep-merge
                    config-file-defaults
                    (if (environ/env :dev)
                      (do
-                       (io/log "DEV enabled, not attempting to read" (str (system-config)))
+                       (io/log "DEV enabled, not attempting to read"
+                               (str (system-config)))
                        {})
                      (let [sys (system-config)]
                        (if (.isFile sys)
@@ -192,6 +196,14 @@
      filename)))
 
 (s/defn parse-args :- Opts
+  "Prepares the configuration/options for runbld.  This currently includes:
+  1. reading, parsing, validating the command line args
+  2. printing usage
+  3. gathering information about the JVM and the environment
+  4. connecting to and initializing ES
+  5. writing out the script file that will drive the build
+
+  And returning all of the useful information from the above."
   ([args :- [s/Str]]
    (let [{:keys [options arguments summary errors]
           :as parsed-opts} (cli/parse-opts args opts :nodefault true)]
