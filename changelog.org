@@ -1,4 +1,7 @@
 * runbld changes
+** 1.3.6
+   - Infer the branch from the job name when it is not specified in
+     the SCM config.
 ** 1.3.5
    - Trim the text from a failed testcase when creating the attachment
      filename
