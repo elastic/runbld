@@ -121,13 +121,18 @@
 
 (s/defn wrap-build-meta :- OptsWithBuild
   [proc :- clojure.lang.IFn]
-  (fn [opts*]
-    (let [opts (assoc opts*
-                      :id (make-id)
-                      :build (merge (:build opts*)
-                                    (split-job-name (:job-name opts*))
-                                    (scheduler/as-map (:scheduler opts*))))
-          [last-good-build checked-out?]
+  (fn [opts]
+    (proc
+     (assoc opts
+            :id (make-id)
+            :build (merge (:build opts)
+                          (split-job-name (:job-name opts))
+                          (scheduler/as-map (:scheduler opts)))))))
+
+(s/defn wrap-last-success
+  [proc :- clojure.lang.IFn]
+  (fn [opts]
+    (let [[last-good-build checked-out?]
           (maybe-find-last-good-build-and-checkout opts)]
       (proc
        (update-in

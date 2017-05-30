@@ -49,7 +49,7 @@
   (io/rmdir-contents workspace))
 
 (s/defn bootstrap-workspace
-  [opts :- MainOpts]
+  [opts]
   (let [clone? (boolean (-> opts :scm :clone))
         wipe-workspace? (boolean (-> opts :scm :wipe-workspace))
         workspace (System/getenv "WORKSPACE")
@@ -73,13 +73,22 @@
         (git/git-clone local remote clone-args)
         (io/log "done cloning")))))
 
+(defn wrap-bootstrap-workspace
+  [proc]
+  (fn [opts]
+    (bootstrap-workspace opts)
+    (proc opts)))
+
 (def make-opts
+  ;; these run bottom to top
   (-> #'identity
       vcs/wrap-vcs-info
+      build/wrap-last-success
+      system/wrap-system
+      wrap-bootstrap-workspace
       build/wrap-build-meta
       scheduler/wrap-scheduler
-      java/wrap-java
-      system/wrap-system))
+      java/wrap-java))
 
 (defn maybe-log-last-success [opts]
   (when (-> opts :build :last-success :checked-out)
@@ -106,7 +115,6 @@
    (let [raw-opts (assoc (opts/parse-args args) :logger io/log)
          _ (io/log (version/string))
          opts (make-opts raw-opts)
-         _ (bootstrap-workspace opts)
          _ (maybe-log-last-success opts)
          _ (io/log ">>>>>>>>>>>> SCRIPT EXECUTION BEGIN >>>>>>>>>>>>")
          {:keys [opts process-result]} (proc/run opts)

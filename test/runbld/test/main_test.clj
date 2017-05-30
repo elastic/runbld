@@ -223,7 +223,8 @@
   (testing "the scm build can be set multiple ways:"
     (let [args (atom [])]
       (with-redefs [git-clone (fn [_ _ clone-args]
-                                (reset! args clone-args))]
+                                (reset! args clone-args))
+                    main/wipe-workspace (fn [workspace] nil)]
         (testing "supplying branch in yml"
           (git/with-tmp-repo [d "tmp/git/owner+project+branch"]
             (let [raw-opts (-> (opts/parse-args
