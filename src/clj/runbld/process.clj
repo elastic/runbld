@@ -233,17 +233,19 @@
    :id      s/Str
    s/Any    s/Any})
 
-(s/defn run :- {:opts RunOpts
-                :process-result ProcessResult}
-  [opts :- RunOpts]
-  {:opts opts
-   :process-result
-   (exec-with-capture
-    (-> opts :process :program)
-    (-> opts :process :args)
-    (-> opts :process :scriptfile)
-    (-> opts :process :cwd)
-    (-> opts :process :output)
-    (-> opts :es)
-    (-> opts :process :env)
-    {:build-id (-> opts :id)})})
+(s/defn run
+  ;; :- {:opts RunOpts
+  ;;     :process-result ProcessResult}
+  [opts ;;:- RunOpts
+   ]
+  (assoc opts
+         :process-result
+         (exec-with-capture
+          (-> opts :process :program)
+          (-> opts :process :args)
+          (-> opts :process :scriptfile)
+          (-> opts :process :cwd)
+          (-> opts :process :output)
+          (-> opts :es)
+          (-> opts :process :env)
+          {:build-id (-> opts :id)})))

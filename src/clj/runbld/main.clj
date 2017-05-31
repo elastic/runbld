@@ -16,6 +16,8 @@
             [runbld.system :as system]
             [runbld.tests :as tests]
             [runbld.io :as io]
+            [runbld.pipeline :refer [after around before
+                                     debug-log make-pipeline]]
             [runbld.util.date :as date]
             [runbld.vcs.git :refer [checkout-commit]]
             [runbld.vcs.middleware :as vcs]
@@ -44,15 +46,15 @@
      ;; for tests when #'really-die is redefed
      msg*)))
 
-(defn wipe-workspace [workspace]
-  (io/log "wiping workspace" workspace)
-  (io/rmdir-contents workspace))
+(defn wipe-workspace [opts]
+  (when (boolean (-> opts :scm :wipe-workspace))
+    (let [workspace (System/getenv "WORKSPACE")]
+      (io/log "wiping workspace" workspace)
+      (io/rmdir-contents workspace)))
+  opts)
 
-(s/defn bootstrap-workspace
-  [opts]
+(s/defn bootstrap-workspace [opts]
   (let [clone? (boolean (-> opts :scm :clone))
-        wipe-workspace? (boolean (-> opts :scm :wipe-workspace))
-        workspace (System/getenv "WORKSPACE")
         local (-> opts :process :cwd)
         remote (-> opts :scm :url)
         reference (-> opts :scm :reference-repo)
@@ -67,68 +69,74 @@
                              (when depth ["--depth" (str depth)])]
                             (filter identity)
                             (apply concat))]
-        (when wipe-workspace?
-          (wipe-workspace workspace))
         (io/log "cloning" remote)
         (git/git-clone local remote clone-args)
-        (io/log "done cloning")))))
+        (io/log "done cloning"))))
+  opts)
 
-(defn wrap-bootstrap-workspace
-  [proc]
-  (fn [opts]
-    (bootstrap-workspace opts)
-    (proc opts)))
+(defn log-script-execution [proc opts]
+  (io/log ">>>>>>>>>>>> SCRIPT EXECUTION BEGIN >>>>>>>>>>>>")
+  (let [{:keys [opts process-result] :as res} (proc opts)
+        {:keys [took status exit-code out-bytes err-bytes]} process-result]
+    (io/log "<<<<<<<<<<<< SCRIPT EXECUTION END <<<<<<<<<<<<")
+    (io/log (format "DURATION: %sms" took))
+    (io/log (format "STDOUT: %d bytes" out-bytes))
+    (io/log (format "STDERR: %d bytes" err-bytes))
+    (io/log (format "WRAPPED PROCESS: %s (%d)" status exit-code))
+    res))
 
-(def make-opts
-  ;; these run bottom to top
-  (-> #'identity
-      vcs/wrap-vcs-info
-      build/wrap-last-success
-      system/wrap-system
-      wrap-bootstrap-workspace
-      build/wrap-build-meta
-      scheduler/wrap-scheduler
-      java/wrap-java))
+(defn test-report [opts]
+  (assoc opts :test-report (tests/report (-> opts :process :cwd))))
 
-(defn maybe-log-last-success [opts]
-  (when (-> opts :build :last-success :checked-out)
-    (let [b (build/find-build opts (-> opts :build :last-success :id))
-          commit (-> b :vcs :commit-short)]
-      (io/log "using last successful commit"
-              commit
-              "from"
-              (-> b :build :job-name) (-> b :id)
-              (-> b :process :time-start)
-              (date/human-duration
-               (date/iso-diff-secs
-                (date/from-iso
-                 ;; notify on time-end because it makes more
-                 ;; logical sense to report on the last
-                 ;; completed build's end time, I think
-                 (-> b :process :time-end))
-                (date/now)))
-              "ago"))))
+(defn store-result [{:keys [test-report process-result] :as opts}]
+  (assoc opts :store-result
+         (store/save! opts process-result test-report)))
+
+(defn send-slack [{:keys [store-result] :as opts}]
+  (assoc opts :slack-result
+         (io/try-log (slack/maybe-send! opts (:addr store-result)))))
+
+(defn send-email [{:keys [store-result] :as opts}]
+  (assoc opts :email-result
+         (io/try-log (email/maybe-send! opts (:addr store-result)))))
+
+(def default-middleware
+  "Middleware that runs during runbld processing.  Will be processed
+  in order, top to bottom.  Use the before, after, and around macros
+  for clarity.
+
+  Order matters as there are stages that may rely on information from
+  previous stages.  Pay particular attention to before/after because
+  in the case of 'before' the order is top to bottom but in the case
+  of 'after' the order is bottom to top, relative to other 'after'
+  functions."
+  [(before java/add-java)
+   (before scheduler/add-scheduler)
+   (before build/add-build-meta)
+   (before system/add-system-facts)
+   (before wipe-workspace)
+   (before bootstrap-workspace)
+   (before vcs/add-vcs-info)
+   (before build/add-last-success)
+   (before build/maybe-log-last-success)
+   (after  send-slack)
+   (after  send-email)
+   (after  store-result)
+   (after  test-report)
+   (around log-script-execution)])
 
 ;; -main :: IO ()
 (defn -main [& args]
   (try+
+   (io/log "runbld started")
+   (io/log (version/string))
    (let [raw-opts (assoc (opts/parse-args args) :logger io/log)
-         _ (io/log (version/string))
-         opts (make-opts raw-opts)
-         _ (maybe-log-last-success opts)
-         _ (io/log ">>>>>>>>>>>> SCRIPT EXECUTION BEGIN >>>>>>>>>>>>")
-         {:keys [opts process-result]} (proc/run opts)
-         _ (io/log "<<<<<<<<<<<< SCRIPT EXECUTION END <<<<<<<<<<<<")
-         {:keys [took status exit-code out-bytes err-bytes]} process-result
-         _ (io/log (format "DURATION: %sms" took))
-         _ (io/log (format "STDOUT: %d bytes" out-bytes))
-         _ (io/log (format "STDERR: %d bytes" err-bytes))
-         _ (io/log (format "WRAPPED PROCESS: %s (%d)" status exit-code))
-         test-report (tests/report (-> opts :process :cwd))
-         store-result (store/save! opts process-result test-report)
-         slack-result (io/try-log (slack/maybe-send! opts (:addr store-result)))
-         email-result (io/try-log (email/maybe-send! opts (:addr store-result)))]
-
+         runbld-proc (make-pipeline proc/run default-middleware)
+         {:as opts
+          :keys [process-result
+                 store-result
+                 email-result
+                 slack-result]} (runbld-proc raw-opts)]
      (if (environ/env :dev)
        (assoc process-result
               :store-result store-result

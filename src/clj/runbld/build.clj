@@ -119,24 +119,41 @@
    :commit-id (-> last-good-build :vcs :commit-id)
    :job-name (-> last-good-build :build :job-name)})
 
-(s/defn wrap-build-meta :- OptsWithBuild
-  [proc :- clojure.lang.IFn]
-  (fn [opts]
-    (proc
-     (assoc opts
-            :id (make-id)
-            :build (merge (:build opts)
-                          (split-job-name (:job-name opts))
-                          (scheduler/as-map (:scheduler opts)))))))
+(s/defn add-build-meta ;; :- OptsWithBuild
+  [opts]
+  (assoc opts
+         :id (make-id)
+         :build (merge (:build opts)
+                       (split-job-name (:job-name opts))
+                       (scheduler/as-map (:scheduler opts)))))
 
-(s/defn wrap-last-success
-  [proc :- clojure.lang.IFn]
-  (fn [opts]
-    (let [[last-good-build checked-out?]
-          (maybe-find-last-good-build-and-checkout opts)]
-      (proc
-       (update-in
-        opts [:build] merge (when last-good-build
-                              {:last-success
-                               (abbreviate-last-good-build
-                                last-good-build checked-out?)}))))))
+(s/defn add-last-success
+  [opts]
+  (let [[last-good-build checked-out?]
+        (maybe-find-last-good-build-and-checkout opts)]
+    (update
+     opts :build merge (when last-good-build
+                         {:last-success
+                          (abbreviate-last-good-build
+                           last-good-build checked-out?)}))))
+
+(defn maybe-log-last-success [opts]
+  (when (-> opts :build :last-success :checked-out)
+    (let [b (find-build opts (-> opts :build :last-success :id))
+          commit (-> b :vcs :commit-short)]
+      ((:logger opts)
+       "using last successful commit"
+       commit
+       "from"
+       (-> b :build :job-name) (-> b :id)
+       (-> b :process :time-start)
+       (date/human-duration
+        (date/iso-diff-secs
+         (date/from-iso
+          ;; notify on time-end because it makes more
+          ;; logical sense to report on the last
+          ;; completed build's end time, I think
+          (-> b :process :time-end))
+         (date/now)))
+       "ago")))
+  opts)

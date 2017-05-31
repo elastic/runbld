@@ -34,9 +34,6 @@
                            cwd)
               :opts opts}))))
 
-(s/defn wrap-vcs-info :- MainOpts
-  [proc :- clojure.lang.IFn]
-  (s/fn [opts :- OptsWithBuild]
-    (proc
-     (assoc opts :vcs (vcs/log-latest
-                       (make-repo opts))))))
+(s/defn add-vcs-info
+  [opts]
+  (assoc opts :vcs (vcs/log-latest (make-repo opts))))

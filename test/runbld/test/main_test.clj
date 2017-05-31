@@ -13,6 +13,7 @@
             [runbld.notifications.slack :as slack]
             [runbld.opts :as opts]
             [runbld.process :as proc]
+            [runbld.scheduler :as scheduler]
             [runbld.store :as store]
             [runbld.test.support :as ts]
             [runbld.util.http :refer [wrap-retries]]
@@ -224,7 +225,8 @@
     (let [args (atom [])]
       (with-redefs [git-clone (fn [_ _ clone-args]
                                 (reset! args clone-args))
-                    main/wipe-workspace (fn [workspace] nil)]
+                    main/wipe-workspace (fn [workspace] nil)
+                    scheduler/as-map identity]
         (testing "supplying branch in yml"
           (git/with-tmp-repo [d "tmp/git/owner+project+branch"]
             (let [raw-opts (-> (opts/parse-args
@@ -233,7 +235,7 @@
                                  "-d" "tmp/git/owner+project+branch"
                                  "test/fail.bash"])
                                (assoc :logger runbld.io/log))
-                  opts (runbld.main/make-opts raw-opts)]
+                  opts (build/add-build-meta raw-opts)]
               (main/bootstrap-workspace
                (assoc-in opts [:scm :wipe-workspace] false))
               (is (= "master"
@@ -250,7 +252,7 @@
                                 "test/fail.bash")
                                opts/parse-args
                                (assoc :logger runbld.io/log))
-                  opts (runbld.main/make-opts raw-opts)]
+                  opts (build/add-build-meta raw-opts)]
               (main/bootstrap-workspace
                (assoc-in opts [:scm :wipe-workspace] false))
               (is (nil? (-> opts :scm :branch)))

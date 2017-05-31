@@ -131,8 +131,8 @@
      :build-doc d}))
 
 (s/defn create-failure-docs :- [StoredFailure]
-  [opts :- MainOpts
-   result :- ProcessResult
+  [opts  ;; :- MainOpts
+   result ;; :- ProcessResult
    failures :- [FailedTestCase]]
   (map #(assoc %
                :build-id (:id opts)
@@ -151,9 +151,10 @@
                              :query-params {:refresh true}}))))
 
 (s/defn save! :- {s/Keyword s/Any}
-  ([opts        :- MainOpts
-    result      :- ProcessResult
-    test-report :- TestReport]
+  ([opts        ;; :- MainOpts
+    result      ;; :- ProcessResult
+    test-report ;; :- TestReport
+    ]
    (when (:report-has-tests test-report)
      ((opts :logger) (format "FAILURES: %d"
                              (count
