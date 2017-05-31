@@ -228,16 +228,13 @@
        :total-bytes total-bytes}))))
 
 (def RunOpts
-  {:process OptsProcess
-   :es      OptsElasticsearch
-   :id      s/Str
-   s/Any    s/Any})
+  {:process  OptsProcess
+   :es       OptsElasticsearch
+   :id       s/Str
+   s/Keyword s/Any})
 
-(s/defn run
-  ;; :- {:opts RunOpts
-  ;;     :process-result ProcessResult}
-  [opts ;;:- RunOpts
-   ]
+(s/defn run :- (assoc RunOpts :process-result ProcessResult)
+  [opts :- RunOpts]
   (assoc opts
          :process-result
          (exec-with-capture

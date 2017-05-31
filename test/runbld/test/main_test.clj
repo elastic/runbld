@@ -14,6 +14,7 @@
             [runbld.opts :as opts]
             [runbld.process :as proc]
             [runbld.scheduler :as scheduler]
+            [runbld.scheduler.default :as default-sched]
             [runbld.store :as store]
             [runbld.test.support :as ts]
             [runbld.util.http :refer [wrap-retries]]
@@ -234,7 +235,9 @@
                                  "-j" "owner+project+master"
                                  "-d" "tmp/git/owner+project+branch"
                                  "test/fail.bash"])
-                               (assoc :logger runbld.io/log))
+                               (assoc :logger runbld.io/log)
+                               ;; make schema happy
+                               (assoc :scheduler (default-sched/make {})))
                   opts (build/add-build-meta raw-opts)]
               (main/bootstrap-workspace
                (assoc-in opts [:scm :wipe-workspace] false))
@@ -251,7 +254,9 @@
                                  "-d" "tmp/git/owner+project+branch"]
                                 "test/fail.bash")
                                opts/parse-args
-                               (assoc :logger runbld.io/log))
+                               (assoc :logger runbld.io/log)
+                               ;; make schema happy
+                               (assoc :scheduler (default-sched/make {})))
                   opts (build/add-build-meta raw-opts)]
               (main/bootstrap-workspace
                (assoc-in opts [:scm :wipe-workspace] false))
@@ -277,7 +282,8 @@
                                        js (mustache/render-string
                                            tmpl (assoc ctx :color color))]
                                    (reset! slack js)))
-                    main/wipe-workspace (fn [workspace] nil)]
+                    main/wipe-workspace (fn [opts] opts)
+                    main/find-workspace (constantly workspace)]
         (try
           (let [[opts res] (run
                              (conj
@@ -305,7 +311,7 @@
                      (let [[_ _ _ subj _ _] @email] subj) "FAILURE"))
                 (is (.contains (slack-msg) "FAILURE")))
               (testing "wiping the workspace"
-                (wipe-workspace-orig workspace)
+                (wipe-workspace-orig opts)
                 ;; Should only have the top-level workspace dir left
                 (is (= [workspace]
                        (map str (file-seq (jio/file workspace))))))))

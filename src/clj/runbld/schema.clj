@@ -106,7 +106,8 @@
    :process    OptsProcess
    :s3         OptsS3
    :java       JavaProperties
-   :env        Env})
+   :env        Env
+   s/Keyword s/Any})
 
 (def BuildSystem
   {:arch                   s/Str
@@ -171,24 +172,26 @@
    (s/optional-key :last-success) LastGoodBuild})
 
 (def OptsWithSys
-  (merge Opts {:sys    BuildSystem
-               :logger clojure.lang.IFn}))
+  (merge Opts
+         {:sys    BuildSystem
+          :logger clojure.lang.IFn}))
 
 (def OptsWithEnv
-  (merge OptsWithSys {:env Env}))
+  (merge Opts {:env Env}))
 
 (def OptsWithJava
-  (merge OptsWithEnv {:java JavaProperties}))
+  (merge Opts {:java JavaProperties}))
 
 (def OptsWithScheduler
-  (merge OptsWithJava {:scheduler (s/protocol Scheduler)}))
+  (merge Opts {:scheduler (s/protocol Scheduler)}))
 
 (def OptsWithBuild
-  (merge OptsWithScheduler {:id    s/Str
-                            :build Build}))
+  (merge Opts
+         {:id    s/Str
+          :build Build}))
 
 (def MainOpts
-  (merge OptsWithBuild {:vcs {s/Keyword s/Any}}))
+  (merge Opts {:vcs {s/Keyword s/Any}}))
 
 (def ProcessResult
   (merge

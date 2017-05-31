@@ -35,5 +35,5 @@
               :opts opts}))))
 
 (s/defn add-vcs-info
-  [opts]
+  [opts :- OptsWithBuild]
   (assoc opts :vcs (vcs/log-latest (make-repo opts))))

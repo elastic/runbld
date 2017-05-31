@@ -77,7 +77,7 @@
       (make-fs cwd)
       (make-hosting facter)))))
 
-(s/defn add-system-facts ;; :- OptsWithSys
-  [opts]
+(s/defn add-system-facts :- OptsWithSys
+  [opts :- Opts]
   (assoc opts :sys (inspect-system
                     (-> opts :process :cwd))))

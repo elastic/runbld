@@ -15,6 +15,7 @@
 
     :else (default/make opts)))
 
-(s/defn add-scheduler ;; :- OptsWithScheduler
+(s/defn add-scheduler :- {:scheduler (s/protocol scheduler/Scheduler)
+                          s/Keyword s/Any}
   [opts]
   (assoc opts :scheduler (make-scheduler opts)))
