@@ -68,7 +68,25 @@
              _# (debug-log :leave name# (keys res#))]
          res#))))
 
-(defn make-pipeline [root-fn middleware-list]
+(defn make-pipeline
+  "Wraps 'root-fn' in the middleware provided in middleware-list.  The
+  following diagram illustrates the order of processing.  The list of
+  middleware is on the left, and the order follows, starting at
+  'before1' down until 'root function' is called and the proceeds back
+  up until it ends at 'after1' and the final map is returned.
+
+                                    ▲
+       MIDDLEWARE      1. before1 │ │ 9. after1
+         before1                  │ │
+         after1        2. before2 │ │ 8. after3
+         before                   │ │
+         around        3.  around │ │ 7. around
+         after2                   │ │
+         before3       4. before3 │ │ 6. after2
+         after3                   │ │
+                                  ▼
+                          5. root function"
+  [root-fn middleware-list]
   (reduce (fn wrap-proc* [proc middleware]
             (middleware proc))
           (fn [opts]

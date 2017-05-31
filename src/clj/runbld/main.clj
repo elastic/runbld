@@ -101,15 +101,11 @@
          (io/try-log (email/maybe-send! opts (:addr store-result)))))
 
 (def default-middleware
-  "Middleware that runs during runbld processing.  Will be processed
-  in order, top to bottom.  Use the before, after, and around macros
-  for clarity.
+  "Middleware that runs during runbld processing. See the docs on
+  runbld.pipeline/make-pipeline for more information.
 
   Order matters as there are stages that may rely on information from
-  previous stages.  Pay particular attention to before/after because
-  in the case of 'before' the order is top to bottom but in the case
-  of 'after' the order is bottom to top, relative to other 'after'
-  functions."
+  previous stages.  Pay particular attention to before/after."
   [(before java/add-java)
    (before scheduler/add-scheduler)
    (before build/add-build-meta)
