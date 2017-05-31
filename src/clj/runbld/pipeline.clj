@@ -3,7 +3,7 @@
 
 (def debug-middleware?
   "Set to true to enable debug logging during before/after/around"
-  true)
+  false)
 
 (defn symbol-name [fn-sym]
   (try
