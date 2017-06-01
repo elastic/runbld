@@ -120,8 +120,9 @@
         t (name DocType)
         id (:id d)
         es-addr {:index idx :type t :id id}]
-    (doc/index conn idx t id {:body d
-                              :query-params {:refresh true}})
+    (doc/update conn idx t id {:body {:doc d
+                                      :doc_as_upsert true}
+                               :query-params {:refresh true}})
     {:url (format "%s://%s:%s/%s/%s/%s"
                   (-> opts :es :conn :settings :scheme name)
                   (-> opts :es :conn :settings :server-name)

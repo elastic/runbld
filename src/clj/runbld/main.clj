@@ -133,6 +133,7 @@
   [(before java/add-java)
    (before scheduler/add-scheduler)
    (before build/add-build-meta)
+   (before store/store-result) ;; store that we started
    (before wipe-workspace)
    (before bootstrap-workspace)
    (before system/add-system-facts)
