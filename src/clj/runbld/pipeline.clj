@@ -78,11 +78,11 @@
                                     ▲
        MIDDLEWARE      1. before1 │ │ 9. after1
          before1                  │ │
-         after1        2. before2 │ │ 8. after3
-         before                   │ │
-         around        3.  around │ │ 7. around
+         after1        2. before2 │ │ 8. around
+         before2                  │ │
+         around        3.  around │ │ 7. after2
          after2                   │ │
-         before3       4. before3 │ │ 6. after2
+         before3       4. before3 │ │ 6. after3
          after3                   │ │
                                   ▼
                           5. root function"
