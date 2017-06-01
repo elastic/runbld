@@ -1,7 +1,6 @@
 (ns runbld.test.main-test
   (:require [cheshire.core :as json]
             [clj-git.core :refer [git-branch git-clone git-log load-repo]]
-            [clj-http.client :as http]
             [clj-http.core :as http-core]
             [clojure.java.io :as jio]
             [clojure.test :refer :all]
@@ -372,3 +371,45 @@
           (is (thrown-with-msg? Exception #"oh noes"
                                 (store/get conn "index" "type" 1234)))
           (is (= 5 @call-count)))))))
+
+(deftest record-progress
+  (let [ready (promise)
+        proceed (promise)
+        done (promise)
+        res (atom nil)]
+    (with-redefs [main/send-email identity
+                  main/send-slack (fn [opts]
+                                    (deliver done true)
+                                    opts)
+                  main/wipe-workspace (fn [opts]
+                                        (reset! res opts)
+                                        (deliver ready true)
+                                        (is (deref proceed 6000 nil)
+                                            "Timed out waiting to proceed")
+                                        opts)]
+      (git/with-tmp-repo [d "tmp/git/record-progress-test-1"]
+        (let [args (conj
+                    ["-c" "test/config/main.yml"
+                     "-j" "elastic+foo+master"
+                     "-d" d]
+                    "test/success.bash")
+              opts (opts/parse-args args)]
+          (future (apply main/-main args))
+          (when (is (deref ready 4000 nil)
+                    "Timed out waiting on pipeline")
+            (testing "we've started, we should have a record"
+              (let [record (store/get (-> opts :es :conn)
+                                      (-> @res :store-result :addr :index)
+                                      (-> @res :store-result :addr :type)
+                                      (-> @res :store-result :addr :id))]
+                (is (= "elastic" (-> record :build :org)))
+                (is (nil? (-> record :process :exit-code)))))
+            (deliver proceed true)
+            (when (is (deref done 10000 nil)
+                      "Timed out waiting on pipeline to finish")
+              (let [record (store/get (-> opts :es :conn)
+                                      (-> @res :store-result :addr :index)
+                                      (-> @res :store-result :addr :type)
+                                      (-> @res :store-result :addr :id))]
+                (is (= "elastic" (-> record :build :org)))
+                (is (zero? (-> record :process :exit-code)))))))))))
