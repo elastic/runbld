@@ -266,3 +266,14 @@
                   (when (not= newbuf :die)
                     (recur newbuf))))]
      [ch proc])))
+
+(s/defn store-result :- {:store-result {s/Keyword s/Any}
+                         s/Keyword s/Any}
+  "Stores the result of the build.  This is the final payload indexed
+  into ES"
+  [opts :- {(s/optional-key :test-report) TestReport
+            (s/optional-key :process-result) ProcessResult
+            s/Keyword s/Any}]
+  (let [{:keys [test-report process-result]} opts]
+    (assoc opts :store-result
+           (save! opts process-result test-report))))
