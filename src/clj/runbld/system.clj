@@ -77,8 +77,7 @@
       (make-fs cwd)
       (make-hosting facter)))))
 
-(s/defn wrap-system :- OptsWithSys
-  [proc :- clojure.lang.IFn]
-  (fn [opts]
-    (proc (assoc opts :sys (inspect-system
-                            (-> opts :process :cwd))))))
+(s/defn add-system-facts :- OptsWithSys
+  [opts :- Opts]
+  (assoc opts :sys (inspect-system
+                    (-> opts :process :cwd))))

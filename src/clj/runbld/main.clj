@@ -16,6 +16,8 @@
             [runbld.system :as system]
             [runbld.tests :as tests]
             [runbld.io :as io]
+            [runbld.pipeline :refer [after around before
+                                     debug-log make-pipeline]]
             [runbld.util.date :as date]
             [runbld.vcs.git :refer [checkout-commit]]
             [runbld.vcs.middleware :as vcs]
@@ -44,15 +46,26 @@
      ;; for tests when #'really-die is redefed
      msg*)))
 
-(defn wipe-workspace [workspace]
-  (io/log "wiping workspace" workspace)
-  (io/rmdir-contents workspace))
+(defn find-workspace
+  "just to override in tests"
+  []
+  (System/getenv "WORKSPACE"))
+
+(s/defn wipe-workspace
+  [opts :- {(s/optional-key :scm) OptsScm
+            s/Keyword s/Any}]
+  (when (boolean (-> opts :scm :wipe-workspace))
+    (let [workspace (find-workspace)]
+      (io/log "wiping workspace" workspace)
+      (io/rmdir-contents workspace)))
+  opts)
 
 (s/defn bootstrap-workspace
-  [opts :- MainOpts]
+  [opts :- {:process OptsProcess
+            :build Build
+            (s/optional-key :scm) OptsScm
+            s/Keyword s/Any}]
   (let [clone? (boolean (-> opts :scm :clone))
-        wipe-workspace? (boolean (-> opts :scm :wipe-workspace))
-        workspace (System/getenv "WORKSPACE")
         local (-> opts :process :cwd)
         remote (-> opts :scm :url)
         reference (-> opts :scm :reference-repo)
@@ -67,60 +80,92 @@
                              (when depth ["--depth" (str depth)])]
                             (filter identity)
                             (apply concat))]
-        (when wipe-workspace?
-          (wipe-workspace workspace))
         (io/log "cloning" remote)
         (git/git-clone local remote clone-args)
-        (io/log "done cloning")))))
+        (io/log "done cloning"))))
+  opts)
 
-(def make-opts
-  (-> #'identity
-      vcs/wrap-vcs-info
-      build/wrap-build-meta
-      scheduler/wrap-scheduler
-      java/wrap-java
-      system/wrap-system))
+(s/defn log-script-execution
+  [proc :- clojure.lang.IFn
+   opts]
+  (io/log ">>>>>>>>>>>> SCRIPT EXECUTION BEGIN >>>>>>>>>>>>")
+  (let [{:keys [process-result] :as opts} (proc opts)
+        {:keys [took status exit-code out-bytes err-bytes]} process-result]
+    (io/log "<<<<<<<<<<<< SCRIPT EXECUTION END <<<<<<<<<<<<")
+    (io/log (format "DURATION: %sms" took))
+    (io/log (format "STDOUT: %d bytes" out-bytes))
+    (io/log (format "STDERR: %d bytes" err-bytes))
+    (io/log (format "WRAPPED PROCESS: %s (%d)" status exit-code))
+    opts))
 
-(defn maybe-log-last-success [opts]
-  (when (-> opts :build :last-success :checked-out)
-    (let [b (build/find-build opts (-> opts :build :last-success :id))
-          commit (-> b :vcs :commit-short)]
-      (io/log "using last successful commit"
-              commit
-              "from"
-              (-> b :build :job-name) (-> b :id)
-              (-> b :process :time-start)
-              (date/human-duration
-               (date/iso-diff-secs
-                (date/from-iso
-                 ;; notify on time-end because it makes more
-                 ;; logical sense to report on the last
-                 ;; completed build's end time, I think
-                 (-> b :process :time-end))
-                (date/now)))
-              "ago"))))
+(s/defn test-report :- {:test-report TestReport
+                        s/Keyword s/Any}
+  [opts :- {:process OptsProcess
+            s/Keyword s/Any}]
+  (assoc opts :test-report (tests/report (-> opts :process :cwd))))
+
+(s/defn store-result :- {:store-result {s/Keyword s/Any}
+                         s/Keyword s/Any}
+  [opts :- {:test-report TestReport
+            :process-result ProcessResult
+            s/Keyword s/Any}]
+  (let [{:keys [test-report process-result]} opts]
+    (assoc opts :store-result
+           (store/save! opts process-result test-report))))
+
+(s/defn send-slack :- {:slack-result s/Any
+                       s/Keyword s/Any}
+  [opts :- {:store-result {:addr {s/Keyword s/Any}
+                           :url s/Str
+                           :build-doc {s/Keyword s/Any}}
+            :slack OptsSlack
+            s/Keyword s/Any}]
+  (assoc opts :slack-result
+         (io/try-log (slack/maybe-send! opts (-> opts :store-result :addr)))))
+
+(s/defn send-email :- {:email-result s/Any
+                       s/Keyword s/Any}
+  [opts :- {:store-result {:addr {s/Keyword s/Any}
+                           :url s/Str
+                           :build-doc {s/Keyword s/Any}}
+            :email OptsEmail
+            s/Keyword s/Any}]
+  (assoc opts :email-result
+         (io/try-log (email/maybe-send! opts (-> opts :store-result :addr)))))
+
+(def default-middleware
+  "Middleware that runs during runbld processing. See the docs on
+  runbld.pipeline/make-pipeline for more information.
+
+  Order matters as there are stages that may rely on information from
+  previous stages.  Pay particular attention to before/after."
+  [(before java/add-java)
+   (before scheduler/add-scheduler)
+   (before build/add-build-meta)
+   (before wipe-workspace)
+   (before bootstrap-workspace)
+   (before system/add-system-facts)
+   (before vcs/add-vcs-info)
+   (before build/add-last-success)
+   (before build/maybe-log-last-success)
+   (after  send-slack)
+   (after  send-email)
+   (after  store-result)
+   (after  test-report)
+   (around log-script-execution)])
 
 ;; -main :: IO ()
 (defn -main [& args]
   (try+
+   (io/log "runbld started")
+   (io/log (version/string))
    (let [raw-opts (assoc (opts/parse-args args) :logger io/log)
-         _ (io/log (version/string))
-         opts (make-opts raw-opts)
-         _ (bootstrap-workspace opts)
-         _ (maybe-log-last-success opts)
-         _ (io/log ">>>>>>>>>>>> SCRIPT EXECUTION BEGIN >>>>>>>>>>>>")
-         {:keys [opts process-result]} (proc/run opts)
-         _ (io/log "<<<<<<<<<<<< SCRIPT EXECUTION END <<<<<<<<<<<<")
-         {:keys [took status exit-code out-bytes err-bytes]} process-result
-         _ (io/log (format "DURATION: %sms" took))
-         _ (io/log (format "STDOUT: %d bytes" out-bytes))
-         _ (io/log (format "STDERR: %d bytes" err-bytes))
-         _ (io/log (format "WRAPPED PROCESS: %s (%d)" status exit-code))
-         test-report (tests/report (-> opts :process :cwd))
-         store-result (store/save! opts process-result test-report)
-         slack-result (io/try-log (slack/maybe-send! opts (:addr store-result)))
-         email-result (io/try-log (email/maybe-send! opts (:addr store-result)))]
-
+         runbld-proc (make-pipeline proc/run default-middleware)
+         {:as opts
+          :keys [process-result
+                 store-result
+                 email-result
+                 slack-result]} (runbld-proc raw-opts)]
      (if (environ/env :dev)
        (assoc process-result
               :store-result store-result

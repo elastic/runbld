@@ -228,22 +228,21 @@
        :total-bytes total-bytes}))))
 
 (def RunOpts
-  {:process OptsProcess
-   :es      OptsElasticsearch
-   :id      s/Str
-   s/Any    s/Any})
+  {:process  OptsProcess
+   :es       OptsElasticsearch
+   :id       s/Str
+   s/Keyword s/Any})
 
-(s/defn run :- {:opts RunOpts
-                :process-result ProcessResult}
+(s/defn run :- (assoc RunOpts :process-result ProcessResult)
   [opts :- RunOpts]
-  {:opts opts
-   :process-result
-   (exec-with-capture
-    (-> opts :process :program)
-    (-> opts :process :args)
-    (-> opts :process :scriptfile)
-    (-> opts :process :cwd)
-    (-> opts :process :output)
-    (-> opts :es)
-    (-> opts :process :env)
-    {:build-id (-> opts :id)})})
+  (assoc opts
+         :process-result
+         (exec-with-capture
+          (-> opts :process :program)
+          (-> opts :process :args)
+          (-> opts :process :scriptfile)
+          (-> opts :process :cwd)
+          (-> opts :process :output)
+          (-> opts :es)
+          (-> opts :process :env)
+          {:build-id (-> opts :id)})))

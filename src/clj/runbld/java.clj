@@ -66,13 +66,10 @@
                               (:home props)))]
      (assoc props :home adjusted-java-home))))
 
-(s/defn wrap-java
-  [proc]
-  (fn [opts]
-    (if (get-in opts [:java :home])
-      (proc opts)
-      (let [facts (jvm-facts (:bootstrap-java-home opts))]
-        (proc
-         (-> opts
-             (merge facts)
-             (assoc-in [:process :env :JAVA_HOME] (:home facts))))))))
+(defn add-java [opts]
+  (if (get-in opts [:java :home])
+    opts
+    (let [facts (jvm-facts (:bootstrap-java-home opts))]
+      (-> opts
+          (merge facts)
+          (assoc-in [:process :env :JAVA_HOME] (:home facts))))))

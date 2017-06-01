@@ -100,7 +100,7 @@
    (slurp (io/resolve-resource tmpl)) ctx))
 
 (s/defn send :- s/Any
-  [opts :- MainOpts
+  [opts
    ctx :- EmailCtx]
   ;; If needing to regenerate for render tests
   #_(spit "test/context.edn"
