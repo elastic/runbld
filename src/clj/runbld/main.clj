@@ -104,15 +104,6 @@
             s/Keyword s/Any}]
   (assoc opts :test-report (tests/report (-> opts :process :cwd))))
 
-(s/defn store-result :- {:store-result {s/Keyword s/Any}
-                         s/Keyword s/Any}
-  [opts :- {:test-report TestReport
-            :process-result ProcessResult
-            s/Keyword s/Any}]
-  (let [{:keys [test-report process-result]} opts]
-    (assoc opts :store-result
-           (store/save! opts process-result test-report))))
-
 (s/defn send-slack :- {:slack-result s/Any
                        s/Keyword s/Any}
   [opts :- {:store-result {:addr {s/Keyword s/Any}
@@ -142,6 +133,7 @@
   [(before java/add-java)
    (before scheduler/add-scheduler)
    (before build/add-build-meta)
+   (before store/store-result) ;; store that we started
    (before wipe-workspace)
    (before bootstrap-workspace)
    (before system/add-system-facts)
@@ -150,7 +142,7 @@
    (before build/maybe-log-last-success)
    (after  send-slack)
    (after  send-email)
-   (after  store-result)
+   (after  store/store-result) ;; store that we finished
    (after  test-report)
    (around log-script-execution)])
 

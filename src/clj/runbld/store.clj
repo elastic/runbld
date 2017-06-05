@@ -120,8 +120,9 @@
         t (name DocType)
         id (:id d)
         es-addr {:index idx :type t :id id}]
-    (doc/index conn idx t id {:body d
-                              :query-params {:refresh true}})
+    (doc/update conn idx t id {:body {:doc d
+                                      :doc_as_upsert true}
+                               :query-params {:refresh true}})
     {:url (format "%s://%s:%s/%s/%s/%s"
                   (-> opts :es :conn :settings :scheme name)
                   (-> opts :es :conn :settings :server-name)
@@ -151,9 +152,9 @@
                              :query-params {:refresh true}}))))
 
 (s/defn save! :- {s/Keyword s/Any}
-  ([opts :- MainOpts
-    result :- ProcessResult
-    test-report :- TestReport]
+  ([opts :- (merge Opts JavaOpts EnvOpts BuildOpts)
+    result :- (s/maybe ProcessResult)
+    test-report :- (s/maybe TestReport)]
    (when (:report-has-tests test-report)
      ((opts :logger) (format "FAILURES: %d"
                              (count
@@ -266,3 +267,14 @@
                   (when (not= newbuf :die)
                     (recur newbuf))))]
      [ch proc])))
+
+(s/defn store-result :- {:store-result {s/Keyword s/Any}
+                         s/Keyword s/Any}
+  "Stores the result of the build.  This is the final payload indexed
+  into ES"
+  [opts :- {(s/optional-key :test-report) TestReport
+            (s/optional-key :process-result) ProcessResult
+            s/Keyword s/Any}]
+  (let [{:keys [test-report process-result]} opts]
+    (assoc opts :store-result
+           (save! opts process-result test-report))))

@@ -176,19 +176,21 @@
          {:sys    BuildSystem
           :logger clojure.lang.IFn}))
 
-(def OptsWithEnv
-  (merge Opts {:env Env}))
+(def EnvOpts
+  {:env Env})
 
-(def OptsWithJava
-  (merge Opts {:java JavaProperties}))
+(def JavaOpts
+  {:java JavaProperties})
 
 (def OptsWithScheduler
   (merge Opts {:scheduler (s/protocol Scheduler)}))
 
+(def BuildOpts
+  {:id    s/Str
+   :build Build})
+
 (def OptsWithBuild
-  (merge Opts
-         {:id    s/Str
-          :build Build}))
+  (merge Opts BuildOpts))
 
 (def MainOpts
   (merge Opts {:vcs {s/Keyword s/Any}}))
@@ -284,9 +286,9 @@
    :version VersionInfo
    :build   Build
    :java    JavaProperties
-   :sys     BuildSystem
-   :vcs     VcsLog
-   :process StoredProcessResult
+   (s/optional-key :sys) BuildSystem
+   (s/optional-key :vcs) VcsLog
+   :process (s/maybe StoredProcessResult)
    :test (s/maybe StoredTestSummary)})
 
 (def StoredBuildIndexSettings
