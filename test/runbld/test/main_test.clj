@@ -222,28 +222,31 @@
 
 (s/deftest set-scm-build
   (testing "the scm build can be set multiple ways:"
-    (let [args (atom [])]
-      (with-redefs [git-clone (fn [_ _ clone-args]
-                                (reset! args clone-args))
+    (let [branch (atom nil)]
+      (with-redefs [git-clone (fn [local remote clone-args]
+                                (reset! branch
+                                        (get (apply hash-map clone-args)
+                                             "--branch")))
+                    main/update-workspace (fn [local b depth]
+                                            (reset! branch b))
                     main/wipe-workspace (fn [workspace] nil)
                     scheduler/as-map identity]
         (testing "supplying branch in yml"
-          (git/with-tmp-repo [d "tmp/git/owner+project+branch"]
-            (let [raw-opts (-> (opts/parse-args
-                                ["-c" "test/config/scm.yml"
-                                 "-j" "owner+project+master"
-                                 "-d" "tmp/git/owner+project+branch"
-                                 "test/fail.bash"])
-                               (assoc :logger runbld.io/log)
-                               ;; make schema happy
-                               (assoc :scheduler (default-sched/make {})))
-                  opts (build/add-build-meta raw-opts)]
-              (main/bootstrap-workspace
-               (assoc-in opts [:scm :wipe-workspace] false))
-              (is (= "master"
-                     (-> opts :scm :branch)
-                     (-> opts :build :branch)
-                     (get (apply hash-map @args) "--branch"))))))
+          (let [raw-opts (-> (opts/parse-args
+                              ["-c" "test/config/scm.yml"
+                               "-j" "owner+project+master"
+                               "-d" "tmp/git/owner+project+branch"
+                               "test/fail.bash"])
+                             (assoc :logger runbld.io/log)
+                             ;; make schema happy
+                             (assoc :scheduler (default-sched/make {})))
+                opts (build/add-build-meta raw-opts)]
+            (main/bootstrap-workspace
+             (assoc-in opts [:scm :wipe-workspace] false))
+            (is (= "master"
+                   (-> opts :scm :branch)
+                   (-> opts :build :branch)
+                   @branch))))
         (testing "extracting branch from job"
           (git/with-tmp-repo [d "tmp/git/owner+project+branch"]
             (let [raw-opts (-> (conj
@@ -262,7 +265,7 @@
               (is (nil? (-> opts :scm :branch)))
               (is (= "branch"
                      (-> opts :build :branch)
-                     (get (apply hash-map @args) "--branch"))))))))))
+                     @branch)))))))))
 
 (s/deftest ^:integration execution-with-scm
   (testing "real execution all the way through with cloning via scm config"
