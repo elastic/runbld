@@ -234,3 +234,20 @@
    (git-pull repo []))
   ([repo args]
    (git repo "pull" args)))
+
+(defn git-fetch
+  "Runs `git fetch' on the provided repo.  `args' is a vector of
+  options as they would be specified on the command line.
+
+  clj: (git-fetch repo [\"--all\"])
+  cli: git fetch --all"
+  ([repo]
+   (git-fetch repo []))
+  ([repo args]
+   (git repo "fetch" args)))
+
+(defn git-remote
+  "Runs `git remote' on the provided repo.  `args' is a vector of
+  options as they would be specified on the command line."
+  [repo args]
+  (git repo "remote" args))
