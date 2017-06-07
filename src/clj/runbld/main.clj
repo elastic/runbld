@@ -65,7 +65,11 @@
   branch."
   [local branch depth]
   (let [repo (git/load-repo local)]
-    (io/log "repo already cloned" local)
+    (io/log "repo already cloned"
+            "local:" local
+            "branch:" branch
+            "depth:" depth
+            "repo:" repo)
     (io/log "updating")
     (git/git-remote repo ["set-branches" "origin" branch])
     (let [fetch-args (concat (when depth
