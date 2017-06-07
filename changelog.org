@@ -1,4 +1,10 @@
 * runbld changes
+** 1.3.8
+   - Update and switch branches (if needed) an already cloned repo
+     when SCM is specified
+** 1.3.7
+   - Record in ES early in the runbld process so failed runblds can be
+     tracked
 ** 1.3.6
    - Infer the branch from the job name when it is not specified in
      the SCM config.
