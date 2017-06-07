@@ -31,7 +31,12 @@
    (run cmd args "."))
   ([cmd args dir]
    #_(prn cmd args dir)
-   (let [res (apply sh/sh "git" cmd (concat args [:dir dir]))
+   ;; sh/sh will eventually call clojure.java.shell/parse-args which
+   ;; will `split-with string?` and will assume the second group is
+   ;; a map.  Long story short, make sure that all of our args are
+   ;; strings.
+   (let [args (map str args)
+         res (apply sh/sh "git" cmd (concat args [:dir dir]))
          err (fn [r]
                (assert
                 (= 0 (:exit r)) (format "%s: \nout: %s\nerr: %s"
