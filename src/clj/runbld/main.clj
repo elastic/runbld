@@ -65,12 +65,16 @@
   branch."
   [local branch depth]
   (let [repo (git/load-repo local)]
-    (io/log "repo already cloned" local)
+    (io/log "repo already cloned"
+            "local:" local
+            "branch:" branch
+            "depth:" depth
+            "repo:" repo)
     (io/log "updating")
     (git/git-remote repo ["set-branches" "origin" branch])
     (let [fetch-args (concat (when depth
-                               ["--depth" (str depth)])
-                             ["origin" (str branch)])]
+                               ["--depth" depth])
+                             ["origin" branch])]
       (git/git-fetch repo fetch-args))
     (git/git-checkout repo branch)
     (git/git-pull repo)
@@ -94,8 +98,8 @@
         (let [clone-args (->> [(when (and reference
                                           (.exists (jio/as-file reference)))
                                  ["--reference" reference])
-                               (when branch ["--branch" (str branch)])
-                               (when depth ["--depth" (str depth)])]
+                               (when branch ["--branch" branch])
+                               (when depth ["--depth" depth])]
                               (filter identity)
                               (apply concat))]
           (io/log "cloning" remote)

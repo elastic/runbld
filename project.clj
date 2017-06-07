@@ -55,4 +55,5 @@
   :aot :all
   :main runbld.main
   :test-selectors {:default (complement :integration)
-                   :integration :integration})
+                   :integration :integration
+                   :all (constantly true)})
