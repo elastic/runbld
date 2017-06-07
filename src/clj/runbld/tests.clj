@@ -1,5 +1,8 @@
 (ns runbld.tests
-  (:require [runbld.tests.junit]))
+  (:require
+   [runbld.schema :refer :all]
+   [runbld.tests.junit]
+   [schema.core :as s]))
 
 (defn capture-failures [workspace]
   (runbld.tests.junit/find-failures workspace))
@@ -16,3 +19,9 @@
       {:report-has-tests true
        :report summary}
       {:report-has-tests false})))
+
+(s/defn add-test-report :- {:test-report TestReport
+                            s/Keyword s/Any}
+  [opts :- {:process OptsProcess
+            s/Keyword s/Any}]
+  (assoc opts :test-report (report (-> opts :process :cwd))))

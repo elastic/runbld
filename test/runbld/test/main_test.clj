@@ -14,6 +14,7 @@
             [runbld.process :as proc]
             [runbld.scheduler :as scheduler]
             [runbld.scheduler.default :as default-sched]
+            [runbld.scm :as scm]
             [runbld.store :as store]
             [runbld.test.support :as ts]
             [runbld.util.http :refer [wrap-retries]]
@@ -227,9 +228,9 @@
                                 (reset! branch
                                         (get (apply hash-map clone-args)
                                              "--branch")))
-                    main/update-workspace (fn [local b depth]
-                                            (reset! branch b))
-                    main/wipe-workspace (fn [workspace] nil)
+                    scm/update-workspace (fn [local b depth]
+                                           (reset! branch b))
+                    scm/wipe-workspace (fn [workspace] nil)
                     scheduler/as-map identity]
         (testing "supplying branch in yml"
           (let [raw-opts (-> (opts/parse-args
@@ -241,7 +242,7 @@
                              ;; make schema happy
                              (assoc :scheduler (default-sched/make {})))
                 opts (build/add-build-meta raw-opts)]
-            (main/bootstrap-workspace
+            (scm/bootstrap-workspace
              (assoc-in opts [:scm :wipe-workspace] false))
             (is (= "master"
                    (-> opts :scm :branch)
@@ -260,7 +261,7 @@
                                ;; make schema happy
                                (assoc :scheduler (default-sched/make {})))
                   opts (build/add-build-meta raw-opts)]
-              (main/bootstrap-workspace
+              (scm/bootstrap-workspace
                (assoc-in opts [:scm :wipe-workspace] false))
               (is (nil? (-> opts :scm :branch)))
               (is (= "branch"
@@ -269,7 +270,7 @@
 
 (s/deftest ^:integration execution-with-scm
   (testing "real execution all the way through with cloning via scm config"
-    (let [wipe-workspace-orig main/wipe-workspace
+    (let [wipe-workspace-orig scm/wipe-workspace
           workspace "tmp/git/elastic+foo+master"]
       (with-redefs [email/send* (fn [& args]
                                   (swap! email concat args)
@@ -284,8 +285,8 @@
                                        js (mustache/render-string
                                            tmpl (assoc ctx :color color))]
                                    (reset! slack js)))
-                    main/wipe-workspace (fn [opts] opts)
-                    main/find-workspace (constantly workspace)]
+                    scm/wipe-workspace (fn [opts] opts)
+                    scm/find-workspace (constantly workspace)]
         (try
           (let [[opts res] (run
                              (conj
@@ -396,16 +397,16 @@
         proceed (promise)
         done (promise)
         res (atom nil)]
-    (with-redefs [main/send-email identity
-                  main/send-slack (fn [opts]
-                                    (deliver done true)
-                                    opts)
-                  main/wipe-workspace (fn [opts]
-                                        (reset! res opts)
-                                        (deliver ready true)
-                                        (is (deref proceed 6000 nil)
-                                            "Timed out waiting to proceed")
-                                        opts)]
+    (with-redefs [email/send-email identity
+                  slack/send-slack (fn [opts]
+                                     (deliver done true)
+                                     opts)
+                  scm/wipe-workspace (fn [opts]
+                                       (reset! res opts)
+                                       (deliver ready true)
+                                       (is (deref proceed 6000 nil)
+                                           "Timed out waiting to proceed")
+                                       opts)]
       (git/with-tmp-repo [d "tmp/git/record-progress-test-1"]
         (let [args (conj
                     ["-c" "test/config/main.yml"

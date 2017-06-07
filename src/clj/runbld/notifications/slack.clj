@@ -79,3 +79,13 @@
             ((opts :logger)
              (str "Caught exception while notifying Slack: "
                   (.getMessage e)))))))))
+
+(s/defn send-slack :- {:slack-result s/Any
+                       s/Keyword s/Any}
+  [opts :- {:store-result {:addr {s/Keyword s/Any}
+                           :url s/Str
+                           :build-doc {s/Keyword s/Any}}
+            :slack OptsSlack
+            s/Keyword s/Any}]
+  (assoc opts :slack-result
+         (io/try-log (maybe-send! opts (-> opts :store-result :addr)))))
