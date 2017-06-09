@@ -21,7 +21,8 @@
             [runbld.vcs.git :as git]
             [runbld.version :as version]
             [schema.test :as s]
-            [stencil.core :as mustache])
+            [stencil.core :as mustache]
+            [environ.core :as environ])
   (:require [runbld.main :as main] :reload-all))
 
 (def email (atom []))
@@ -271,7 +272,8 @@
 (s/deftest ^:integration execution-with-scm
   (testing "real execution all the way through with cloning via scm config"
     (let [wipe-workspace-orig scm/wipe-workspace
-          workspace "tmp/git/elastic+foo+master"]
+          workspace "tmp/git/elastic+foo+master"
+          master-commit (atom nil)]
       (with-redefs [email/send* (fn [& args]
                                   (swap! email concat args)
                                   ;; to satisfy schema
@@ -301,7 +303,8 @@
                     depth (-> opts :scm :depth)
                     repo (load-repo workspace)]
                 (is (= branch (git-branch repo)))
-                (is (= depth (count (git-log repo)))))
+                (is (= depth (count (git-log repo))))
+                (reset! master-commit (first (git-log repo))))
               (testing "scm doesn't break anything else"
                 (is (= 1 (:exit-code res)))
                 (is (= 1 (-> (store/get (-> opts :es :conn)
@@ -329,6 +332,21 @@
                               (-> opts2 :scm :branch))))
                   (is (= branch (git-branch repo2)))
                   (is (= depth (count (git-log repo2))))))
+              (testing "can clone a specific commit"
+                (with-redefs [environ/env
+                              {:dev "true"
+                               :branch-specifier (:commit @master-commit)}]
+                  (let [[opts3 res3] (run
+                                       (conj
+                                        ["-c" "test/config/scm.yml"
+                                         "-j" "elastic+foo+master"
+                                         "-d" workspace]
+                                        (if (opts/windows?)
+                                          "test/fail.bat"
+                                          "test/fail.bash")))
+                        repo3 (load-repo workspace)]
+                    (is (= (:commit @master-commit)
+                           (:commit (first (git-log repo3))))))))
               (testing "wiping the workspace"
                 (wipe-workspace-orig opts)
                 ;; Should only have the top-level workspace dir left
