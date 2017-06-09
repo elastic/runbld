@@ -47,7 +47,7 @@
                  [slingshot "0.12.2"]
                  [stencil "0.5.0"]]
   :injections [(require 'clojure.pprint)]
-  :profiles {:dev {:env {:dev true}}
+  :profiles {:dev {:env {:dev "true"}}
              :package {:plugins [[elastic/lein-bin "0.3.6"]]
                        :bin {:bootclasspath false}}}
   :plugins [[lein-environ "1.0.3"]]
