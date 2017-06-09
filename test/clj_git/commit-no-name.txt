@@ -1,0 +1,7 @@
+commit 42f79829d9845c89f9adde32bd5301c6273bd828
+tree 80519f92e9b7f47dcd6e33db59bb68ceb374c28b
+parent 7cfcf080d58cfc0025fcd639fbfec586ed94d2a8
+author  <pickypg@Picky-W10-Desktop.localdomain> 1497026848 -0400
+committer  <pickypg@Picky-W10-Desktop.localdomain> 1497026848 -0400
+
+    add the entire shard request rather than just index and shard id

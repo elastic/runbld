@@ -32,7 +32,7 @@
        "https://github.com/elastic/elasticsearch.git")))
   (println "  Done."))
 
-(deftest parse-commit
+(deftest parse-repo-commits
   (maybe-prep-repo es-src-dir)
   (time
    (testing "the first thousand commits can parse"
@@ -41,3 +41,11 @@
                       git/git-log
                       (take 1000)
                       count))))))
+
+(deftest parse-samples
+  (doseq [f (->> ["clj_git/commit.txt"
+                  "clj_git/commit-no-name.txt"]
+                 (map io/resource)
+                 (map io/file))]
+    (testing f
+      (is (-> f slurp git/parse-raw-commit :commit count pos?)))))

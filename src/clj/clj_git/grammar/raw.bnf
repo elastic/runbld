@@ -15,8 +15,8 @@ treeLine = <'tree'> <sp> sha
 parentLine = <['parent' sp sha newline]> (* In case of a merge commit, disregard
                                             the first parent.  Is this technically right? *)
              <'parent'> <sp> sha
-authorLine = <'author'> <sp> name <bracket> emailAddr <bracket> <sp> time
-committerLine = <'committer'> <sp> name <bracket> emailAddr <bracket> <sp> time
+authorLine = <'author'> <sp> name? <bracket> emailAddr <bracket> <sp> time
+committerLine = <'committer'> <sp> name? <bracket> emailAddr <bracket> <sp> time
 gpgsig = <'gpgsig'>
          <oneSp> gpgPrefix newline
          ( <oneSp> gpgHeader newline )*

@@ -102,14 +102,22 @@
      {:parent sha})
 
    :authorLine
-   (fn [name [_ email] time]
-     {:author
-      (->Author name email time)})
+   (fn
+     ([[_ email] time]
+      {:author
+       (->Author "" email time)})
+     ([name [_ email] time]
+      {:author
+       (->Author name email time)}))
 
    :committerLine
-   (fn [name [_ email] time]
-     {:committer
-      (->Committer name email time)})
+   (fn
+     ([[_ email] time]
+      {:committer
+       (->Committer "" email time)})
+     ([name [_ email] time]
+      {:committer
+       (->Committer name email time)}))
 
    :msgTitle
    (fn [& x]
