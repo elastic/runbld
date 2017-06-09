@@ -11,6 +11,7 @@ test:
 	go test -v | go-junit-report > TEST-no-errors.xml
 	-cd test/repo/go/some-errors && \
 	go test -v | go-junit-report > TEST-some-errors.xml
+	rm -rf tmp/git
 	lein do clean, test
 
 package: test
