@@ -41,9 +41,7 @@
            (test-choose-branch "abc1234" "026aac0" "def5678"))
         "Use master if no branches are found")
     (testing "A commit is ignored if it's preceded by a branch"
-      (is (with-redefs [environ/env {:branch-specifier "6.4"}]
-            (= {:branch "6.4" :commit nil}
-               (test-choose-branch "6.4" "026aac0" "3.2"))))
-      (is (with-redefs [environ/env {}]
-            (= {:branch "1.6" :commit nil}
-               (test-choose-branch nil "1.6" "026aac0")))))))
+      (is (= {:branch "6.4" :commit nil}
+             (test-choose-branch "6.4" "026aac0" "3.2")))
+      (is (= {:branch "1.6" :commit nil}
+             (test-choose-branch nil "1.6" "026aac0"))))))
