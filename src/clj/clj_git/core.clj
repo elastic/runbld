@@ -264,3 +264,8 @@
   options as they would be specified on the command line."
   [repo args]
   (git repo "remote" args))
+
+(defn shallow-clone?
+  "Returns true if the repo is shallow, false otherwise."
+  [repo]
+  (.exists (io/file (:path repo) ".git" "shallow")))

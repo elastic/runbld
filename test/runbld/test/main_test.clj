@@ -1,6 +1,7 @@
 (ns runbld.test.main-test
   (:require [cheshire.core :as json]
-            [clj-git.core :refer [git-branch git-clone git-log load-repo]]
+            [clj-git.core :refer [git-branch git-clone git-log load-repo
+                                  shallow-clone?]]
             [clj-http.core :as http-core]
             [clojure.java.io :as jio]
             [clojure.test :refer :all]
@@ -305,7 +306,8 @@
                 (is (= branch (git-branch repo)))
                 (let [log (git-log repo)]
                   (is (= depth (count (git-log repo))))
-                  (reset! master-commit (last log))))
+                  (reset! master-commit (last log)))
+                (is (shallow-clone? repo))                )
               (testing "scm doesn't break anything else"
                 (is (= 1 (:exit-code res)))
                 (is (= 1 (-> (store/get (-> opts :es :conn)
@@ -336,7 +338,8 @@
               (testing "can clone a specific commit"
                 (with-redefs [environ/env
                               {:dev "true"
-                               :branch-specifier (:commit @master-commit)}]
+                               ;; this shouldn't have been fetched above
+                               :branch-specifier (:parent @master-commit)}]
                   (let [[opts3 res3] (run
                                        (conj
                                         ["-c" "test/config/scm.yml"
@@ -346,8 +349,9 @@
                                           "test/fail.bat"
                                           "test/fail.bash")))
                         repo3 (load-repo workspace)]
-                    (is (= (:commit @master-commit)
-                           (:commit (first (git-log repo3))))))))
+                    (is (= (:parent @master-commit)
+                           (:commit (first (git-log repo3)))))
+                    (is (shallow-clone? repo3)))))
               (testing "wiping the workspace"
                 (wipe-workspace-orig opts)
                 ;; Should only have the top-level workspace dir left

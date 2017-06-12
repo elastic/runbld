@@ -1,6 +1,7 @@
 (ns runbld.scm
   (:require
    [clj-git.core :as git]
+   [clj-time.core :as t]
    [clojure.java.io :as jio]
    [environ.core :as environ]
    [runbld.io :as io]
@@ -26,6 +27,10 @@
   [local commit]
   (let [repo (git/load-repo local)]
     (io/log "Fetching provided commit" commit)
+    (when (git/shallow-clone? repo)
+      (io/log "Repo was shallow.  Fetching all commits newer than 6 months.")
+      (git/git-fetch repo [(str "--shallow-since="
+                                (str (t/minus (t/now) (t/months 6))))]))
     (git/git-checkout repo commit)
     (io/log "Done fetching.")))
 
