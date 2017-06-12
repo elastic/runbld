@@ -18,14 +18,14 @@
             s/Keyword s/Any}]
   (when (boolean (-> opts :scm :wipe-workspace))
     (let [workspace (find-workspace)]
-      (io/log "wiping workspace" workspace)
+      (io/log "Wiping workspace." workspace)
       (io/rmdir-contents workspace)))
   opts)
 
 (defn checkout-commit
   [local commit]
   (let [repo (git/load-repo local)]
-    (io/log (format "Specific commit specified, %s.  Fetching." commit))
+    (io/log "Fetching provided commit" commit)
     (git/git-checkout repo commit)
     (io/log "Done fetching.")))
 
@@ -34,7 +34,7 @@
   branch."
   [local branch depth]
   (let [repo (git/load-repo local)]
-    (io/log "Repo already cloned in" local)
+    (io/log "Repo already cloned to" local)
     (io/log "Updating branch to" branch "with depth" depth)
     (git/git-remote repo ["set-branches" "origin" branch])
     (let [fetch-args (concat (when depth
@@ -48,16 +48,22 @@
   "Clones a git repo at the specified branch and depth.  If the local
   reference repo is available, clone from there to save time."
   [local remote reference branch depth]
-  (let [clone-args (->> [(when (and reference
-                                    (.exists (jio/as-file reference)))
+  (let [use-reference-repo? (and reference
+                                 (.exists (jio/as-file reference)))
+        clone-args (->> [(when use-reference-repo?
                            ["--reference" reference])
                          (when branch ["--branch" (str branch)])
                          (when depth ["--depth" (str depth)])]
                         (filter identity)
                         (apply concat))]
-    (io/log "cloning" remote)
+    (io/log "Cloning repo" remote
+            "to" local
+            "on branch" branch
+            "with depth" depth)
+    (when use-reference-repo?
+      (io/log "Using local reference repo at" reference))
     (git/git-clone local remote clone-args)
-    (io/log "done cloning")))
+    (io/log "Done cloning.")))
 
 (defn choose-branch
   "Select the branch (or commit) to checkout.  The branch is chosen
