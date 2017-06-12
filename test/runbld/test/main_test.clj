@@ -303,8 +303,9 @@
                     depth (-> opts :scm :depth)
                     repo (load-repo workspace)]
                 (is (= branch (git-branch repo)))
-                (is (= depth (count (git-log repo))))
-                (reset! master-commit (first (git-log repo))))
+                (let [log (git-log repo)]
+                  (is (= depth (count (git-log repo))))
+                  (reset! master-commit (last log))))
               (testing "scm doesn't break anything else"
                 (is (= 1 (:exit-code res)))
                 (is (= 1 (-> (store/get (-> opts :es :conn)
