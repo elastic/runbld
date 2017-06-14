@@ -77,9 +77,10 @@
          [:alternative]
          attachments
          [{:type "text/plain; charset=utf-8"
-           :content plain}
-          {:type "text/html; charset=utf-8"
-           :content html}])]
+           :content plain}]
+         (when-not (empty? html)
+           [{:type "text/html; charset=utf-8"
+             :content html}]))]
     (mail/send-message
      conn
      {:from from
