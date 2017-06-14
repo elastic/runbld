@@ -126,15 +126,20 @@
                               (date/duration-in-seconds timeout)
                               TimeUnit/SECONDS)
                     (.waitFor proc))
-        exit-code (.exitValue proc)
+        timed-out? (and (boolean? exit-code)
+                        (not exit-code))
+        exit-code (if timed-out?
+                    (do
+                      (.destroyForcibly proc)
+                      1)
+                    (.exitValue proc))
         end (System/currentTimeMillis)
         took (- end start)]
     {:exit-code exit-code
      :millis-end end
      :millis-start start
      :status (cond
-               (and timeout-provided?
-                    (false? exit-code))
+               (and timeout-provided? timed-out?)
                "TIMEOUT"
 
                (pos? exit-code) "FAILURE"

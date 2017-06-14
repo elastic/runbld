@@ -1,0 +1,1 @@
+timeout /T 30

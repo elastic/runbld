@@ -45,8 +45,7 @@
     :stdout ".stdout.log"
     :stderr ".stderr.log"
     :output ".output.log"
-    :env {}
-    :timeout nil}
+    :env {}}
 
    :email
    {:host "localhost"
