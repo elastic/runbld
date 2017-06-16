@@ -9,8 +9,6 @@
                     :build {:branch job-branch}})))
 
 (deftest branch-selection
-  {:scm {:branch "1.6"}
-   :build {:branch "3.2"}}
   (testing "Branch selection chooses the right option."
     (is (= {:branch "1.6" :commit nil}
            (test-choose-branch nil "1.6" "3.2"))
