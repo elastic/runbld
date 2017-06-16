@@ -3,7 +3,8 @@
             [clj-time.core :as t]
             [clj-time.format :as f]
             [clojure.string :as str]
-            [slingshot.slingshot :refer [throw+]]))
+            [slingshot.slingshot :refer [throw+]])
+  (:import [org.joda.time Period]))
 
 (defn now []
   (t/now))
@@ -55,6 +56,9 @@
 ;; Thanks Devin Humbert!
 ;; https://www.cromulentbits.com/clojure-readable-time-duration/
 (defn human-duration
+  "Takes a number of seconds and returns a human readable version of
+  the duration.  e.g. 1232352 -> '14d 6h 19m 12s'.  Currently only
+  handles up to a granularity in days."
   [secs]
   (let [isecs (int secs)
         days (quot isecs 86400)
@@ -71,3 +75,25 @@
                    (when (> hours 0) (str hours "h"))
                    (when (> minutes 0) (str minutes "m"))
                    (str seconds "s"))))))
+
+(defn duration-in-seconds
+  "This is the other side of 'human-duration' and will convert output
+  like '14d 6h 19m 12s' to 1232352.  It handles granularity up to
+  daily (again, like 'human-duration')"
+  [duration-str]
+  (-> duration-str
+      str/lower-case
+      (str/replace #"\s" "")
+      (str/replace #"^([0-9]+d)?(.*)$"
+                   (fn [[_ p t]]
+                     (format "P%s%s"
+                             (if-not (empty? p)
+                               p
+                               "")
+                             (if-not (empty? t)
+                               (str "T" t)
+                               ""))))
+      (Period/parse)
+      (.toStandardDuration)
+      (.getMillis)
+      (/ 1000)))

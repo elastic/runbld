@@ -54,3 +54,48 @@
           (is (= 11 (store/count-logs opts "stdout" build-id)))
           (testing "env threading"
             (is (.contains (slurp master) "RUNBLD_TEST"))))))))
+
+(deftest process-timeout
+  (binding [*out* (java.io.StringWriter.)
+            *err* (java.io.StringWriter.)]
+    (io/with-tmp-dir [dir ["tmp" (str *ns* "-")]]
+      (testing "timeouts are handled"
+        (let [opts (opts/parse-args
+                    (concat ["-j" "elastic+foo+master"
+                             "-d" (str dir)]
+                            (if (opts/windows?)
+                              ["-c" "test\\config\\timeout.yml"
+                               "test\\timeout.bat"]
+                              ["-c" "test/config/timeout.yml"
+                               "test/timeout.bash"])))
+              {{:keys [took exit-code status]} :process-result}
+              (proc/run (assoc opts :id (str (java.util.UUID/randomUUID))))]
+          (is (> 5000 took)
+              "The proc should be stopped near the timeout or 2 sec")
+          (is (= "TIMEOUT" status))
+          (is (= 1 exit-code))))
+      (testing "processes work as normal when they don't timeout"
+        (let [opts (opts/parse-args
+                    (concat ["-j" "elastic+foo+master"
+                             "-d" (str dir)]
+                            (if (opts/windows?)
+                              ["-c" "test\\config\\timeout.yml"
+                               "test\\success.bat"]
+                              ["-c" "test/config/timeout.yml"
+                               "test/success.bash"])))
+              {{:keys [exit-code status]} :process-result}
+              (proc/run (assoc opts :id (str (java.util.UUID/randomUUID))))]
+          (is (= "SUCCESS" status))
+          (is (= 0 exit-code)))
+        (let [opts (opts/parse-args
+                    (concat ["-j" "elastic+foo+master"
+                             "-d" (str dir)]
+                            (if (opts/windows?)
+                              ["-c" "test\\config\\timeout.yml"
+                               "test\\fail.bat"]
+                              ["-c" "test/config/timeout.yml"
+                               "test/fail.bash"])))
+              {{:keys [exit-code status]} :process-result}
+              (proc/run (assoc opts :id (str (java.util.UUID/randomUUID))))]
+          (is (= "FAILURE" status))
+          (is (= 1 exit-code)))))))

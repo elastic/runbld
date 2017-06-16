@@ -13,7 +13,8 @@
   (:import (clojure.core.async.impl.channels ManyToManyChannel)
            (clojure.lang Atom Ref)
            (java.io File InputStream)
-           (java.util UUID)))
+           (java.util UUID)
+           (java.util.concurrent TimeUnit)))
 
 (s/defn inc-ordinals
   [m :- clojure.lang.Ref
@@ -113,61 +114,59 @@
    :time-start     s/Str
    :took           s/Num
    :bytes          Ref}
-  ([pb]
-   (exec-pb pb []))
-  ([pb listeners]
-   (exec-pb pb [] {}))
-  ([pb        :- ProcessBuilder
-    listeners :- [ManyToManyChannel]
-    log-extra :- {s/Any s/Any}]
-   (let [{:keys [start proc out bytes threads]} (start pb log-extra)
-         multi (start-input-multiplexer! out listeners)
-         exit-code (.waitFor proc)
-         end (System/currentTimeMillis)
-         took (- end start)]
-     {:exit-code exit-code
-      :millis-end end
-      :millis-start start
-      :status (if (pos? exit-code) "FAILURE" "SUCCESS")
-      :time-end (date/ms-to-iso end)
-      :time-start (date/ms-to-iso start)
-      :took took
-      :bytes bytes})))
+  [pb        :- ProcessBuilder
+   listeners :- [ManyToManyChannel]
+   log-extra :- {s/Any s/Any}
+   timeout   :- (s/maybe s/Str)]
+  (let [{:keys [start proc out bytes threads]} (start pb log-extra)
+        multi (start-input-multiplexer! out listeners)
+        timeout-provided? (not (empty? timeout))
+        exit-code (if timeout-provided?
+                    (.waitFor proc
+                              (date/duration-in-seconds timeout)
+                              TimeUnit/SECONDS)
+                    (.waitFor proc))
+        timed-out? (and (boolean? exit-code)
+                        (not exit-code))
+        exit-code (if timed-out?
+                    (do
+                      (.destroyForcibly proc)
+                      1)
+                    (.exitValue proc))
+        end (System/currentTimeMillis)
+        took (- end start)]
+    {:exit-code exit-code
+     :millis-end end
+     :millis-start start
+     :status (cond
+               (and timeout-provided? timed-out?)
+               "TIMEOUT"
 
-(s/defn exec :-
-  {:exit-code      s/Num
-   :millis-end     s/Num
-   :millis-start   s/Num
-   :status         s/Str
-   :time-end       s/Str
-   :time-start     s/Str
-   :took           s/Num
-   :cmd            [s/Str]
-   :cmd-source     s/Str
-   :bytes          Ref}
-  ([program args scriptfile]
-   (exec program args scriptfile (System/getProperty "user.dir")))
-  ([program args scriptfile cwd]
-   (exec program args scriptfile cwd {}))
-  ([program args scriptfile cwd env]
-   (exec program args scriptfile cwd {} []))
-  ([program args scriptfile cwd env listeners]
-   (exec program args scriptfile cwd {} [] {}))
-  ([program args scriptfile cwd env listeners log-extra]
-   (let [scriptfile* (io/abspath scriptfile)
-         dir (io/abspath-file cwd)
-         cmd (flatten [program args scriptfile*])
-         pb (doto (ProcessBuilder. cmd)
-              (.directory dir))
-         ;; can only alter the env via this mutable map
-         _ (add-env! (.environment pb) env)
-         res (exec-pb pb listeners log-extra)]
-     (flush)
-     (merge
-      res
-      {:cmd cmd
-       :cmd-source (slurp scriptfile)
-       :bytes (:bytes res)}))))
+               (pos? exit-code) "FAILURE"
+
+               :else "SUCCESS")
+     :time-end (date/ms-to-iso end)
+     :time-start (date/ms-to-iso start)
+     :took took
+     :bytes bytes}))
+
+(defn exec
+  [program args scriptfile cwd
+   env listeners log-extra timeout]
+  (let [scriptfile* (io/abspath scriptfile)
+        dir (io/abspath-file cwd)
+        cmd (flatten [program args scriptfile*])
+        pb (doto (ProcessBuilder. cmd)
+             (.directory dir))
+        ;; can only alter the env via this mutable map
+        _ (add-env! (.environment pb) env)
+        res (exec-pb pb listeners log-extra timeout)]
+    (flush)
+    (merge
+     res
+     {:cmd cmd
+      :cmd-source (slurp scriptfile)
+      :bytes (:bytes res)})))
 
 (s/defn start-file-listener! :- [ManyToManyChannel]
   ([file]
@@ -196,36 +195,38 @@
              (recur)))])))
 
 (s/defn exec-with-capture :- ProcessResult
-  ([program    :- s/Str
-    args       :- [s/Str]
-    scriptfile :- s/Str
-    cwd        :- s/Str
-    outputfile :- s/Str
-    es-opts    :- OptsElasticsearch
-    env        :- Env
-    log-extra  :- {s/Any s/Any}]
-   (let [dir (io/abspath-file cwd)
-         outputfile* (io/prepend-path dir outputfile)
-         [file-ch file-process] (start-file-listener! outputfile*)
-         [es-ch es-process] (start-es-listener! es-opts)
-         [stdout-ch stdout-process] (start-writer-listener! *out* :stdout)
-         [stderr-ch stderr-process] (start-writer-listener! *err* :stderr)
-         listeners [file-ch es-ch stdout-ch stderr-ch]
-         result (exec program args scriptfile cwd env listeners log-extra)
-         listeners-done (doall
-                         (map <!! [file-process
-                                   es-process
-                                   stdout-process
-                                   stderr-process]))
-         out-bytes (@(:bytes result) :stdout)
-         err-bytes (@(:bytes result) :stderr)
-         total-bytes (@(:bytes result) :total)]
-     (store/after-log es-opts)
-     (merge
-      (dissoc result :bytes)
-      {:out-bytes out-bytes
-       :err-bytes err-bytes
-       :total-bytes total-bytes}))))
+  [program    :- s/Str
+   args       :- [s/Str]
+   scriptfile :- s/Str
+   cwd        :- s/Str
+   outputfile :- s/Str
+   es-opts    :- OptsElasticsearch
+   env        :- Env
+   log-extra  :- {s/Any s/Any}
+   timeout    :- (s/maybe s/Str)]
+  (let [dir (io/abspath-file cwd)
+        outputfile* (io/prepend-path dir outputfile)
+        [file-ch file-process] (start-file-listener! outputfile*)
+        [es-ch es-process] (start-es-listener! es-opts)
+        [stdout-ch stdout-process] (start-writer-listener! *out* :stdout)
+        [stderr-ch stderr-process] (start-writer-listener! *err* :stderr)
+        listeners [file-ch es-ch stdout-ch stderr-ch]
+        result (exec program args scriptfile cwd
+                     env listeners log-extra timeout)
+        listeners-done (doall
+                        (map <!! [file-process
+                                  es-process
+                                  stdout-process
+                                  stderr-process]))
+        out-bytes (@(:bytes result) :stdout)
+        err-bytes (@(:bytes result) :stderr)
+        total-bytes (@(:bytes result) :total)]
+    (store/after-log es-opts)
+    (merge
+     (dissoc result :bytes)
+     {:out-bytes out-bytes
+      :err-bytes err-bytes
+      :total-bytes total-bytes})))
 
 (def RunOpts
   {:process  OptsProcess
@@ -245,4 +246,5 @@
           (-> opts :process :output)
           (-> opts :es)
           (-> opts :process :env)
-          {:build-id (-> opts :id)})))
+          {:build-id (-> opts :id)}
+          (-> opts :process :timeout))))

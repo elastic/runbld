@@ -61,7 +61,8 @@
    :stdout            s/Str
    :stderr            s/Str
    :output            s/Str
-   :env               Env})
+   :env               Env
+   (s/optional-key :timeout) (s/maybe s/Str)})
 
 (def OptsElasticsearch
   {:build-index          s/Str
