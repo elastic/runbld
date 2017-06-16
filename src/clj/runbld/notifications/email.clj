@@ -153,3 +153,13 @@
     (if (send? (-> opts :email) build-doc)
       (send opts (make-context opts build-doc failure-docs))
       ((opts :logger) "NO MAIL GENERATED"))))
+
+(s/defn send-email :- {:email-result s/Any
+                       s/Keyword s/Any}
+  [opts :- {:store-result {:addr {s/Keyword s/Any}
+                           :url s/Str
+                           :build-doc {s/Keyword s/Any}}
+            :email OptsEmail
+            s/Keyword s/Any}]
+  (assoc opts :email-result
+         (io/try-log (maybe-send! opts (-> opts :store-result :addr)))))

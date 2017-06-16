@@ -1,6 +1,7 @@
 (ns runbld.test.main-test
   (:require [cheshire.core :as json]
-            [clj-git.core :refer [git-branch git-clone git-log load-repo]]
+            [clj-git.core :refer [git-branch git-clone git-log load-repo
+                                  shallow-clone?]]
             [clj-http.core :as http-core]
             [clojure.java.io :as jio]
             [clojure.test :refer :all]
@@ -14,13 +15,15 @@
             [runbld.process :as proc]
             [runbld.scheduler :as scheduler]
             [runbld.scheduler.default :as default-sched]
+            [runbld.scm :as scm]
             [runbld.store :as store]
             [runbld.test.support :as ts]
             [runbld.util.http :refer [wrap-retries]]
             [runbld.vcs.git :as git]
             [runbld.version :as version]
             [schema.test :as s]
-            [stencil.core :as mustache])
+            [stencil.core :as mustache]
+            [environ.core :as environ])
   (:require [runbld.main :as main] :reload-all))
 
 (def email (atom []))
@@ -227,9 +230,9 @@
                                 (reset! branch
                                         (get (apply hash-map clone-args)
                                              "--branch")))
-                    main/update-workspace (fn [local b depth]
-                                            (reset! branch b))
-                    main/wipe-workspace (fn [workspace] nil)
+                    scm/update-workspace (fn [local b depth]
+                                           (reset! branch b))
+                    scm/wipe-workspace (fn [workspace] nil)
                     scheduler/as-map identity]
         (testing "supplying branch in yml"
           (let [raw-opts (-> (opts/parse-args
@@ -241,7 +244,7 @@
                              ;; make schema happy
                              (assoc :scheduler (default-sched/make {})))
                 opts (build/add-build-meta raw-opts)]
-            (main/bootstrap-workspace
+            (scm/bootstrap-workspace
              (assoc-in opts [:scm :wipe-workspace] false))
             (is (= "master"
                    (-> opts :scm :branch)
@@ -260,7 +263,7 @@
                                ;; make schema happy
                                (assoc :scheduler (default-sched/make {})))
                   opts (build/add-build-meta raw-opts)]
-              (main/bootstrap-workspace
+              (scm/bootstrap-workspace
                (assoc-in opts [:scm :wipe-workspace] false))
               (is (nil? (-> opts :scm :branch)))
               (is (= "branch"
@@ -269,8 +272,9 @@
 
 (s/deftest ^:integration execution-with-scm
   (testing "real execution all the way through with cloning via scm config"
-    (let [wipe-workspace-orig main/wipe-workspace
-          workspace "tmp/git/elastic+foo+master"]
+    (let [wipe-workspace-orig scm/wipe-workspace
+          workspace "tmp/git/elastic+foo+master"
+          master-commit (atom nil)]
       (with-redefs [email/send* (fn [& args]
                                   (swap! email concat args)
                                   ;; to satisfy schema
@@ -284,8 +288,8 @@
                                        js (mustache/render-string
                                            tmpl (assoc ctx :color color))]
                                    (reset! slack js)))
-                    main/wipe-workspace (fn [opts] opts)
-                    main/find-workspace (constantly workspace)]
+                    scm/wipe-workspace (fn [opts] opts)
+                    scm/find-workspace (constantly workspace)]
         (try
           (let [[opts res] (run
                              (conj
@@ -300,7 +304,10 @@
                     depth (-> opts :scm :depth)
                     repo (load-repo workspace)]
                 (is (= branch (git-branch repo)))
-                (is (= depth (count (git-log repo)))))
+                (let [log (git-log repo)]
+                  (is (= depth (count (git-log repo))))
+                  (reset! master-commit (last log)))
+                (is (shallow-clone? repo))                )
               (testing "scm doesn't break anything else"
                 (is (= 1 (:exit-code res)))
                 (is (= 1 (-> (store/get (-> opts :es :conn)
@@ -328,6 +335,23 @@
                               (-> opts2 :scm :branch))))
                   (is (= branch (git-branch repo2)))
                   (is (= depth (count (git-log repo2))))))
+              (testing "can clone a specific commit"
+                (with-redefs [environ/env
+                              {:dev "true"
+                               ;; this shouldn't have been fetched above
+                               :branch-specifier (:parent @master-commit)}]
+                  (let [[opts3 res3] (run
+                                       (conj
+                                        ["-c" "test/config/scm.yml"
+                                         "-j" "elastic+foo+master"
+                                         "-d" workspace]
+                                        (if (opts/windows?)
+                                          "test/fail.bat"
+                                          "test/fail.bash")))
+                        repo3 (load-repo workspace)]
+                    (is (= (:parent @master-commit)
+                           (:commit (first (git-log repo3)))))
+                    (is (shallow-clone? repo3)))))
               (testing "wiping the workspace"
                 (wipe-workspace-orig opts)
                 ;; Should only have the top-level workspace dir left
@@ -396,16 +420,16 @@
         proceed (promise)
         done (promise)
         res (atom nil)]
-    (with-redefs [main/send-email identity
-                  main/send-slack (fn [opts]
-                                    (deliver done true)
-                                    opts)
-                  main/wipe-workspace (fn [opts]
-                                        (reset! res opts)
-                                        (deliver ready true)
-                                        (is (deref proceed 6000 nil)
-                                            "Timed out waiting to proceed")
-                                        opts)]
+    (with-redefs [email/send-email identity
+                  slack/send-slack (fn [opts]
+                                     (deliver done true)
+                                     opts)
+                  scm/wipe-workspace (fn [opts]
+                                       (reset! res opts)
+                                       (deliver ready true)
+                                       (is (deref proceed 6000 nil)
+                                           "Timed out waiting to proceed")
+                                       opts)]
       (git/with-tmp-repo [d "tmp/git/record-progress-test-1"]
         (let [args (conj
                     ["-c" "test/config/main.yml"
