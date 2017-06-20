@@ -109,6 +109,7 @@
        ;; only actually check out as working copy if the command line
        ;; opt has been supplied
        (when check-out?
+         (runbld.vcs/fetch-latest vcs-repo)
          (runbld.vcs/check-out vcs-repo (-> build :vcs :commit-id)))
        build)
      check-out?]))
