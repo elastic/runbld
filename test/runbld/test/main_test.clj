@@ -1,6 +1,6 @@
 (ns runbld.test.main-test
   (:require [cheshire.core :as json]
-            [clj-git.core :refer [git-branch git-clone git-log load-repo
+            [clj-git.core :refer [git git-branch git-clone git-log load-repo
                                   shallow-clone?]]
             [clj-http.core :as http-core]
             [clojure.java.io :as jio]
@@ -184,44 +184,103 @@
             (is (empty? @slack))))))))
 
 (s/deftest last-good-commit
-  (testing "last-good-commit:"
-    (testing "successful intake"
-      (let [email-body (atom :no-email-body-yet)]
-        (with-redefs [email/send* (fn [_ _ _ _ plain html attachments]
-                                    (reset! email-body html)
-                                    ;; to satisfy schema
-                                    {})
-                      slack/send (fn [& _] (prn 'slack))]
-          (let [intake-dir "tmp/git/main-intake"
-                periodic-dir "tmp/git/main-periodic"]
-            (try
-              (git/init-test-clone periodic-dir intake-dir)
-              (let [[opts-intake res-intake]
+  (let [email-body (atom "no-email-body-yet")]
+    (with-redefs [email/send* (fn [_ _ _ _ plain html attachments]
+                                (reset! email-body html)
+                                ;; to satisfy schema
+                                {})
+                  slack/send (fn [& _] (prn 'slack))]
+      (testing "successful intake"
+        (let [intake-dir "tmp/git/main-intake"
+              periodic-dir "tmp/git/main-periodic"]
+          (try
+            (git/init-test-clone periodic-dir intake-dir)
+            (let [[opts-intake res-intake]
+                  (run (conj
+                        ["-c" "test/config/main.yml"
+                         "-j" "elastic+foo+master+intake"
+                         "-d" intake-dir]
+                        (if (opts/windows?)
+                          "test/success.bat"
+                          "test/success.bash")))]
+              (let [[opts-periodic res-periodic]
+                    (run (conj
+                          ["-c" "test/config/main.yml"
+                           "-j" "elastic+foo+master+periodic"
+                           "-d" periodic-dir
+                           "--last-good-commit" "elastic+foo+master+intake"]
+                          (if (opts/windows?)
+                            "test/fail.bat"
+                            "test/fail.bash")))]
+                (is (= 0 (:exit-code res-intake)))
+                (is (= 1 (:exit-code res-periodic)))
+                (is (.contains @email-body "using successful commit")
+                    (with-out-str
+                      (println "@email-body")
+                      (prn @email-body)))))
+            (finally
+              (io/rmdir-r periodic-dir)
+              (io/rmdir-r intake-dir)))))
+      (reset! email-body "no-email-body-yet")
+      (testing "the source is updated prior to checking out l-g-c"
+        ;; The setup is when the last-good-commit is a commit "in the
+        ;; future" from the point of view of the locally checked-out copy
+        ;; of the repo.  In that case we get an exception with "fatal:
+        ;; reference is not a tree" when we attempt to checkout the l-g-c
+        ;; Simply fetching will resolve the issue.
+        (let [origin "tmp/git/origin-repo"
+              first-clone "tmp/git/first-clone"
+              second-clone "tmp/git/second-clone"]
+          (try
+            (let [origin-repo (load-repo origin)
+                  first-repo (load-repo first-clone)
+                  second-repo (load-repo second-clone)]
+              (.mkdirs (io/file (:path origin-repo)))
+              (git origin-repo "init" ["--bare"])
+              ;; Add a commit to the first repo- the one that will
+              ;; soon be out of date
+              (git-clone first-clone origin)
+              (git/add-test-commit first-clone)
+              (git first-repo "push")
+              ;; now create a new clone that will have the previous
+              ;; commit and push another new commit that first won't
+              ;; have
+              (git-clone second-clone origin)
+              (git/add-test-commit second-clone)
+              (git second-repo "push")
+              ;; Run runbld on the second clone to store the l-g-c as
+              ;; one that doesn't exist in the first
+              (let [[opts-second res-second]
                     (run (conj
                           ["-c" "test/config/main.yml"
                            "-j" "elastic+foo+master+intake"
-                           "-d" intake-dir]
+                           "-d" second-clone]
                           (if (opts/windows?)
                             "test/success.bat"
-                            "test/success.bash")))]
-                (let [[opts-periodic res-periodic]
-                      (run (conj
-                            ["-c" "test/config/main.yml"
-                             "-j" "elastic+foo+master+periodic"
-                             "-d" periodic-dir
-                             "--last-good-commit" "elastic+foo+master+intake"]
-                            (if (opts/windows?)
-                              "test/fail.bat"
-                              "test/fail.bash")))]
-                  (is (= 0 (:exit-code res-intake)))
-                  (is (= 1 (:exit-code res-periodic)))
-                  (is (.contains @email-body "using successful commit")
-                      (with-out-str
-                        (println "@email-body")
-                        (prn @email-body)))))
-              (finally
-                (io/rmdir-r periodic-dir)
-                (io/rmdir-r intake-dir)))))))))
+                            "test/success.bash")))
+                    ;; now run it on the first clone, which would
+                    ;; throw an exception were it not for the added
+                    ;; fetching
+                    [opts-first res-first]
+                    (run (conj
+                          ["-c" "test/config/main.yml"
+                           "-j" "elastic+foo+master+periodic"
+                           "-d" first-clone
+                           "--last-good-commit" "elastic+foo+master+intake"]
+                          (if (opts/windows?)
+                            "test/fail.bat"
+                            "test/fail.bash")))]
+                ;; make sure we saw what we expected to see
+                (is (= 0 (:exit-code res-second)))
+                (is (= 1 (:exit-code res-first)))
+                (is (.contains @email-body "using successful commit")
+                    (with-out-str
+                      (println "@email-body")
+                      (prn @email-body)))))
+            (finally
+              (io/rmdir-r origin)
+              (io/rmdir-r first-clone)
+              (io/rmdir-r second-clone))))))))
 
 (s/deftest set-scm-build
   (testing "the scm build can be set multiple ways:"
