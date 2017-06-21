@@ -134,6 +134,11 @@
       (when-let [u (commit-url this commit-id)]
         {:commit-url u})))))
 
+(defn fetch-latest [this]
+  (let [repo (git/load-repo (.dir this))]
+    (git/git-fetch repo)
+    (git/git-checkout repo "HEAD")))
+
 ;; Assume GitHub for now...
 (s/defrecord GitRepo
     [dir     :- s/Str  ;; local working copy
@@ -145,7 +150,8 @@
   VcsRepo
   {:log-latest log-latest
    :provider (constantly provider)
-   :check-out checkout-commit})
+   :check-out checkout-commit
+   :fetch-latest fetch-latest})
 
 (s/defn make-repo :- GitRepo
   [dir org project branch]

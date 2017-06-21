@@ -109,6 +109,7 @@
        ;; only actually check out as working copy if the command line
        ;; opt has been supplied
        (when check-out?
+         (runbld.vcs/fetch-latest vcs-repo)
          (runbld.vcs/check-out vcs-repo (-> build :vcs :commit-id)))
        build)
      check-out?]))
@@ -145,18 +146,17 @@
     (let [b (find-build opts (-> opts :build :last-success :id))
           commit (-> b :vcs :commit-short)]
       ((:logger opts)
-       "using last successful commit"
-       commit
-       "from"
-       (-> b :build :job-name) (-> b :id)
-       (-> b :process :time-start)
-       (date/human-duration
-        (date/iso-diff-secs
-         (date/from-iso
-          ;; notify on time-end because it makes more
-          ;; logical sense to report on the last
-          ;; completed build's end time, I think
-          (-> b :process :time-end))
-         (date/now)))
+       "Using last successful commit" commit
+       "from the job" (-> b :build :job-name)
+       "with the build id" (-> b :id)
+       "that was started at" (-> b :process :time-start)
+       "and finished" (date/human-duration
+                       (date/iso-diff-secs
+                        (date/from-iso
+                         ;; notify on time-end because it makes more
+                         ;; logical sense to report on the last
+                         ;; completed build's end time, I think
+                         (-> b :process :time-end))
+                        (date/now)))
        "ago")))
   opts)
