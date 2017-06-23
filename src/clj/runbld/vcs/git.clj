@@ -98,10 +98,11 @@
 
 (defn head-commit
   [dir]
-  (let [HEAD (first
-              (git/git-log
-               (git/load-repo dir)))]
-    (commit-map HEAD)))
+  (let [repo (git/load-repo dir)]
+    (if-let [commit (git/git-log-commit repo)]
+      (commit-map commit)
+      (io/log "Failed to get the head-commit. The raw string was:"
+              (git/git-log-raw-string repo "HEAD")))))
 
 (defn project-url
   [this]
