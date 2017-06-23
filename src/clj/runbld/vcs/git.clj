@@ -55,25 +55,27 @@
 (defn commit-map [commit]
   (let [message (let [b (-> commit :message :body)]
                   (str (-> commit :message :title)
-                       (when (and b (not-empty b)) (str "\n\n" b))))]
-    {:commit-id (:commit commit)
-     :commit-short (:commit-short commit)
-     :message (-> commit :message :title)
-     :message-full message
-     :commit-time (-> commit :committer :time str)
-     :commit-name (-> commit :committer :name)
-     :commit-email (-> commit :committer :email)
-     :author-time (-> commit :author :time str)
-     :author-name (-> commit :author :name)
-     :author-email (-> commit :author :email)
-     :provider provider
-     :log-pretty (format
-                  "commit %s\nAuthor: %s <%s>\nDate:   %s\n\n%s"
-                  (:commit commit)
-                  (or (-> commit :author :name) "")
-                  (or (-> commit :author :email) "")
-                  (-> commit :committer :time str)
-                  message)}))
+                       (when (and b (not-empty b)) (str "\n\n" b))))
+        commit-time (-> commit :committer :time)
+        author-time (-> commit :author :time)]
+    (cond-> {:commit-id (:commit commit)
+             :commit-short (:commit-short commit)
+             :message (-> commit :message :title)
+             :message-full message
+             :commit-name (-> commit :committer :name)
+             :commit-email (-> commit :committer :email)
+             :author-name (-> commit :author :name)
+             :author-email (-> commit :author :email)
+             :provider provider
+             :log-pretty (format
+                          "commit %s\nAuthor: %s <%s>\nDate:   %s\n\n%s"
+                          (:commit commit)
+                          (or (-> commit :author :name) "")
+                          (or (-> commit :author :email) "")
+                          commit-time
+                          message)}
+      commit-time (assoc :commit-time (str commit-time))
+      author-time (assoc :author-time (str author-time)))))
 
 (defn resolve-remote [^String loc]
   (condp #(.startsWith %2 %1) loc
