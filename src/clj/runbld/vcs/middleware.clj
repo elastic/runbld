@@ -36,4 +36,7 @@
 
 (s/defn add-vcs-info
   [opts :- OptsWithBuild]
-  (assoc opts :vcs (vcs/log-latest (make-repo opts))))
+  (let [latest (vcs/log-latest (make-repo opts))]
+    ((:logger opts)
+     "Adding vcs info for the latest commit: " (:commit-id latest))
+    (assoc opts :vcs latest)))
