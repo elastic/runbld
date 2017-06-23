@@ -111,21 +111,25 @@
   (let [rcpts (split-addr (-> opts :email :to))]
     ((opts :logger) "MAILING:" (str/join ", "
                                          (map obfuscate-addr rcpts)))
-    ((opts :logger)
-     (with-out-str
-       (clojure.pprint/pprint
-        (send* (opts :email)
-               (-> opts :email :from)
-               rcpts
-               (-> ctx :email :subject)
-               (render (-> opts :email :template-txt) ctx)
-               (when (and (-> opts :email :template-html)
-                          (not (-> opts :email :text-only)))
-                 (render (-> opts :email :template-html) ctx))
-               (concat
-                (map attach-failure (:failures ctx))
-                (when-let [a (attach-log (:id ctx) (-> ctx :log :lines))]
-                  [a]))))))))
+    (let [out (with-out-str
+                (clojure.pprint/pprint
+                 (send* (opts :email)
+                        (-> opts :email :from)
+                        rcpts
+                        (-> ctx :email :subject)
+                        (render (-> opts :email :template-txt) ctx)
+                        (when (and (-> opts :email :template-html)
+                                   (not (-> opts :email :text-only)))
+                          (render (-> opts :email :template-html) ctx))
+                        (concat
+                         (map attach-failure (:failures ctx))
+                         (when-let [a (attach-log
+                                       (:id ctx) (-> ctx :log :lines))]
+                           [a])))))
+          msg (if (.contains out "SUCCESS")
+                "Mail sent.  Output: "
+                "Mail failed to send.  Output: ")]
+      ((opts :logger) (str msg out)))))
 
 (s/defn make-context :- EmailCtx
   [opts build failures]
