@@ -25,7 +25,7 @@ gpgsig = <'gpgsig'>
          <oneSp> gpgPostfix
 
 msgTitle = <indent> nonNewline*
-msgBody = ( newline <indent> nonNewline* )*
+msgBody = ( (newline <indent>)+ nonNewline* )*
 
 gpgPrefix = '-----BEGIN PGP SIGNATURE-----'
 gpgPostfix = '-----END PGP SIGNATURE-----'
