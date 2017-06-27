@@ -1,4 +1,7 @@
 * runbld changes
+** 1.4.0
+   - New debug log feature to aid in future development
+   - Minor fix to git log parsing
 ** 1.3.11
    - Fetch from git before checking out the last-good-commit
 ** 1.3.10
