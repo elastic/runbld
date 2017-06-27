@@ -4,13 +4,18 @@
   in).  So while this may appear to be gross b/c of the essentially
   global state that it maintains, it was done deliberately to prevent
   having to thread that state into all corners of the codebase."
-  (:require [clojure.stacktrace :as stacktrace]
-            [clojure.string :as string]
-            [runbld.io :as io]
-            [postal.core :as mail]
-            [runbld.util.email :as email]
-            [slingshot.slingshot :refer [try+ throw+]])
+  (:require
+   [clj-time.core :as t]
+   [clj-time.format :as f]
+   [clojure.stacktrace :as stacktrace]
+   [clojure.string :as string]
+   [runbld.io :as io]
+   [postal.core :as mail]
+   [runbld.util.email :as email]
+   [slingshot.slingshot :refer [try+ throw+]])
   (:import (java.util Date)))
+
+(def date-format (f/formatters :date-time))
 
 (def debug-log
   "The log is basically a vector of stuff that will eventually be
@@ -35,13 +40,14 @@
                            [nil more])]
     (swap! debug-log conj
            (format "[%s] [%s %s:%s] %s%s"
-                   (Date.)
+                   (f/unparse date-format (t/now))
                    ns
                    (:line form-meta "")
                    (:column form-meta "")
                    (apply print-str msgs)
                    (if throwable
-                     (str "\n" (with-out-str (stacktrace/print-cause-trace throwable)))
+                     (str "\n" (with-out-str
+                                 (stacktrace/print-cause-trace throwable)))
                      "")))))
 
 (defmacro log
@@ -65,8 +71,8 @@
      {:from from
       :to to
       :subject (str "runbld debug log for " job-name)
-      :body {:type "text/plain; charset=utf-8"
-             :content (string/join "\n" @debug-log)}})))
+      :body [{:type "text/plain; charset=utf-8"
+              :content (string/join "\n" @debug-log)}]})))
 
 (defn with-debug-logging [proc opts]
   (try+

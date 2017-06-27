@@ -525,27 +525,53 @@
                               ;; to satisfy schema
                               {})
                 slack/send (fn [opts ctx])
-                runbld.opts/load-config (fn [_]
-                                          (slingshot.slingshot/throw+
-                                           {:error :runbld.opts/file-not-found
-                                            :msg "on purpose test failure"}))]
-    (testing "build success: default notification settings"
-      (reset! email [])
-      (reset! slack [])
-      (git/with-tmp-repo [d "tmp/git/main-test-3"]
-        (try
-          (let [res (apply main/-main
-                           ["-c" "test/config/main.yml"
-                            "-j" "elastic+foo+master"
-                            "-d" d
-                            "test/success.bash"])]
-            (is (= "on purpose test failure" res))
-            (is (= 1 (count (debug/get-log))))
-            (is (.contains (first (debug/get-log))
-                           "runbld.main"))
-            (is (.contains (first (debug/get-log))
-                           (version/version))))
-          (catch Throwable t
-            ;; with-debug-log rethrows but it should rethrow in a way
-            ;; that runbld.main can continue to work as it should
-            (is false "This should've been caught in runbld.main")))))))
+                ]
+    (testing "debug log is capturing info, rethrowing correctly"
+      (with-redefs [runbld.opts/load-config
+                    (fn [_]
+                      (slingshot.slingshot/throw+
+                       {:error :runbld.opts/file-not-found
+                        :msg "on purpose test failure"}))]
+        (git/with-tmp-repo [d "tmp/git/debug-log-1"]
+          (try
+            (let [res (apply main/-main
+                             ["-c" "test/config/main.yml"
+                              "-j" "elastic+foo+master"
+                              "-d" d
+                              "test/success.bash"])]
+              (is (= "on purpose test failure" res))
+              (is (= 1 (count (debug/get-log))))
+              (is (.contains (first (debug/get-log))
+                             "runbld.main"))
+              (is (.contains (first (debug/get-log))
+                             (version/version))))
+            (catch Throwable t
+              ;; with-debug-log rethrows but it should rethrow in a way
+              ;; that runbld.main can continue to work as it should
+              (is false "This should've been caught in runbld.main"))))))
+    ;; This test is disabled b/c it requires a real email config but
+    ;; is left here for future manual testing
+    #_
+    (testing "emails are sent"
+      (debug/reset)
+      (with-redefs [store/store-result
+                    (fn [& _]
+                      (throw (Exception. "on purpose test failure")))]
+        (git/with-tmp-repo [d "tmp/git/debug-log-2"]
+          (try
+            (let [res (apply main/-main
+                             ["-c" "test/config/debug.yml"
+                              "-j" "elastic+foo+master"
+                              "-d" d
+                              "test/success.bash"])]
+              (is (and res (.contains res "on purpose test failure")))
+              (is (< 1 (count (debug/get-log))))
+              (when (is (first (debug/get-log)))
+                (is (.contains (first (debug/get-log))
+                               "runbld.main"))
+                (is (.contains (first (debug/get-log))
+                               (version/version)))))
+            (catch Throwable t
+              ;; with-debug-log rethrows but it should rethrow in a way
+              ;; that runbld.main can continue to work as it should
+              (is false "This should've been caught in runbld.main"))))))))

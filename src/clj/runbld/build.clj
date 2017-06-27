@@ -126,10 +126,14 @@
   [opts :- {:job-name s/Str
             :scheduler (s/protocol scheduler/Scheduler)
             s/Keyword s/Any}]
-  (assoc opts
-         :id (make-id)
-         :build (merge (split-job-name (:job-name opts))
-                       (scheduler/as-map (:scheduler opts)))))
+  (let [build-id (make-id)
+        build-meta (merge (split-job-name (:job-name opts))
+                          (scheduler/as-map (:scheduler opts)))]
+    (debug/log "Build id:" build-id
+               "Build meta:" build-meta)
+    (assoc opts
+           :id build-id
+           :build build-meta)))
 
 (s/defn add-last-success
   [opts :- OptsWithBuild]
