@@ -16,8 +16,7 @@
             [runbld.system :as system]
             [runbld.tests :as tests]
             [runbld.io :as io]
-            [runbld.pipeline :refer [after around before
-                                     debug-log make-pipeline]]
+            [runbld.pipeline :refer [after around before make-pipeline]]
             [runbld.scm :as scm]
             [runbld.util.date :as date]
             [runbld.vcs.git :refer [checkout-commit]]
