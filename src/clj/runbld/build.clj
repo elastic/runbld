@@ -6,6 +6,7 @@
             [runbld.util.data :refer [deep-merge-with deep-merge]]
             [runbld.util.date :as date]
             [runbld.scheduler :as scheduler]
+            [runbld.util.debug :as debug]
             [runbld.vcs.middleware :as vcs]
             [schema.core :as s]
             [slingshot.slingshot :refer [throw+]]))
@@ -106,6 +107,7 @@
                    (:job-name opts))
         vcs-repo (vcs/make-repo opts)]
     [(when-let [build (last-good-build job-name opts vcs-repo)]
+       (debug/log "Found last-good-commit:" (-> build :vcs :commit-id))
        ;; only actually check out as working copy if the command line
        ;; opt has been supplied
        (when check-out?
