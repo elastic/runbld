@@ -1,19 +1,12 @@
 (ns runbld.pipeline
-  (:require [runbld.io :as io]))
-
-(def debug-middleware?
-  "Set to true to enable debug logging during before/after/around"
-  false)
+  (:require [runbld.io :as io]
+            [runbld.util.debug :as debug]))
 
 (defn symbol-name [fn-sym]
   (try
     `(:name (meta (var ~fn-sym)))
     (catch Exception _
       `(str ~fn-sym))))
-
-(defn debug-log [& x]
-  (when debug-middleware?
-    (apply io/log x)))
 
 (defmacro before [fn-sym]
   "Returns a middleware function that will run before the wrapped
@@ -26,11 +19,8 @@
   `(fn [proc#]
      (fn [opts#]
        (let [name# ~(symbol-name fn-sym)
-             _# (debug-log :enter name# (keys opts#))
              res# (~fn-sym opts#)
-             _# (debug-log :after-fn name# (keys res#))
              proc-res# (proc# res#)]
-         (debug-log :after-proc name# (keys proc-res#))
          proc-res#))))
 
 (defmacro after [fn-sym]
@@ -44,11 +34,8 @@
   `(fn [proc#]
      (fn [opts#]
        (let [name# ~(symbol-name fn-sym)
-             _# (debug-log :enter name# (keys opts#))
              res# (proc# opts#)
-             _# (debug-log :after-proc name# (keys res#))
              fn-res# (~fn-sym res#)]
-         (debug-log :after-fn name# (keys fn-res#))
          fn-res#))))
 
 (defmacro around [fn-sym]
@@ -63,9 +50,7 @@
   `(fn [proc#]
      (fn [opts#]
        (let [name# ~(symbol-name fn-sym)
-             _# (debug-log :enter name# (keys opts#))
-             res# (~fn-sym proc# opts#)
-             _# (debug-log :leave name# (keys res#))]
+             res# (~fn-sym proc# opts#)]
          res#))))
 
 (defn make-pipeline
@@ -90,8 +75,5 @@
   (reduce (fn wrap-proc* [proc middleware]
             (middleware proc))
           (fn [opts]
-            (debug-log :before-root-proc (keys opts))
-            (let [res (root-fn opts)]
-              (debug-log :after-root-proc (keys opts))
-              res))
+            (root-fn opts))
           (reverse middleware-list)))

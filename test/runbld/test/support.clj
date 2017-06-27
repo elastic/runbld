@@ -1,7 +1,8 @@
 (ns runbld.test.support
   (:require
    [runbld.io :as io]
-   [runbld.util.date :as date]))
+   [runbld.util.date :as date]
+   [runbld.util.debug :as debug]))
 
 (defn test-log [& x]
   (io/spit (.getAbsolutePath (clojure.java.io/file "test.log"))
@@ -16,3 +17,9 @@
   ;; Don't pollute the console
   (with-redefs [io/log test-log]
     (f)))
+
+(defn reset-debug-log-fixture
+  "Clears out the debug log between tests."
+  [f]
+  (debug/reset)
+  (f))

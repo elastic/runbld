@@ -1,0 +1,21 @@
+es:
+  build-index: runbld-build
+  failure-index: runbld-failure
+  log-index: runbld-log
+
+process:
+  env:
+    RUNBLD_TEST: RUNBLD_TEST
+
+email:
+  host: smtp.example.com
+  port: 587
+  user: smtpuser
+  pass: pass!
+  from: default@example.com
+  to: default@example.com
+  template-txt: templates/email.mustache.txt
+  template-html: templates/email.mustache.html
+
+debug:
+  to: default@example.com

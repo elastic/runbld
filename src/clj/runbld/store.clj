@@ -1,17 +1,17 @@
 (ns runbld.store
   (:refer-clojure :exclude [get])
-  (:require [runbld.schema :refer :all]
-            [schema.core :as s])
-  (:require [clojure.core.async :as async
-             :refer [go go-loop chan >! <! alts! close!]]
+  (:require [clojure.core.async :as async]
             [clojure.string :as str]
-            [elasticsearch.document :as doc]
-            [elasticsearch.indices :as indices]
             [elasticsearch.connection :as conn]
             [elasticsearch.connection.http :as http]
-            [runbld.util.date :as date]
+            [elasticsearch.document :as doc]
+            [elasticsearch.indices :as indices]
             [runbld.io :as io]
+            [runbld.schema :refer :all]
+            [runbld.util.date :as date]
+            [runbld.util.debug :as debug]
             [runbld.vcs :refer [VcsRepo]]
+            [schema.core :as s]
             [slingshot.slingshot :refer [try+ throw+]])
   (:import (elasticsearch.connection Connection)))
 
@@ -120,6 +120,7 @@
         t (name DocType)
         id (:id d)
         es-addr {:index idx :type t :id id}]
+    (debug/log "Saving doc in ES:" d)
     (doc/update conn idx t id {:body {:doc d
                                       :doc_as_upsert true}
                                :query-params {:refresh true}})
@@ -231,10 +232,10 @@
   ([opts :- OptsElasticsearch]
    (let [BUFSIZE (-> opts :bulk-size)
          TIMEOUT_MS (-> opts :bulk-timeout-ms)
-         ch (chan BUFSIZE)
-         proc (go-loop [buf []]
+         ch (async/chan BUFSIZE)
+         proc (async/go-loop [buf []]
                 (let [timed-out (async/timeout TIMEOUT_MS)
-                      [x select] (alts! [ch timed-out])
+                      [x select] (async/alts! [ch timed-out])
                       newbuf
                       (cond
                         ;; got nil from the message chan, index buf,
