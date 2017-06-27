@@ -7,6 +7,7 @@
             [environ.core :as environ]
             [runbld.util.data :refer [strip-trailing-slashes]]
             [runbld.util.date :as date]
+            [runbld.util.debug :as debug]
             [runbld.io :as io]
             [runbld.vcs :as vcs :refer [VcsRepo]]
             [slingshot.slingshot :refer [throw+]]))
@@ -84,6 +85,18 @@
     "git@" loc
     (str "file://" (io/abspath loc))))
 
+(defn head-commit
+  [dir]
+  (let [repo (git/load-repo dir)]
+    (let [commit (git/git-log-commit repo "HEAD")
+          raw-commit (git/git-log-raw-string repo "HEAD")]
+      (debug/log "HEAD commit:" commit
+                 "Raw string: >" raw-commit "<")
+      (if commit
+        (commit-map commit)
+        (io/log "Failed to get the head-commit. The raw string was:"
+                raw-commit)))))
+
 (defn checkout-workspace [clone-home remote workspace org project branch]
   (let [absremote (resolve-remote remote)
         absworkspace (io/abspath-file workspace)
@@ -93,16 +106,8 @@
                    absremote absworkspace)
         workspace-repo (git/load-repo absworkspace)
         _ (git/git-checkout workspace-repo branch)
-        HEAD (first (git/git-log workspace-repo))]
+        HEAD (head-commit absworkspace)]
     (commit-map HEAD)))
-
-(defn head-commit
-  [dir]
-  (let [repo (git/load-repo dir)]
-    (if-let [commit (git/git-log-commit repo)]
-      (commit-map commit)
-      (io/log "Failed to get the head-commit. The raw string was:"
-              (git/git-log-raw-string repo "HEAD")))))
 
 (defn project-url
   [this]
