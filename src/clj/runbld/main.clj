@@ -19,11 +19,12 @@
             [runbld.pipeline :refer [after around before make-pipeline]]
             [runbld.scm :as scm]
             [runbld.util.date :as date]
+            [runbld.util.debug :as debug]
             [runbld.vcs.git :refer [checkout-commit]]
             [runbld.vcs.middleware :as vcs]
             [runbld.version :as version]
             [schema.core :as s]
-            [slingshot.slingshot :refer [try+ throw+]]))
+            [slingshot.slingshot :refer [try+]]))
 
 (defn really-die
   ([code]
@@ -65,7 +66,8 @@
 
   Order matters as there are stages that may rely on information from
   previous stages.  Pay particular attention to before/after."
-  [(before java/add-java)
+  [(around debug/with-debug-logging)
+   (before java/add-java)
    (before scheduler/add-scheduler)
    (before build/add-build-meta)
    (before store/store-result) ;; store that we started
@@ -86,6 +88,7 @@
   (try+
    (io/log "runbld started")
    (io/log (version/string))
+   (debug/log (version/string))
    (let [raw-opts (assoc (opts/parse-args args) :logger io/log)
          runbld-proc (make-pipeline proc/run default-middleware)
          {:as opts
