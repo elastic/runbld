@@ -4,6 +4,7 @@
             [slingshot.slingshot :refer [throw+]])
   (:require [clojure.java.io :as io]
             [environ.core :as environ]
+            [runbld.util.debug :as debug]
             [runbld.vcs :as vcs]
             [runbld.vcs.subversion :as svn]
             [runbld.vcs.git :as git]))
@@ -26,13 +27,21 @@
                               (get-in opts [:build :project])
                               (get-in opts [:env :SVN_REVISION]))
 
-      :else (throw+
-             {:error ::unknown-repo
-              :msg (format (str
-                            "%s: unknown repository type "
-                            "(only know about git and svn currently)")
-                           cwd)
-              :opts opts}))))
+      :else
+      (let [msg (str cwd ": unknown repository type "
+                     "(only know about git and svn currently)")
+            f (io/file cwd)
+            exists? (.exists f)]
+        (debug/log msg
+                   "CWD exists?" exists?
+                   "Listing:" (if exists?
+                                (.list f)
+                                "N/A")
+                   "Process opts:" (:process opts))
+        (throw+
+         {:error ::unknown-repo
+          :msg msg
+          :opts opts})))))
 
 (s/defn add-vcs-info
   [opts :- OptsWithBuild]
