@@ -8,6 +8,7 @@
             [runbld.opts :as opts]
             [runbld.store :as store]
             [runbld.test.support :as ts]
+            [runbld.util.email :as email-util]
             [runbld.vcs.git :as git]
             [schema.test]
             [stencil.core :as mustache]))
@@ -37,11 +38,11 @@
 
 (deftest obfuscation
   (is (= "foo@b***.dom"
-         (email/obfuscate-addr "foo@bar.dom")))
+         (email-util/obfuscate-addr "foo@bar.dom")))
   (is (= "foo@b***.dom"
-         (email/obfuscate-addr "foo@bar.baz.dom")))
+         (email-util/obfuscate-addr "foo@bar.baz.dom")))
   (is (= "foo@q***.dom"
-         (email/obfuscate-addr "foo@bar.quux.dom"))))
+         (email-util/obfuscate-addr "foo@bar.quux.dom"))))
 
 (defn find-contents [body]
   (->> body

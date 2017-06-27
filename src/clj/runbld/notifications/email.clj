@@ -7,6 +7,7 @@
             [runbld.store :as store]
             [runbld.io :as io]
             [runbld.notifications :as n]
+            [runbld.util.email :as email]
             [runbld.vcs :as vcs]
             [stencil.core :as mustache]))
 
@@ -88,12 +89,6 @@
       :subject subject
       :body body})))
 
-(s/defn obfuscate-addr :- s/Str
-  [addr :- s/Str]
-  (str/replace addr
-               (re-pattern "(.*?)@([^.]+\\.)?(.)[^.]+\\.([^.]+)$")
-               "$1@$3***.$4"))
-
 (s/defn render :- s/Str
   [tmpl :- s/Str
    ctx :- EmailCtx]
@@ -110,7 +105,7 @@
              (into (sorted-map) ctx))))
   (let [rcpts (split-addr (-> opts :email :to))]
     ((opts :logger) "MAILING:" (str/join ", "
-                                         (map obfuscate-addr rcpts)))
+                                         (map email/obfuscate-addr rcpts)))
     (let [out (with-out-str
                 (clojure.pprint/pprint
                  (send* (opts :email)
