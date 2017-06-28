@@ -135,5 +135,6 @@
           (clojure.pprint/pprint opts))))
      (die 1))
 
-   (catch Exception e
-     (die 1 e))))
+   ;; Gotta catch 'em all!
+   (catch Throwable t
+     (die 1 t))))
