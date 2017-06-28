@@ -1,4 +1,7 @@
 * runbld changes
+** 1.4.1
+   - Catch all throwables
+   - Log the status of the debug log
 ** 1.4.0
    - New debug log feature to aid in future development
    - Minor fix to git log parsing
