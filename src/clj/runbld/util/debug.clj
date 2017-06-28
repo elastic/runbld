@@ -76,10 +76,13 @@
 
 (defn with-debug-logging [proc opts]
   (try+
+   (if (-> opts :debug :to)
+     ((:logger opts) "Debug logging enabled.")
+     ((:logger opts) "Debug logging disabled."))
    (proc opts)
    (catch Object o
      (let [t (:throwable &throw-context)]
        (log t "Error caught in debug logger.")
        (when (-> opts :debug :to)
          (send-log opts))
-       (throw+ t)))))
+       (throw+ o)))))
