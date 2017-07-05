@@ -35,7 +35,7 @@
         (debug/log msg
                    "CWD exists?" exists?
                    "Listing:" (if exists?
-                                (.list f)
+                                (vec (.list f))
                                 "N/A")
                    "Process opts:" (:process opts))
         (throw+
