@@ -9,7 +9,6 @@
    [clj-time.format :as f]
    [clojure.stacktrace :as stacktrace]
    [clojure.string :as string]
-   [runbld.io :as io]
    [postal.core :as mail]
    [runbld.util.email :as email]
    [slingshot.slingshot :refer [try+ throw+]])
@@ -65,7 +64,7 @@
                  :keys [job-name]
                  :as opts}]
   (when to
-    (io/log "Sending debug log to" (email/obfuscate-addr to))
+    ((:logger opts) "Sending debug log to" (email/obfuscate-addr to))
     (mail/send-message
      email-cfg
      {:from from
