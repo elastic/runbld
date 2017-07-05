@@ -44,6 +44,7 @@
                    (:line form-meta "")
                    (:column form-meta "")
                    (apply print-str msgs)
+                   (apply pr-str msgs)
                    (if throwable
                      (str "\n" (with-out-str
                                  (stacktrace/print-cause-trace throwable)))
