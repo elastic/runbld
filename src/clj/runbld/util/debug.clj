@@ -38,12 +38,14 @@
                            [(first more) (rest more)]
                            [nil more])]
     (swap! debug-log conj
-           (format "[%s] [%s %s:%s] %s%s"
+           (format "[%s] [%s] %s%s"
                    (f/unparse date-format (t/now))
-                   ns
-                   (:line form-meta "")
-                   (:column form-meta "")
-                   (apply print-str msgs)
+                   (if ns
+                     (format "%s %s:%s"
+                             ns
+                             (:line form-meta "")
+                             (:column form-meta ""))
+                     "")
                    (apply pr-str msgs)
                    (if throwable
                      (str "\n" (with-out-str
