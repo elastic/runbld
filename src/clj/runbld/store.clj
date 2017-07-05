@@ -120,7 +120,7 @@
         t (name DocType)
         id (:id d)
         es-addr {:index idx :type t :id id}]
-    (debug/log "Saving doc in ES:" d)
+    (debug/log "Saving doc in ES:" (update d :process dissoc :cmd-source))
     (doc/update conn idx t id {:body {:doc d
                                       :doc_as_upsert true}
                                :query-params {:refresh true}})
