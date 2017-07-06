@@ -9,7 +9,6 @@
    [clj-time.format :as f]
    [clojure.stacktrace :as stacktrace]
    [clojure.string :as string]
-   [runbld.io :as io]
    [postal.core :as mail]
    [runbld.util.email :as email]
    [slingshot.slingshot :refer [try+ throw+]])
@@ -39,12 +38,15 @@
                            [(first more) (rest more)]
                            [nil more])]
     (swap! debug-log conj
-           (format "[%s] [%s %s:%s] %s%s"
+           (format "[%s] [%s] %s%s"
                    (f/unparse date-format (t/now))
-                   ns
-                   (:line form-meta "")
-                   (:column form-meta "")
-                   (apply print-str msgs)
+                   (if ns
+                     (format "%s %s:%s"
+                             ns
+                             (:line form-meta "")
+                             (:column form-meta ""))
+                     "")
+                   (apply pr-str msgs)
                    (if throwable
                      (str "\n" (with-out-str
                                  (stacktrace/print-cause-trace throwable)))
@@ -65,7 +67,7 @@
                  :keys [job-name]
                  :as opts}]
   (when to
-    (io/log "Sending debug log to" (email/obfuscate-addr to))
+    ((:logger opts) "Sending debug log to" (email/obfuscate-addr to))
     (mail/send-message
      email-cfg
      {:from from

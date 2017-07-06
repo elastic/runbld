@@ -91,7 +91,7 @@
     (let [commit (git/git-log-commit repo "HEAD")
           raw-commit (git/git-log-raw-string repo "HEAD")]
       (debug/log "HEAD commit:" commit
-                 "Raw string: >" raw-commit "<")
+                 "Raw string:" raw-commit)
       (if commit
         (commit-map commit)
         (io/log "Failed to get the head-commit. The raw string was:"

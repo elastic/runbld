@@ -1,6 +1,7 @@
 (ns runbld.io
   (:refer-clojure :exclude [spit])
-  (:require [schema.core :as s])
+  (:require [schema.core :as s]
+            [runbld.util.debug :as debug])
   (:require [clojure.java.io :as jio]
             [clojure.java.shell :as sh]
             [pallet.thread-expr :refer [when->]]
@@ -23,6 +24,7 @@
    (.startsWith os "WINDOWS")))
 
 (defn log [& x]
+  (apply debug/log* *ns* nil x)
   (send-off logger (fn [_] (apply println "runbld>>>" x)))
   nil)
 
