@@ -139,11 +139,14 @@
   [opts :- OptsWithBuild]
   (let [[last-good-build checked-out?]
         (maybe-find-last-good-build-and-checkout opts)]
-    (update
-     opts :build merge (when last-good-build
-                         {:last-success
-                          (abbreviate-last-good-build
-                           last-good-build checked-out?)}))))
+    (cond-> opts
+      last-good-build
+      (update :build merge {:last-success (abbreviate-last-good-build
+                                           last-good-build checked-out?)})
+
+      (and last-good-build checked-out?)
+      (update :vcs merge
+              (:vcs (find-build opts (:id last-good-build)))))))
 
 (s/defn maybe-log-last-success
   [opts :- (merge {:logger clojure.lang.IFn}

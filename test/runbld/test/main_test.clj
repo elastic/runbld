@@ -253,7 +253,8 @@
               (git second-repo "push")
               ;; Run runbld on the second clone to store the l-g-c as
               ;; one that doesn't exist in the first
-              (let [[opts-second res-second]
+              (let [second-commit (:commit (git/head-commit second-repo))
+                    [opts-second res-second]
                     (run (conj
                           ["-c" "test/config/main.yml"
                            "-j" "elastic+foo+master+intake"
@@ -261,6 +262,7 @@
                           (if (opts/windows?)
                             "test/success.bat"
                             "test/success.bash")))
+                    _ (reset! email-body "no-email-body-yet")
                     ;; now run it on the first clone, which would
                     ;; throw an exception were it not for the added
                     ;; fetching
@@ -276,7 +278,8 @@
                 ;; make sure we saw what we expected to see
                 (is (= 0 (:exit-code res-second)))
                 (is (= 1 (:exit-code res-first)))
-                (is (.contains @email-body "using successful commit")
+                (is (.contains @email-body
+                               (str "using successful commit " second-commit))
                     (with-out-str
                       (println "@email-body")
                       (prn @email-body)))))
