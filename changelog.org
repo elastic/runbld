@@ -1,4 +1,7 @@
 * runbld changes
+** 1.4.2
+   - Tweaked debug output
+   - Corrected commit id in notification when last-good-commit is used
 ** 1.4.1
    - Catch all throwables
    - Log the status of the debug log
