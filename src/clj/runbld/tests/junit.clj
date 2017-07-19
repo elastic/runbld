@@ -89,6 +89,7 @@
          (map str)
          (filter #(re-find #"TEST-.*\.xml$" %))
          (map io/file)
+         (remove #(= 0 (.length %)))
          (map #(.toURI %))
          (map #(.toURL %))
          (map x/xml-resource)

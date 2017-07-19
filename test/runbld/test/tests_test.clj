@@ -60,3 +60,10 @@
               :skipped 0}
              (select-keys res [:errors :failures :tests :skipped])))
       (is (= [] (map :type (:failed-testcases res)))))))
+
+(deftest empty-file
+  (try
+    (tests/capture-failures "test")
+    (is :a-ok "This should pass")
+    (catch Exception e
+      (is false (str "Why did this fail? " (.getMessage e))))))
