@@ -1,4 +1,7 @@
 * runbld changes
+** 1.4.3
+   - Jenkins allows empty test results and runbld shouldn't fail when
+     exposed to one.
 ** 1.4.2
    - Tweaked debug output
    - Corrected commit id in notification when last-good-commit is used
