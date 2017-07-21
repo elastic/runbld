@@ -9,6 +9,39 @@
 (def T
   (name runbld.schema/DocType))
 
+(defn clean-repro [s]
+  (when (string? s)
+    (-> s
+        (.replace "  2> " "")
+        (.replaceAll " -D" " \\\\\n  -D"))))
+
+(defn repro-lines [conn idx build-id]
+  (let [q {:query
+           {:bool
+            {:should [{:match {:log "2"}}]
+             :must [{:match {:log "reproduce"}}
+                    {:match {:log "with"}}
+                    {:match {:build-id build-id}}]}}
+           :sort {:ord.stream :asc}
+           :size 10}]
+    (->> (es.doc/search conn idx T {:body q})
+         :hits :hits
+         (map (comp clean-repro :log :_source))
+         (filter identity))))
+
+(defn there-were-test-failures-line [conn idx build-id]
+  (let [q {:query
+           {:bool
+            {:must [{:match {:log "there"}}
+                    {:match {:log "were"}}
+                    {:match {:log "test"}}
+                    {:match {:log "failures"}}
+                    {:match {:build-id build-id}}]}}
+           :size 1}
+        res (-> (es.doc/search conn idx T {:body q})
+                :hits :hits first :_source)]
+    (:log res)))
+
 (defn went-wrong-line [conn idx build-id]
   (let [q {:query
            {:bool
@@ -92,3 +125,15 @@
                (map :_source)
                (map :log)
                reverse))))))
+
+(defn summary [conn idx build-id]
+  (when-let [first-line (or (there-were-test-failures-line conn idx build-id)
+                            (went-wrong conn idx build-id))]
+    (let [repros (->> (repro-lines conn idx build-id)
+                      (interpose "\n\n")
+                      (apply str))]
+      (format "%s%s"
+              first-line
+              (if (pos? (count repros))
+                (format "\n\n%s" repros)
+                "")))))
