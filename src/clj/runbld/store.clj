@@ -6,7 +6,7 @@
             [elasticsearch.connection.http :as http]
             [elasticsearch.document :as doc]
             [elasticsearch.indices :as indices]
-            [robert.bruce :refer [try-try-again]]
+            [robert.bruce :refer [*try* try-try-again]]
             [runbld.io :as io]
             [runbld.schema :refer :all]
             [runbld.util.date :as date]
@@ -205,29 +205,33 @@
    (when (seq docs)
      (let [make (fn [doc]
                   {:index {:source doc}})
-           actions (atom (doall (map make docs)))]
+           actions (atom (doall (map make docs)))
+           tries 10]
        ;; Special case of try-try-again b/c we want some decay to
        ;; give ES time to recover
        (try-try-again
-        {:tries 10
+        {:tries tries
          :sleep 1000
          :decay :golden-ratio
          :error-hook
          (fn [ex]
-           (io/log "error!")
            (when-let [data (ex-data ex)]
              (when (= :elasticsearch.document/bulk-error (:type data))
                ;; Filter out successful actions
                (reset! actions
                        (->> (:items data)
                             (filter #(= 429 (:status %)))
-                            (map :original-item))))))}
-        #(do
-           (io/log :count (count @actions))
-           (io/log :after (count (:items (doc/bulk (:conn opts)
-                                                   (opts :log-index-write)
-                                                   (name DocType)
-                                                   {:body @actions}))))))))))
+                            (map :original-item)))
+               (debug/log "There was an error during bulk, retrying"
+                          (count @actions) "items."
+                          (- tries *try*) "tries remain.")
+               ;; explicit return of nil so that try-try-again retries
+               ;; happen as configured
+               nil)))}
+        #(doc/bulk (:conn opts)
+                   (opts :log-index-write)
+                   (name DocType)
+                   {:body @actions}))))))
 
 (s/defn after-log
   ([opts :- OptsElasticsearch]
