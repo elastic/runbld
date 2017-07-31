@@ -31,7 +31,7 @@
                  [log4j/log4j "1.2.17"]
 
                  [com.palletops/thread-expr "1.3.0"]
-                 [elastic/elasticsearch-clojure "0.99.5"
+                 [elastic/elasticsearch-clojure "0.99.6"
                   :exclusions [prismatic/schema]]
                  [enlive "1.1.6"]
                  [environ "1.1.0"]

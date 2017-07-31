@@ -6,6 +6,7 @@
             [elasticsearch.connection.http :as http]
             [elasticsearch.document :as doc]
             [elasticsearch.indices :as indices]
+            [robert.bruce :refer [*try* try-try-again]]
             [runbld.io :as io]
             [runbld.schema :refer :all]
             [runbld.util.date :as date]
@@ -204,11 +205,33 @@
    (when (seq docs)
      (let [make (fn [doc]
                   {:index {:source doc}})
-           actions (map make docs)]
-       (doc/bulk (:conn opts)
-                 (opts :log-index-write)
-                 (name DocType)
-                 {:body actions})))))
+           actions (atom (doall (map make docs)))
+           tries 10]
+       ;; Special case of try-try-again b/c we want some decay to
+       ;; give ES time to recover
+       (try-try-again
+        {:tries tries
+         :sleep 1000
+         :decay :golden-ratio
+         :error-hook
+         (fn [ex]
+           (when-let [data (ex-data ex)]
+             (when (= :elasticsearch.document/bulk-error (:type data))
+               ;; Filter out successful actions
+               (reset! actions
+                       (->> (:items data)
+                            (filter #(= 429 (:status %)))
+                            (map :original-item)))
+               (debug/log "There was an error during bulk, retrying"
+                          (count @actions) "items."
+                          (- tries *try*) "tries remain.")
+               ;; explicit return of nil so that try-try-again retries
+               ;; happen as configured
+               nil)))}
+        #(doc/bulk (:conn opts)
+                   (opts :log-index-write)
+                   (name DocType)
+                   {:body @actions}))))))
 
 (s/defn after-log
   ([opts :- OptsElasticsearch]
