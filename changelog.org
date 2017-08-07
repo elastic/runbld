@@ -1,6 +1,10 @@
 * runbld changes
+** 1.4.5
+   - Minor bug fix to actually include how to reproduce gradle builds
+     in the build email
 ** 1.4.4
    - Retry bulk indexing failures when indexing log lines
+   - Include instructions on how to reproduce gradle builds, if available
 ** 1.4.3
    - Jenkins allows empty test results and runbld shouldn't fail when
      exposed to one.
