@@ -24,10 +24,9 @@
                             (pos? (-> build :test :failures))))
         last-success (build/find-build
                       opts (-> build :build :last-success :id))
-        results-summary (when-not test-results?
-                          (results/summary
-                           (-> opts :es :conn) (-> opts :es :log-index-search)
-                           (:id build)))]
+        results-summary (results/summary
+                         (-> opts :es :conn) (-> opts :es :log-index-search)
+                         (:id build))]
     (-> build
         (update-in [:process :cmd] #(str/join " " %))
         (update-in [:process :cmd-source] strip-out-runbld)

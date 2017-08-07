@@ -134,3 +134,22 @@
                   (is (.contains content ":core:integTest")))
                 (is (= 4 (count body))
                     (pr-str @email))))))))))
+
+(deftest reproduce-with
+  (let [email (atom nil)
+        out (java.io.StringWriter.)]
+    (binding [*out* out
+              *err* out]
+      (with-redefs [mail/send-message (fn [conn msg]
+                                        (reset! email msg))]
+        (git/with-tmp-repo [d "tmp/git/reproduce-with"]
+          (run (conj
+                ["-c" "test/config/main.yml"
+                 "-j" "elastic+foo+master"
+                 "-d" d]
+                (if (opts/windows?)
+                  "test/fail-gradle-with-task.bat"
+                  "test/fail-gradle-with-task.bash")))
+          (is (re-find #"REPRODUCE WITH: gradle :core:integTest"
+                       (pr-str @email))
+              "There should have been a reproduce with section"))))))
