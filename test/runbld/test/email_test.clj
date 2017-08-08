@@ -153,3 +153,19 @@
           (is (re-find #"REPRODUCE WITH: gradle :core:integTest"
                        (pr-str @email))
               "There should have been a reproduce with section"))))))
+
+(deftest reply-to
+  (let [email (atom [])
+        out (java.io.StringWriter.)]
+    (with-redefs [mail/send-message (fn [conn msg]
+                                      (reset! email msg))]
+      (git/with-tmp-repo [d "tmp/git/email-log"]
+        (binding [*out* out
+                  *err* out]
+          (run (conj ["-c" "test/config/main.yml"
+                      "-j" "elastic+foo+master"
+                      "-d" d]
+                     (if (opts/windows?)
+                       "test/fail.bat"
+                       "test/fail.bash"))))
+        (is (= (:reply-to @email) "replyto@example.com"))))))
