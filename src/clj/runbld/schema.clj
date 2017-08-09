@@ -39,6 +39,7 @@
    :text-only          s/Bool
    :tls                s/Bool
    :to                 (s/cond-pre s/Str [s/Str])
+   (s/optional-key :reply-to) s/Str
    :user               s/Str
    :disable            s/Bool})
 

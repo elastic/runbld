@@ -109,7 +109,7 @@
                          :process
                          :exit-code)))
             (is (.startsWith
-                 (let [[_ _ _ subj _ _] @email] subj) "FAILURE"))
+                 (let [[_ _ _ _ subj _ _] @email] subj) "FAILURE"))
             (is (.contains (slack-msg) "FAILURE")))))
       (testing "build success: default notification settings"
         (reset! email [])
@@ -188,7 +188,7 @@
 
 (s/deftest last-good-commit
   (let [email-body (atom "no-email-body-yet")]
-    (with-redefs [email/send* (fn [_ _ _ _ plain html attachments]
+    (with-redefs [email/send* (fn [_ _ _ _ _ plain html attachments]
                                 (reset! email-body html)
                                 ;; to satisfy schema
                                 {})

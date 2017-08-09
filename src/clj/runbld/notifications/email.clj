@@ -66,6 +66,7 @@
   [conn     :- {s/Keyword s/Any}
    from     :- s/Str
    to       :- [s/Str]
+   reply-to :- s/Str
    subject  :- s/Str
    plain    :- s/Str
    html     :- (s/maybe s/Str)
@@ -86,6 +87,7 @@
      conn
      {:from from
       :to to
+      :reply-to reply-to
       :subject subject
       :body body})))
 
@@ -111,6 +113,7 @@
                  (send* (opts :email)
                         (-> opts :email :from)
                         rcpts
+                        (-> opts :email :reply-to)
                         (-> ctx :email :subject)
                         (render (-> opts :email :template-txt) ctx)
                         (when (and (-> opts :email :template-html)
