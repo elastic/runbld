@@ -1,4 +1,6 @@
 * runbld changes
+** 1.4.6
+   - Use reply-to addresses when present in the email config
 ** 1.4.5
    - Minor bug fix to actually include how to reproduce gradle builds
      in the build email
