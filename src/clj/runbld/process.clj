@@ -170,7 +170,7 @@
     (merge
      res
      {:cmd cmd
-      :cmd-source (slurp scriptfile)
+      :cmd-source (slurp scriptfile*)
       :bytes (:bytes res)})))
 
 (s/defn start-file-listener! :- [ManyToManyChannel]
