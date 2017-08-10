@@ -1,4 +1,6 @@
 * runbld changes
+** 1.4.8
+   - Change how we read in the script file by using the absolute path
 ** 1.4.7
    - Add some extra debug information regarding which profile matched
      in runbld.conf and what the cwd is
