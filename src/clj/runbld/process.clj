@@ -1,6 +1,7 @@
 (ns runbld.process
   (:require [runbld.schema :refer :all]
-            [schema.core :as s])
+            [schema.core :as s]
+            [runbld.util.debug :as debug])
   (:require [cheshire.core :as json]
             [clojure.core.async :as async
              :refer [thread go go-loop chan
@@ -161,6 +162,10 @@
         ;; can only alter the env via this mutable map
         _ (add-env! (.environment pb) env)
         res (exec-pb pb listeners log-extra timeout)]
+    (debug/log "Exec:"
+               "CWD:" dir
+               "CMD:" cmd
+               "Script exists?" (.exists (io/file scriptfile*)))
     (flush)
     (merge
      res

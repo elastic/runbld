@@ -1,7 +1,8 @@
 (ns runbld.opts
   (:require [runbld.schema :refer :all]
             [schema.core :as s]
-            [slingshot.slingshot :refer [throw+]])
+            [slingshot.slingshot :refer [throw+]]
+            [runbld.util.debug :as debug])
   (:require [clj-yaml.core :as yaml]
             [clojure.string :as str]
             [clojure.tools.cli :as cli]
@@ -11,6 +12,7 @@
             [runbld.store :as store]
             [runbld.util.data :refer [deep-merge-with deep-merge]]
             [runbld.util.date :as date]
+            [runbld.util.debug :as debug]
             [runbld.util.http :refer [wrap-retries]]
             [runbld.io :as io]
             [runbld.version :as version]))
@@ -73,7 +75,11 @@
              (let [[k v] (first ms)
                    pat ((comp re-pattern name) k)]
                (if (re-find pat job-name)
-                 v
+                 (do
+                   (debug/log "Job" job-name
+                              "matched the pattern" k
+                              "Using profile:" v)
+                   v)
                  {}))))
     {}))
 
