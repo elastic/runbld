@@ -1,4 +1,7 @@
 * runbld changes
+** 1.4.7
+   - Add some extra debug information regarding which profile matched
+     in runbld.conf and what the cwd is
 ** 1.4.6
    - Use reply-to addresses when present in the email config
 ** 1.4.5
