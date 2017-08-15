@@ -1,4 +1,6 @@
 * runbld changes
+** 1.4.9
+   - Add build-id to email subject
 ** 1.4.8
    - Change how we read in the script file by using the absolute path
 ** 1.4.7
