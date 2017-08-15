@@ -64,7 +64,7 @@
 
 (defn send-log [{{:keys [to]} :debug
                  {:keys [from] :as email-cfg} :email
-                 :keys [job-name]
+                 :keys [id job-name]
                  :as opts}]
   (when to
     ((:logger opts) "Sending debug log to" (email/obfuscate-addr to))
@@ -72,7 +72,7 @@
      email-cfg
      {:from from
       :to to
-      :subject (str "runbld debug log for " job-name)
+      :subject (str "runbld debug log for " job-name " - " id)
       :body [{:type "text/plain; charset=utf-8"
               :content (string/join "\n" @debug-log)}]})))
 

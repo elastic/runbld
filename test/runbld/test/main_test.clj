@@ -108,8 +108,10 @@
                                     (-> res :store-result :addr :id))
                          :process
                          :exit-code)))
-            (is (.startsWith
-                 (let [[_ _ _ _ subj _ _] @email] subj) "FAILURE"))
+            (let [[_ _ _ _ subj _ _] @email]
+              (is (.startsWith subj "FAILURE"))
+              (is (re-find (re-pattern (-> res :store-result :build-doc :id))
+                           subj)))
             (is (.contains (slack-msg) "FAILURE")))))
       (testing "build success: default notification settings"
         (reset! email [])
