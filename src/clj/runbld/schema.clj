@@ -188,11 +188,13 @@
   (merge Opts {:scheduler (s/protocol Scheduler)}))
 
 (def BuildOpts
-  {:id    s/Str
-   :build Build})
+  {:build Build})
 
 (def OptsWithBuild
   (merge Opts BuildOpts))
+
+(def OptsWithId
+  (assoc Opts :id s/Str))
 
 (def MainOpts
   (merge Opts {:vcs {s/Keyword s/Any}}))

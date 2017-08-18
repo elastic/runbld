@@ -122,18 +122,20 @@
    :commit-id (-> last-good-build :vcs :commit-id)
    :job-name (-> last-good-build :build :job-name)})
 
+(s/defn add-build-id :- OptsWithId
+  [opts :- Opts]
+  (let [build-id (make-id)]
+    (debug/log "Build id:" build-id)
+    (assoc opts :id build-id)))
+
 (s/defn add-build-meta :- OptsWithBuild
   [opts :- {:job-name s/Str
             :scheduler (s/protocol scheduler/Scheduler)
             s/Keyword s/Any}]
-  (let [build-id (make-id)
-        build-meta (merge (split-job-name (:job-name opts))
+  (let [build-meta (merge (split-job-name (:job-name opts))
                           (scheduler/as-map (:scheduler opts)))]
-    (debug/log "Build id:" build-id
-               "Build meta:" build-meta)
-    (assoc opts
-           :id build-id
-           :build build-meta)))
+    (debug/log "Build meta:" build-meta)
+    (assoc opts :build build-meta)))
 
 (s/defn add-last-success
   [opts :- OptsWithBuild]

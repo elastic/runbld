@@ -66,7 +66,8 @@
 
   Order matters as there are stages that may rely on information from
   previous stages.  Pay particular attention to before/after."
-  [(around debug/with-debug-logging)
+  [(before build/add-build-id)
+   (around debug/with-debug-logging)
    (before java/add-java)
    (before scheduler/add-scheduler)
    (before build/add-build-meta)
