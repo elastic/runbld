@@ -1,4 +1,7 @@
 * runbld changes
+** 1.4.10
+   - Add build-id to debug email subject
+   - Skip (but report) poorly formatted XML files
 ** 1.4.9
    - Add build-id to email subject
 ** 1.4.8
