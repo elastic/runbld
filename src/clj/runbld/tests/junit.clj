@@ -1,10 +1,13 @@
 (ns runbld.tests.junit
-  (:require [runbld.schema :refer :all]
-            [schema.core :as s])
   (:require [clojure.java.io :as io]
             [clojure.set :refer [rename-keys]]
             [clojure.string :as str]
-            [net.cgrand.enlive-html :as x]))
+            [net.cgrand.enlive-html :as x]
+            [runbld.io :as rio]
+            [runbld.schema :refer :all]
+            [runbld.util.debug :as debug]
+            [schema.core :as s])
+  (:import (org.xml.sax SAXParseException)))
 
 (defn maybe-update [m ks f & x]
   (into m (for [[k v] (select-keys m ks)]
@@ -92,7 +95,14 @@
          (remove #(= 0 (.length %)))
          (map #(.toURI %))
          (map #(.toURL %))
-         (map x/xml-resource)
+         (map #(try
+                 (x/xml-resource %)
+                 (catch SAXParseException e
+                   (rio/log "Failed to parse" (rio/abspath %)
+                            "because of" (.getMessage e))
+                   (debug/log e "Full trace")
+                   nil)))
+         (remove nil?)
          (mapcat #(x/select % [[(x/tag= :testsuite)]]))
          (map make-failure-report)
          (filter identity)
