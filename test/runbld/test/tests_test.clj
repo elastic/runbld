@@ -1,9 +1,15 @@
 (ns runbld.test.tests-test
-  (:require [schema.test])
-  (:require [clojure.test :refer :all])
-  (:require [runbld.tests :as tests] :reload-all))
+  (:require
+   [clojure.stacktrace :as stacktrace]
+   [clojure.test :refer :all]
+   [schema.test]
+   [runbld.test.support :as ts]
+   [runbld.tests :as tests]
+   [runbld.util.debug :as debug]))
 
 (use-fixtures :once schema.test/validate-schemas)
+
+(use-fixtures :each ts/reset-debug-log-fixture)
 
 (deftest some-errors
   (testing "java"
@@ -63,7 +69,19 @@
 
 (deftest empty-file
   (try
-    (tests/capture-failures "test")
+    (tests/capture-failures "test/xmls/empty")
     (is :a-ok "This should pass")
     (catch Exception e
-      (is false (str "Why did this fail? " (.getMessage e))))))
+      (is false "There shouldn't have been any exceptions")
+      (stacktrace/print-cause-trace e))))
+
+(deftest bad-xmls
+  (try
+    (let [out (with-out-str (tests/capture-failures "test/xmls"))
+          log (debug/get-log)]
+      (is (re-find #"Failed to parse" out))
+      (is (re-find #"(?m)ErrorHandlerWrapper.createSAXParseException"
+                   (second log))))
+    (catch Exception e
+      (is false "There shouldn't have been any exceptions")
+      (stacktrace/print-cause-trace e))))
