@@ -580,3 +580,46 @@
               ;; with-debug-log rethrows but it should rethrow in a way
               ;; that runbld.main can continue to work as it should
               (is false "This should've been caught in runbld.main"))))))))
+
+(deftest build-metadata
+  (let [email-body (atom "no-email-body-yet")]
+    (with-redefs [email/send* (fn [_ _ _ _ _ plain html attachments]
+                                (reset! email-body html)
+                                ;; to satisfy schema
+                                {})
+                  slack/send (fn [& _] (prn 'slack))]
+      (testing "successful intake"
+        (let [intake-dir "tmp/git/main-intake"
+              periodic-dir "tmp/git/main-periodic"]
+          (try
+            (git/init-test-clone periodic-dir intake-dir)
+            (let [[opts-intake res-intake]
+                  (run (conj
+                        ["-c" "test/config/main.yml"
+                         "-j" "elastic+foo+master+intake"
+                         "-d" intake-dir]
+                        "test/add-metadata.bash"))]
+              (let [[opts-periodic res-periodic]
+                    (run (conj
+                          ["-c" "test/config/main.yml"
+                           "-j" "elastic+foo+master+periodic"
+                           "-d" periodic-dir
+                           "--last-good-commit"
+                           "elastic+foo+master+intake"]
+                          "test/check-metadata.bash"))]
+                (is (= 0 (:exit-code res-intake)))
+                (is (= "the first metadata;the second metadata;"
+                       (get-in (store/get
+                                (-> opts-intake :es :conn)
+                                (-> res-intake :store-result :addr :index)
+                                (-> res-intake :store-result :addr :type)
+                                (-> res-intake :store-result :addr :id))
+                               [:build :metadata]))
+                    "the metadata should be stored.")
+                ;; 0 exit code means the second script got the
+                ;; metadata- the check is in the bash script
+                (is (= 0 (:exit-code res-periodic))
+                    "the metadata should be in the environment")))
+            (finally
+              (io/rmdir-r periodic-dir)
+              (io/rmdir-r intake-dir))))))))
