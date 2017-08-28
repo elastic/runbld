@@ -84,31 +84,21 @@
   (merge default-failure-report m))
 
 (defn find-failures [dir]
-  (when dir
-    (->> dir
-         io/file
-         file-seq
-         (map #(.getCanonicalPath %))
-         (map str)
-         (filter #(re-find #"TEST-.*\.xml$" %))
-         (map io/file)
-         (remove #(= 0 (.length %)))
-         (map #(.toURI %))
-         (map #(.toURL %))
-         (map #(try
-                 (x/xml-resource %)
-                 (catch SAXParseException e
-                   (rio/log "Failed to parse" (rio/abspath %)
-                            "because of" (.getMessage e))
-                   (debug/log e "Full trace")
-                   nil)))
-         (remove nil?)
-         (mapcat #(x/select % [[(x/tag= :testsuite)]]))
-         (map make-failure-report)
-         (filter identity)
-         (map merge-default)
-         (reduce combine-failure-reports {:errors 0
-                                          :failures 0
-                                          :tests 0
-                                          :skipped 0
-                                          :failed-testcases []}))))
+  (->> (rio/find-files dir #"TEST-.*\.xml$")
+       (map #(try
+               (x/xml-resource %)
+               (catch SAXParseException e
+                 (rio/log "Failed to parse" (rio/abspath %)
+                          "because of" (.getMessage e))
+                 (debug/log e "Full trace")
+                 nil)))
+       (remove nil?)
+       (mapcat #(x/select % [[(x/tag= :testsuite)]]))
+       (map make-failure-report)
+       (filter identity)
+       (map merge-default)
+       (reduce combine-failure-reports {:errors 0
+                                        :failures 0
+                                        :tests 0
+                                        :skipped 0
+                                        :failed-testcases []})))
