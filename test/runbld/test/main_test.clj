@@ -374,7 +374,7 @@
                 (let [log (git-log repo)]
                   (is (= depth (count (git-log repo))))
                   (reset! master-commit (last log)))
-                (is (shallow-clone? repo))                )
+                (is (shallow-clone? repo)))
               (testing "scm doesn't break anything else"
                 (is (= 1 (:exit-code res)))
                 (is (= 1 (-> (store/get (-> opts :es :conn)
@@ -384,13 +384,13 @@
                              :process
                              :exit-code)))
                 (is (.startsWith
-                     (let [[_ _ _ subj _ _] @email] subj) "FAILURE"))
+                     (let [[_ _ _ _ subj _ _] @email] subj) "FAILURE"))
                 (is (.contains (slack-msg) "FAILURE")))
               (testing "Running again w/o wipe-workspace should update the repo"
                 (let [[opts2 res2] (run
                                      (conj
                                       ["-c" "test/config/scm.yml"
-                                       "-j" "elastic+foo+5.x"
+                                       "-j" "elastic+foo+6.0"
                                        "-d" workspace]
                                       (if (opts/windows?)
                                         "test/fail.bat"
