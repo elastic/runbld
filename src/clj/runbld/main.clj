@@ -70,7 +70,7 @@
    (around debug/with-debug-logging)
    (before java/add-java)
    (before scheduler/add-scheduler)
-   (before build/add-build-meta)
+   (before build/add-build-info)
    (before store/store-result) ;; store that we started
    (before scm/wipe-workspace)
    (before scm/bootstrap-workspace)
@@ -82,6 +82,7 @@
    (after  email/send-email)
    (after  store/store-result) ;; store that we finished
    (after  tests/add-test-report)
+   (around build/add-build-meta)
    (around log-script-execution)])
 
 ;; -main :: IO ()

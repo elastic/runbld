@@ -1,11 +1,13 @@
 (ns runbld.build
   (:require [clojure.java.io :as io]
+            [clojure.string :as string]
             [elasticsearch.document :as doc]
             [environ.core :as environ]
+            [runbld.io :as rio]
+            [runbld.scheduler :as scheduler]
             [runbld.schema :refer :all]
             [runbld.util.data :refer [deep-merge-with deep-merge]]
             [runbld.util.date :as date]
-            [runbld.scheduler :as scheduler]
             [runbld.util.debug :as debug]
             [runbld.vcs.middleware :as vcs]
             [schema.core :as s]
@@ -122,13 +124,47 @@
    :commit-id (-> last-good-build :vcs :commit-id)
    :job-name (-> last-good-build :build :job-name)})
 
+(defn set-build-meta-environment
+  "If last-good-commit was specified, this reads the build metadata
+  from the commit and stores it in the BUILD_METADATA variable in the
+  script execution environment."
+  [opts]
+  (if (-> opts :build :last-success :checked-out)
+    (let [build (find-build opts (-> opts :build :last-success :id))
+          metadata (-> build :build :metadata)]
+      (if (empty? metadata)
+        (do
+          ((:logger opts) "No build metadata found, not setting BUILD_METADATA")
+          opts)
+        (do
+          ((:logger opts) "BUILD_METADATA:" metadata)
+          (assoc-in opts [:process :env :BUILD_METADATA] metadata))))
+    opts))
+
+(defn record-build-meta
+  "Searches the build workspace for files starting with build_metadata
+  and concats their contents and stores it in the build metadata in
+  Elasticsearch."
+  [opts]
+  (let [metadata (->> (rio/find-files (-> opts :process :cwd)
+                                      #"/build_metadata")
+                      (map slurp)
+                      (map #(string/replace % #"\n+$" ""))
+                      string/join)]
+    ((:logger opts) "Storing build metadata:" metadata)
+    (assoc-in opts [:build :metadata] metadata)))
+
+
+;; Pipeline functions
+
+
 (s/defn add-build-id :- OptsWithId
   [opts :- Opts]
   (let [build-id (make-id)]
     (debug/log "Build id:" build-id)
     (assoc opts :id build-id)))
 
-(s/defn add-build-meta :- OptsWithBuild
+(s/defn add-build-info :- OptsWithBuild
   [opts :- {:job-name s/Str
             :scheduler (s/protocol scheduler/Scheduler)
             s/Keyword s/Any}]
@@ -171,3 +207,10 @@
                         (date/now)))
        "ago")))
   opts)
+
+(defn add-build-meta
+  [proc opts]
+  (-> opts
+      set-build-meta-environment
+      proc
+      record-build-meta))

@@ -310,7 +310,7 @@
                              (assoc :logger runbld.io/log)
                              ;; make schema happy
                              (assoc :scheduler (default-sched/make {})))
-                opts (build/add-build-meta raw-opts)]
+                opts (build/add-build-info raw-opts)]
             (scm/bootstrap-workspace
              (assoc-in opts [:scm :wipe-workspace] false))
             (is (= "master"
@@ -329,7 +329,7 @@
                                (assoc :logger runbld.io/log)
                                ;; make schema happy
                                (assoc :scheduler (default-sched/make {})))
-                  opts (build/add-build-meta raw-opts)]
+                  opts (build/add-build-info raw-opts)]
               (scm/bootstrap-workspace
                (assoc-in opts [:scm :wipe-workspace] false))
               (is (nil? (-> opts :scm :branch)))
