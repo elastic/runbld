@@ -159,7 +159,7 @@
         out (java.io.StringWriter.)]
     (with-redefs [mail/send-message (fn [conn msg]
                                       (reset! email msg))]
-      (git/with-tmp-repo [d "tmp/git/email-log"]
+      (git/with-tmp-repo [d "tmp/git/email-reply-to"]
         (binding [*out* out
                   *err* out]
           (run (conj ["-c" "test/config/main.yml"

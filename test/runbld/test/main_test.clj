@@ -310,7 +310,7 @@
                              (assoc :logger runbld.io/log)
                              ;; make schema happy
                              (assoc :scheduler (default-sched/make {})))
-                opts (build/add-build-meta raw-opts)]
+                opts (build/add-build-info raw-opts)]
             (scm/bootstrap-workspace
              (assoc-in opts [:scm :wipe-workspace] false))
             (is (= "master"
@@ -329,7 +329,7 @@
                                (assoc :logger runbld.io/log)
                                ;; make schema happy
                                (assoc :scheduler (default-sched/make {})))
-                  opts (build/add-build-meta raw-opts)]
+                  opts (build/add-build-info raw-opts)]
               (scm/bootstrap-workspace
                (assoc-in opts [:scm :wipe-workspace] false))
               (is (nil? (-> opts :scm :branch)))
@@ -374,7 +374,7 @@
                 (let [log (git-log repo)]
                   (is (= depth (count (git-log repo))))
                   (reset! master-commit (last log)))
-                (is (shallow-clone? repo))                )
+                (is (shallow-clone? repo)))
               (testing "scm doesn't break anything else"
                 (is (= 1 (:exit-code res)))
                 (is (= 1 (-> (store/get (-> opts :es :conn)
@@ -384,13 +384,13 @@
                              :process
                              :exit-code)))
                 (is (.startsWith
-                     (let [[_ _ _ subj _ _] @email] subj) "FAILURE"))
+                     (let [[_ _ _ _ subj _ _] @email] subj) "FAILURE"))
                 (is (.contains (slack-msg) "FAILURE")))
               (testing "Running again w/o wipe-workspace should update the repo"
                 (let [[opts2 res2] (run
                                      (conj
                                       ["-c" "test/config/scm.yml"
-                                       "-j" "elastic+foo+5.x"
+                                       "-j" "elastic+foo+6.0"
                                        "-d" workspace]
                                       (if (opts/windows?)
                                         "test/fail.bat"
@@ -580,3 +580,46 @@
               ;; with-debug-log rethrows but it should rethrow in a way
               ;; that runbld.main can continue to work as it should
               (is false "This should've been caught in runbld.main"))))))))
+
+(deftest build-metadata
+  (let [email-body (atom "no-email-body-yet")]
+    (with-redefs [email/send* (fn [_ _ _ _ _ plain html attachments]
+                                (reset! email-body html)
+                                ;; to satisfy schema
+                                {})
+                  slack/send (fn [& _] (prn 'slack))]
+      (testing "successful intake"
+        (let [intake-dir "tmp/git/main-intake"
+              periodic-dir "tmp/git/main-periodic"]
+          (try
+            (git/init-test-clone periodic-dir intake-dir)
+            (let [[opts-intake res-intake]
+                  (run (conj
+                        ["-c" "test/config/main.yml"
+                         "-j" "elastic+foo+master+intake"
+                         "-d" intake-dir]
+                        "test/add-metadata.bash"))]
+              (let [[opts-periodic res-periodic]
+                    (run (conj
+                          ["-c" "test/config/main.yml"
+                           "-j" "elastic+foo+master+periodic"
+                           "-d" periodic-dir
+                           "--last-good-commit"
+                           "elastic+foo+master+intake"]
+                          "test/check-metadata.bash"))]
+                (is (= 0 (:exit-code res-intake)))
+                (is (= "the first metadata;the second metadata;"
+                       (get-in (store/get
+                                (-> opts-intake :es :conn)
+                                (-> res-intake :store-result :addr :index)
+                                (-> res-intake :store-result :addr :type)
+                                (-> res-intake :store-result :addr :id))
+                               [:build :metadata]))
+                    "the metadata should be stored.")
+                ;; 0 exit code means the second script got the
+                ;; metadata- the check is in the bash script
+                (is (= 0 (:exit-code res-periodic))
+                    "the metadata should be in the environment")))
+            (finally
+              (io/rmdir-r periodic-dir)
+              (io/rmdir-r intake-dir))))))))

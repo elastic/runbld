@@ -200,3 +200,18 @@
     f2 :- java.io.File]
    (= (abspath-file f1)
       (abspath-file f2))))
+
+(defn find-files
+  [dir regex]
+  (when dir
+    (let [dir (jio/file dir)]
+      (when (.exists dir)
+        (->> (file-seq dir)
+             (filter #(.isFile %))
+             (map #(.getCanonicalPath %))
+             (map str)
+             (filter #(re-find regex %))
+             (map jio/file)
+             (remove #(= 0 (.length %)))
+             (map #(.toURI %))
+             (map #(.toURL %)))))))

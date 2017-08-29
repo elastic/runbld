@@ -167,6 +167,7 @@
    :scheduler                  s/Str
    :url                        s/Str
    :console-url                s/Str
+   (s/optional-key :metadata)  s/Str
    :tags                       [s/Str]
    (s/optional-key :number)    s/Str
    (s/optional-key :executor)  s/Str
@@ -321,6 +322,7 @@
                :number              m/keyword
                :executor            m/keyword
                :node                m/keyword
+               :metadata            m/multi-string
                :last-success
                {:properties
                 {:id                m/keyword

@@ -28,11 +28,11 @@ profiles:
         # Git should ignore reference repos that aren't accessible.
         reference-repo: /some/fake/path
 
-  - '^elastic\+foo\+5\.x$':
+  - '^elastic\+foo\+6\.0$':
       scm:
         clone: true
         url: https://github.com/elastic/elasticsearch.git
-        branch: 5.x
+        branch: '6.0'
         depth: 1
         wipe-workspace: true
         # Git should ignore reference repos that aren't accessible.
