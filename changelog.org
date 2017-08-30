@@ -1,4 +1,6 @@
 * runbld changes
+** 1.5.1
+   - add ';' between concatenated metadata files
 ** 1.5.0
    - Add ability to store/restore build metadata.  The wrapped script
      may write out files whose name start with =build_metadata= and
