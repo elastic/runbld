@@ -146,11 +146,17 @@
   and concats their contents and stores it in the build metadata in
   Elasticsearch."
   [opts]
-  (let [metadata (->> (rio/find-files (-> opts :process :cwd)
+  (let [prep-content #(-> %
+                          string/trim
+                          (string/replace #"\n+$" "")
+                          ;; strip trailing semicolons so we can blindly
+                          ;; str/join
+                          (string/replace #";+$" ""))
+        metadata (->> (rio/find-files (-> opts :process :cwd)
                                       #"/build_metadata")
                       (map slurp)
-                      (map #(string/replace % #"\n+$" ""))
-                      string/join)]
+                      (map prep-content)
+                      (string/join ";"))]
     ((:logger opts) "Storing build metadata:" metadata)
     (assoc-in opts [:build :metadata] metadata)))
 

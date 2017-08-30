@@ -608,7 +608,7 @@
                            "elastic+foo+master+intake"]
                           "test/check-metadata.bash"))]
                 (is (= 0 (:exit-code res-intake)))
-                (is (= "the first metadata;the second metadata;"
+                (is (= "the first metadata;the second metadata"
                        (get-in (store/get
                                 (-> opts-intake :es :conn)
                                 (-> res-intake :store-result :addr :index)
@@ -619,7 +619,8 @@
                 ;; 0 exit code means the second script got the
                 ;; metadata- the check is in the bash script
                 (is (= 0 (:exit-code res-periodic))
-                    "the metadata should be in the environment")))
+                    (str "the metadata should be in the environment\n"
+                         "the test is in check-metadata.bash"))))
             (finally
               (io/rmdir-r periodic-dir)
               (io/rmdir-r intake-dir))))))))
