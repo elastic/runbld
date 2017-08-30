@@ -131,12 +131,23 @@
   [opts]
   (if (-> opts :build :last-success :checked-out)
     (let [build (find-build opts (-> opts :build :last-success :id))
-          metadata (-> build :build :metadata)]
-      (if (empty? metadata)
+          metadata (-> build :build :metadata)
+          env-metadata (environ/env :build-metadata)]
+      (cond
+        (not (empty? env-metadata))
+        (do
+          ((:logger opts) "BUILD_METADATA already found in the environment.")
+          ((:logger opts) "BUILD_METADATA:" env-metadata)
+          (assoc-in opts [:process :env :BUILD_METADATA] env-metadata))
+
+        (empty? metadata)
         (do
           ((:logger opts) "No build metadata found, not setting BUILD_METADATA")
           opts)
+
+        :else
         (do
+          ((:logger opts) "BUILD_METADATA found in Elasticsearch.")
           ((:logger opts) "BUILD_METADATA:" metadata)
           (assoc-in opts [:process :env :BUILD_METADATA] metadata))))
     opts))
