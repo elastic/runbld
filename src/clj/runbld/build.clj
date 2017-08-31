@@ -129,17 +129,25 @@
   from the commit and stores it in the BUILD_METADATA variable in the
   script execution environment."
   [opts]
-  (if (-> opts :build :last-success :checked-out)
-    (let [build (find-build opts (-> opts :build :last-success :id))
-          metadata (-> build :build :metadata)]
-      (if (empty? metadata)
-        (do
-          ((:logger opts) "No build metadata found, not setting BUILD_METADATA")
-          opts)
-        (do
-          ((:logger opts) "BUILD_METADATA:" metadata)
-          (assoc-in opts [:process :env :BUILD_METADATA] metadata))))
-    opts))
+  (let [env-metadata (environ/env :build-metadata)]
+    (if (not (string/blank? env-metadata))
+      (do
+        ((:logger opts) "BUILD_METADATA found in the environment.")
+        ((:logger opts) "BUILD_METADATA:" env-metadata)
+        (assoc-in opts [:process :env :BUILD_METADATA] env-metadata))
+      (if (-> opts :build :last-success :checked-out)
+        (let [build (find-build opts (-> opts :build :last-success :id))
+              metadata (-> build :build :metadata)]
+          (if (string/blank? metadata)
+            (do
+              ((:logger opts)
+               "No build metadata found, not setting BUILD_METADATA")
+              opts)
+            (do
+              ((:logger opts) "BUILD_METADATA found in Elasticsearch.")
+              ((:logger opts) "BUILD_METADATA:" metadata)
+              (assoc-in opts [:process :env :BUILD_METADATA] metadata))))
+        opts))))
 
 (defn record-build-meta
   "Searches the build workspace for files starting with build_metadata

@@ -1,30 +1,31 @@
 (ns runbld.test.main-test
-  (:require [cheshire.core :as json]
-            [clj-git.core :refer [git git-branch git-clone git-log load-repo
-                                  shallow-clone?]]
-            [clj-http.core :as http-core]
-            [clojure.java.io :as jio]
-            [clojure.test :refer :all]
-            [clojure.walk :refer [keywordize-keys]]
-            [runbld.build :as build]
-            [runbld.env :as env]
-            [runbld.io :as io]
-            [runbld.notifications.email :as email]
-            [runbld.notifications.slack :as slack]
-            [runbld.opts :as opts]
-            [runbld.process :as proc]
-            [runbld.scheduler :as scheduler]
-            [runbld.scheduler.default :as default-sched]
-            [runbld.scm :as scm]
-            [runbld.store :as store]
-            [runbld.test.support :as ts]
-            [runbld.util.debug :as debug]
-            [runbld.util.http :refer [wrap-retries]]
-            [runbld.vcs.git :as git]
-            [runbld.version :as version]
-            [schema.test :as s]
-            [stencil.core :as mustache]
-            [environ.core :as environ])
+  (:require
+   [cheshire.core :as json]
+   [clj-git.core :refer [git git-branch git-clone git-log
+                         load-repo shallow-clone?]]
+   [clj-http.core :as http-core]
+   [clojure.java.io :as jio]
+   [clojure.test :refer :all]
+   [clojure.walk :refer [keywordize-keys]]
+   [environ.core :as environ]
+   [runbld.build :as build]
+   [runbld.env :as env]
+   [runbld.io :as io]
+   [runbld.notifications.email :as email]
+   [runbld.notifications.slack :as slack]
+   [runbld.opts :as opts]
+   [runbld.process :as proc]
+   [runbld.scheduler :as scheduler]
+   [runbld.scheduler.default :as default-sched]
+   [runbld.scm :as scm]
+   [runbld.store :as store]
+   [runbld.test.support :as ts]
+   [runbld.util.debug :as debug]
+   [runbld.util.http :refer [wrap-retries]]
+   [runbld.vcs.git :as git]
+   [runbld.version :as version]
+   [schema.test :as s]
+   [stencil.core :as mustache])
   (:require [runbld.main :as main] :reload-all))
 
 (def email (atom []))
@@ -582,45 +583,63 @@
               (is false "This should've been caught in runbld.main"))))))))
 
 (deftest build-metadata
-  (let [email-body (atom "no-email-body-yet")]
-    (with-redefs [email/send* (fn [_ _ _ _ _ plain html attachments]
-                                (reset! email-body html)
-                                ;; to satisfy schema
-                                {})
-                  slack/send (fn [& _] (prn 'slack))]
-      (testing "successful intake"
-        (let [intake-dir "tmp/git/main-intake"
-              periodic-dir "tmp/git/main-periodic"]
-          (try
-            (git/init-test-clone periodic-dir intake-dir)
-            (let [[opts-intake res-intake]
-                  (run (conj
-                        ["-c" "test/config/main.yml"
-                         "-j" "elastic+foo+master+intake"
-                         "-d" intake-dir]
-                        "test/add-metadata.bash"))]
+  (let [email-body (atom "no-email-body-yet")
+        intake-dir "tmp/git/metadata-intake"
+        periodic-dir "tmp/git/metadata-periodic"]
+    (try
+      (when (.exists (jio/file periodic-dir))
+        (io/rmdir-r periodic-dir))
+      (when (.exists (jio/file intake-dir))
+        (io/rmdir-r intake-dir))
+      (with-redefs [email/send* (fn [_ _ _ _ _ plain html attachments]
+                                  (reset! email-body html)
+                                  ;; to satisfy schema
+                                  {})
+                    slack/send (fn [& _] (prn 'slack))]
+        (git/init-test-clone periodic-dir intake-dir)
+        (let [[opts-intake res-intake]
+              (run (conj
+                    ["-c" "test/config/main.yml"
+                     "-j" "elastic+foo+master+intake"
+                     "-d" intake-dir]
+                    "test/add-metadata.bash"))
+              [opts-periodic res-periodic]
+              (run (conj
+                    ["-c" "test/config/main.yml"
+                     "-j" "elastic+foo+master+periodic"
+                     "-d" periodic-dir
+                     "--last-good-commit"
+                     "elastic+foo+master+intake"]
+                    "test/check-metadata.bash"))]
+          (is (= 0 (:exit-code res-intake)))
+          (is (= "the first metadata;the second metadata"
+                 (get-in (store/get
+                          (-> opts-intake :es :conn)
+                          (-> res-intake :store-result :addr :index)
+                          (-> res-intake :store-result :addr :type)
+                          (-> res-intake :store-result :addr :id))
+                         [:build :metadata]))
+              "the metadata should be stored.")
+          ;; 0 exit code means the second script got the
+          ;; metadata- the check is in the bash script
+          (is (= 0 (:exit-code res-periodic))
+              (str "the metadata should be in the environment\n"
+                   "the test is in check-metadata.bash"))
+          (testing "existing BUILD_METADATA environment is respected"
+            (with-redefs [environ/env {:build-metadata "existing;metadata"}]
               (let [[opts-periodic res-periodic]
                     (run (conj
                           ["-c" "test/config/main.yml"
                            "-j" "elastic+foo+master+periodic"
                            "-d" periodic-dir
-                           "--last-good-commit"
-                           "elastic+foo+master+intake"]
-                          "test/check-metadata.bash"))]
-                (is (= 0 (:exit-code res-intake)))
-                (is (= "the first metadata;the second metadata"
-                       (get-in (store/get
-                                (-> opts-intake :es :conn)
-                                (-> res-intake :store-result :addr :index)
-                                (-> res-intake :store-result :addr :type)
-                                (-> res-intake :store-result :addr :id))
-                               [:build :metadata]))
-                    "the metadata should be stored.")
+                           "--last-good-commit" "elastic+foo+master+intake"]
+                          "test/check-existing-metadata.bash"))]
                 ;; 0 exit code means the second script got the
                 ;; metadata- the check is in the bash script
+                (println (environ/env :build-metadata))
                 (is (= 0 (:exit-code res-periodic))
-                    (str "the metadata should be in the environment\n"
-                         "the test is in check-metadata.bash"))))
-            (finally
-              (io/rmdir-r periodic-dir)
-              (io/rmdir-r intake-dir))))))))
+                    (str "the metadata was incorrect in the environment\n"
+                         "the test is in check-existing-metadata.bash")))))))
+      (finally
+        (io/rmdir-r periodic-dir)
+        (io/rmdir-r intake-dir)))))
