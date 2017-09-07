@@ -47,7 +47,7 @@ happened.</em>
 
 <table>
 <tr><td><code>Build</code></td><td><code>{{ id }}</code></td></tr>
-<tr><td><code>Log</code></td><td><code>{{ build.console-url }}</code></td></tr>
+<tr><td><code>Log</code></td><td><code><a href="{{ build.console-url }}">{{ build.console-url }}</a></code></td></tr>
 <tr><td><code>Duration</code></td><td><code>{{ process.took-human }} ({{ process.took }}ms)</code></td></tr>
 <tr><td><code>Started</code></td><td><code>{{ process.time-start }}</code></td></tr>
 <tr><td><code>Ended</code></td><td><code>{{ process.time-end }}</code></td></tr>
