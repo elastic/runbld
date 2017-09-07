@@ -45,7 +45,7 @@
          (email-util/obfuscate-addr "foo@bar.quux.dom"))))
 
 (defn find-contents [body]
-  (->> body
+  (->> (tree-seq sequential? identity body)
        (filter #(and (map? %) (not (= :attachment (:type %)))))
        (map :content)))
 
@@ -111,7 +111,7 @@
                 (is (= 2 (count contents)) body)
                 (doseq [content contents]
                   (is (.contains content "Cannot expand ZIP")))
-                (is (= 3 (count body))
+                (is (= 2 (count body))
                     (pr-str @email)))))
           (testing "with gradle task"
             (let [out (java.io.StringWriter.)
@@ -132,7 +132,7 @@
                 (is (= 2 (count contents)) body)
                 (doseq [content contents]
                   (is (.contains content ":core:integTest")))
-                (is (= 4 (count body))
+                (is (= 3 (count body))
                     (pr-str @email))))))))))
 
 (deftest reproduce-with
