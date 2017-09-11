@@ -428,6 +428,47 @@
           (finally
             (io/rmdir-r workspace)))))))
 
+(deftest scm-basedir
+  (let [wipe-workspace-orig scm/wipe-workspace
+        workspace "tmp/git/base+dir+master"
+        master-commit (atom nil)]
+    (try
+      (with-redefs [email/send* (fn [& args]
+                                  (swap! email concat args)
+                                  ;; to satisfy schema
+                                  {})
+                    slack/send (fn [opts ctx]
+                                 (let [f (-> opts :slack :template)
+                                       tmpl (-> f io/resolve-resource slurp)
+                                       color (if (-> ctx :process :failed)
+                                               "danger"
+                                               "good")
+                                       js (mustache/render-string
+                                           tmpl (assoc ctx :color color))]
+                                   (reset! slack js)))
+                    scm/wipe-workspace (fn [opts] opts)
+                    scm/find-workspace (constantly workspace)]
+        (let [[opts res] (run
+                           (conj
+                            ["-c" "test/config/scm.yml"
+                             "-j" "base+dir+master"
+                             "-d" workspace]
+                            (if (opts/windows?)
+                              "test/fail.bat"
+                              "test/fail.bash")))]
+          (testing "the elasticsearch repo was cloned correctly into the subdir"
+            (let [branch (-> opts :scm :branch)
+                  depth (-> opts :scm :depth)
+                  repo (load-repo (scm/checkout-dir opts))]
+              (is (re-find (re-pattern "/some/other/dir") (:path repo)))
+              (is (= branch (git-branch repo)))
+              (let [log (git-log repo)]
+                (is (= depth (count (git-log repo))))
+                (reset! master-commit (last log)))
+              (is (shallow-clone? repo))))))
+      (finally
+        (io/rmdir-r workspace)))))
+
 (deftest http-retries
   (let [call-count (atom 0)]
     (with-redefs [http-core/http-client (fn [& _]

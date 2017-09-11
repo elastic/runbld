@@ -56,3 +56,14 @@ profiles:
         wipe-workspace: true
         # Git should ignore reference repos that aren't accessible.
         reference-repo: /some/fake/path
+
+  - '^base\+dir\+master':
+      scm:
+        clone: true
+        url: https://github.com/elastic/elasticsearch.git
+        branch: master
+        depth: 1
+        wipe-workspace: true
+        # Git should ignore reference repos that aren't accessible.
+        reference-repo: /some/fake/path
+        basedir: /some/other/dir

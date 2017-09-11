@@ -93,6 +93,7 @@
    :url s/Str
    (s/optional-key :reference-repo) s/Str
    (s/optional-key :branch) s/Str
+   (s/optional-key :basedir) s/Str
    :wipe-workspace s/Bool
    (s/optional-key :depth) s/Int})
 

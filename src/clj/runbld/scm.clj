@@ -3,11 +3,13 @@
    [clj-git.core :as git]
    [clj-time.core :as t]
    [clojure.java.io :as jio]
+   [clojure.string :as string]
    [environ.core :as environ]
    [runbld.io :as io]
    [runbld.schema :refer :all]
    [schema.core :as s]
-   [clojure.string :as str]))
+   [clojure.string :as str]
+   [clojure.string :as string]))
 
 (defn find-workspace
   "just to override in tests"
@@ -109,6 +111,12 @@
           branch (first (drop-while commit? branches))]
       {:commit commit :branch (or branch "master")})))
 
+(defn checkout-dir [opts]
+  (let [cwd (-> opts :process :cwd)]
+    (if-let [basedir (-> opts :scm :basedir)]
+      (string/replace (str cwd "/" basedir) #"/+" "/")
+      cwd)))
+
 (s/defn bootstrap-workspace
   "Prepare the local workspace by cloning or updating the repository,
   as necessary."
@@ -117,7 +125,7 @@
             (s/optional-key :scm) OptsScm
             s/Keyword s/Any}]
   (let [clone? (boolean (-> opts :scm :clone))
-        local (-> opts :process :cwd)
+        local (checkout-dir opts)
         remote (-> opts :scm :url)
         reference (-> opts :scm :reference-repo)
         {:keys [branch commit]} (choose-branch opts)
