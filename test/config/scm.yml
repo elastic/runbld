@@ -66,4 +66,4 @@ profiles:
         wipe-workspace: true
         # Git should ignore reference repos that aren't accessible.
         reference-repo: /some/fake/path
-        basedir: /some/other/dir
+        basedir: some/other/dir

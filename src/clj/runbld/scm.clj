@@ -114,7 +114,7 @@
 (defn checkout-dir [opts]
   (let [cwd (-> opts :process :cwd)]
     (if-let [basedir (-> opts :scm :basedir)]
-      (string/replace (str cwd "/" basedir) #"/+" "/")
+      (string/replace (string/join "/" [cwd basedir]) #"/+" "/")
       cwd)))
 
 (s/defn bootstrap-workspace
