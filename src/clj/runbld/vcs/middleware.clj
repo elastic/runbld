@@ -1,36 +1,39 @@
 (ns runbld.vcs.middleware
-  (:require [runbld.schema :refer :all]
-            [schema.core :as s]
-            [slingshot.slingshot :refer [throw+]])
-  (:require [clojure.java.io :as io]
-            [environ.core :as environ]
-            [runbld.util.debug :as debug]
-            [runbld.vcs :as vcs]
-            [runbld.vcs.subversion :as svn]
-            [runbld.vcs.git :as git]))
+  (:require
+   [clojure.java.io :as io]
+   [environ.core :as environ]
+   [runbld.schema :refer :all]
+   [runbld.scm :as scm]
+   [runbld.util.debug :as debug]
+   [runbld.vcs :as vcs]
+   [runbld.vcs.subversion :as svn]
+   [runbld.vcs.git :as git]
+   [schema.core :as s]
+   [slingshot.slingshot :refer [throw+]]))
 
 (s/defn make-repo :- (s/protocol vcs/VcsRepo)
   [opts]
-  (let [cwd (get-in opts [:process :cwd])]
+  (let [source-dir (scm/checkout-dir opts)]
     (cond
       (.isDirectory
-       (io/file cwd ".git")) (git/make-repo
-                              cwd
-                              (get-in opts [:build :org])
-                              (get-in opts [:build :project])
-                              (get-in opts [:build :branch]))
+       (io/file source-dir ".git")) (git/make-repo
+                                     source-dir
+                                     (get-in opts [:build :org])
+                                     (get-in opts [:build :project])
+                                     (get-in opts [:build :branch]))
 
+      ;; TODO remove svn - it's not needed and is no longer 100% supported
       (.isDirectory
-       (io/file cwd ".svn")) (svn/make-repo
-                              (get-in opts [:env :SVN_URL])
-                              (get-in opts [:build :org])
-                              (get-in opts [:build :project])
-                              (get-in opts [:env :SVN_REVISION]))
+       (io/file source-dir ".svn")) (svn/make-repo
+                                     (get-in opts [:env :SVN_URL])
+                                     (get-in opts [:build :org])
+                                     (get-in opts [:build :project])
+                                     (get-in opts [:env :SVN_REVISION]))
 
       :else
-      (let [msg (str cwd ": unknown repository type "
+      (let [msg (str source-dir ": unknown repository type "
                      "(only know about git and svn currently)")
-            f (io/file cwd)
+            f (io/file source-dir)
             exists? (.exists f)]
         (debug/log msg
                    "CWD exists?" exists?
