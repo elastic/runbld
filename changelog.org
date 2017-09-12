@@ -1,4 +1,13 @@
 * runbld changes
+** 1.5.3
+   - Add =basedir= option to scm config to allow source to be checked
+     out into a subdirectory relative to the current working directory
+     of the script.
+   - Tweak the HTML email template to turn the =build.console-url=
+     into a real link
+   - Fix the MIME format of the email to properly separate the
+     multipart/alternative email bodies (html and plain text) from the
+     attachments using multipart/mixed
 ** 1.5.2
    - always set build_metadata when it's passed in via the env
 ** 1.5.1
