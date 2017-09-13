@@ -153,19 +153,21 @@
   "Searches the build workspace for files starting with build_metadata
   and concats their contents and stores it in the build metadata in
   Elasticsearch."
-  [opts]
+  [{:keys [logger] :as opts}]
+  (logger "Searching for build metadata in" (System/getProperty "user.dir"))
   (let [prep-content #(-> %
                           string/trim
                           (string/replace #"\n+$" "")
                           ;; strip trailing semicolons so we can blindly
                           ;; str/join
                           (string/replace #";+$" ""))
-        metadata (->> (rio/find-files (-> opts :process :cwd)
-                                      #"/build_metadata")
+        metadata (->> (rio/find-files
+                       (System/getProperty "user.dir")
+                       #"/build_metadata")
                       (map slurp)
                       (map prep-content)
                       (string/join ";"))]
-    ((:logger opts) "Storing build metadata:" metadata)
+    (logger "Storing build metadata:" metadata)
     (assoc-in opts [:build :metadata] metadata)))
 
 
