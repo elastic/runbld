@@ -1,4 +1,8 @@
 * runbld changes
+** 1.5.4
+   - Search for =build_metadata= files in the root execution directory
+     (Java's =user.dir=) rather than from the wrapped script's
+     execution directory.
 ** 1.5.3
    - Add =basedir= option to scm config to allow source to be checked
      out into a subdirectory relative to the current working directory
