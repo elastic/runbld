@@ -5,7 +5,7 @@
    [runbld.util.debug :as debug]))
 
 (defn test-log [& x]
-  (io/spit (.getAbsolutePath (clojure.java.io/file "test.log"))
+  (io/spit (.getAbsolutePath (clojure.java.io/file "target" "test.log"))
            (str (apply print-str x) (System/getProperty "line.separator"))
            :append true))
 

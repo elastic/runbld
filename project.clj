@@ -14,6 +14,7 @@
   :exclusions [org.clojure/clojure
                prismatic/schema]
   :source-paths ["src/clj"]
+  :clean-targets ["target" "tmp"]
   :java-source-paths ["src/java"]
   :javac-options ["-Xlint:unchecked"]
   :jvm-opts ["-server"]
@@ -51,7 +52,8 @@
              :package {:plugins [[elastic/lein-bin "0.3.6"]]
                        :bin {:bootclasspath false}}}
   :plugins [[lein-environ "1.0.3"]]
-  :aliases {"package" ["with-profile" "package" "bin"]}
+  :aliases {"package" ["with-profile" "package" "bin"]
+            "test!" ["do" "clean," "test"]}
   :aot :all
   :main runbld.main
   :test-selectors {:default (complement :integration)
