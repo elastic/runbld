@@ -1,6 +1,6 @@
-(ns runbld.test.process-test
+(ns runbld.process-test
   (:require [clojure.test :refer :all]
-            [runbld.test.support :as ts]
+            [runbld.test-support :as ts]
             [schema.test])
   (:require [cheshire.core :as json]
             [runbld.java :as java]

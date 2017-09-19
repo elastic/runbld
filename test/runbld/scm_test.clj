@@ -1,4 +1,4 @@
-(ns runbld.test.scm-test
+(ns runbld.scm-test
   (:require [clojure.test :refer :all]
             [environ.core :as environ]
             [runbld.scm :refer :all]))

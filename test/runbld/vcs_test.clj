@@ -1,4 +1,4 @@
-(ns runbld.test.vcs-test
+(ns runbld.vcs-test
   (:require [clojure.test :refer :all]
             [schema.test])
   (:require [runbld.vcs :as vcs]

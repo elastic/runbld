@@ -1,4 +1,4 @@
-(ns runbld.test.build-test
+(ns runbld.build-test
   (:require [clojure.test :refer :all]
             [runbld.build :as build]
             [schema.test :as s]))

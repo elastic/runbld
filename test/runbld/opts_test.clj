@@ -1,6 +1,6 @@
-(ns runbld.test.opts-test
+(ns runbld.opts-test
   (:require [clojure.test :refer :all]
-            [runbld.test.support :as ts]
+            [runbld.test-support :as ts]
             [schema.test])
   (:require [clj-time.core :as t]
             [runbld.io :as io]

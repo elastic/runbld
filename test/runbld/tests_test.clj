@@ -1,9 +1,9 @@
-(ns runbld.test.tests-test
+(ns runbld.tests-test
   (:require
    [clojure.stacktrace :as stacktrace]
    [clojure.test :refer :all]
    [schema.test]
-   [runbld.test.support :as ts]
+   [runbld.test-support :as ts]
    [runbld.tests :as tests]
    [runbld.util.debug :as debug]))
 

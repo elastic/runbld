@@ -1,4 +1,4 @@
-(ns runbld.test.email-test
+(ns runbld.email-test
   (:require [clojure.edn :as edn]
             [clojure.test :refer :all]
             [postal.core :as mail]
@@ -7,7 +7,7 @@
             [runbld.notifications.email :as email]
             [runbld.opts :as opts]
             [runbld.store :as store]
-            [runbld.test.support :as ts]
+            [runbld.test-support :as ts]
             [runbld.util.email :as email-util]
             [runbld.vcs.git :as git]
             [schema.test]

@@ -1,4 +1,4 @@
-(ns runbld.test.support
+(ns runbld.test-support
   (:require
    [runbld.io :as io]
    [runbld.util.date :as date]

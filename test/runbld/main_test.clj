@@ -1,4 +1,4 @@
-(ns runbld.test.main-test
+(ns runbld.main-test
   (:require
    [cheshire.core :as json]
    [clj-git.core :refer [git git-branch git-clone git-log
@@ -19,7 +19,7 @@
    [runbld.scheduler.default :as default-sched]
    [runbld.scm :as scm]
    [runbld.store :as store]
-   [runbld.test.support :as ts]
+   [runbld.test-support :as ts]
    [runbld.util.debug :as debug]
    [runbld.util.http :refer [wrap-retries]]
    [runbld.vcs.git :as git]

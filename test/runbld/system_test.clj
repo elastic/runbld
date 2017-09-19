@@ -1,4 +1,4 @@
-(ns runbld.test.system-test
+(ns runbld.system-test
   (:require [clojure.test :refer :all]
             [schema.test])
   (:require [runbld.facts.factory :as facter]

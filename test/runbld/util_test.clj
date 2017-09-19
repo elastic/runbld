@@ -1,4 +1,4 @@
-(ns runbld.test.util-test
+(ns runbld.util-test
   (:require [clojure.test :refer :all]
             [runbld.util.data :as data]))
 

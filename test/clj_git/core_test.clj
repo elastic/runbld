@@ -1,4 +1,4 @@
-(ns clj-git.test.core-test
+(ns clj-git.core-test
   (:require [clojure.java.io :as io]
             [clojure.test :refer :all]
             [environ.core :as environ])
