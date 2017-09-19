@@ -73,7 +73,7 @@
     (apply deep-merge-with deep-merge
            (for [ms profiles]
              (let [[k v] (first ms)
-                   pat ((comp re-pattern name) k)]
+                   pat (re-pattern (name k))]
                (if (re-find pat job-name)
                  (do
                    (debug/log "Job" job-name
