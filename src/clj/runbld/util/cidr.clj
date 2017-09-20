@@ -1,6 +1,8 @@
 (ns runbld.util.cidr
-  "From https://github.com/zentrope/match-expr/blob/master/src/match_expr/impl/cidr.clj"
-  (:require [clojure.string]))
+  "From:
+   github.com/zentrope/match-expr/blob/master/src/match_expr/impl/cidr.clj"
+  (:require
+   [clojure.string]))
 
 (defn expt
   [x pow]

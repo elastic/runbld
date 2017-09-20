@@ -1,13 +1,15 @@
 (ns runbld.tests.junit
-  (:require [clojure.java.io :as io]
-            [clojure.set :refer [rename-keys]]
-            [clojure.string :as str]
-            [net.cgrand.enlive-html :as x]
-            [runbld.io :as rio]
-            [runbld.schema :refer :all]
-            [runbld.util.debug :as debug]
-            [schema.core :as s])
-  (:import (org.xml.sax SAXParseException)))
+  (:require
+   [clojure.java.io :as io]
+   [clojure.set :refer [rename-keys]]
+   [clojure.string :as str]
+   [net.cgrand.enlive-html :as x]
+   [runbld.io :as rio]
+   [runbld.schema :refer :all]
+   [runbld.util.debug :as debug]
+   [schema.core :as s])
+  (:import
+   (org.xml.sax SAXParseException)))
 
 (defn maybe-update [m ks f & x]
   (into m (for [[k v] (select-keys m ks)]

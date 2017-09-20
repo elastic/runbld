@@ -1,7 +1,8 @@
 (ns runbld.scheduler.default
-  (:require [runbld.schema :refer :all]
-            [schema.core :as s])
-  (:require [runbld.scheduler :refer [Scheduler] :as scheduler]))
+  (:require
+   [runbld.scheduler :refer [Scheduler] :as scheduler]
+   [runbld.schema :refer :all]
+   [schema.core :as s]))
 
 (defrecord DefaultScheduler [opts]
   Scheduler

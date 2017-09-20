@@ -1,11 +1,13 @@
 (ns runbld.vcs.subversion
-  (:require [runbld.schema :refer :all]
-            [schema.core :as s]
-            [slingshot.slingshot :refer [throw+]]
-            [clojure.reflect])
-  (:require [runbld.util.date :as date]
-            [runbld.vcs :as vcs :refer [VcsRepo]])
-  (:import (runbld.vcs.subversion SvnRepository)))
+  (:require
+   [clojure.reflect]
+   [runbld.schema :refer :all]
+   [runbld.util.date :as date]
+   [runbld.vcs :as vcs :refer [VcsRepo]]
+   [schema.core :as s]
+   [slingshot.slingshot :refer [throw+]])
+  (:import
+   (runbld.vcs.subversion SvnRepository)))
 
 (def provider "svn")
 

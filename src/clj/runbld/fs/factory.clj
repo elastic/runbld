@@ -1,11 +1,13 @@
 (ns runbld.fs.factory
-  (:require [runbld.schema :refer :all]
-            [schema.core :as s]
-            [slingshot.slingshot :refer [throw+]])
-  (:require [runbld.io :as io]
-            [runbld.fs :refer [FileSystem] :as fs]
-            [runbld.util.data :as data])
-  (:import (java.nio.file Files)))
+  (:require
+   [runbld.fs :refer [FileSystem] :as fs]
+   [runbld.io :as io]
+   [runbld.schema :refer :all]
+   [runbld.util.data :as data]
+   [schema.core :as s]
+   [slingshot.slingshot :refer [throw+]])
+  (:import
+   (java.nio.file Files)))
 
 ;; We need to guard against overflows on filesystems (particularly
 ;; AWS EFS) that are larger than Long/MAX_VALUE. See

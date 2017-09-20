@@ -1,10 +1,11 @@
 (ns runbld.hosting.aws-ec2
-  (:require [robert.bruce :refer [try-try-again]]
-            [runbld.schema :refer :all]
-            [schema.core :as s]
-            [slingshot.slingshot :refer [try+ throw+]])
-  (:require [clj-http.client :as http]
-            [runbld.hosting :refer [HostingProvider] :as hosting]))
+  (:require
+   [clj-http.client :as http]
+   [robert.bruce :refer [try-try-again]]
+   [runbld.hosting :refer [HostingProvider] :as hosting]
+   [runbld.schema :refer :all]
+   [schema.core :as s]
+   [slingshot.slingshot :refer [try+ throw+]]))
 
 (s/defn region-name :- s/Str
   "Given us-east-1c, we want us-east-1."

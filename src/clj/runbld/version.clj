@@ -1,5 +1,6 @@
 (ns runbld.version
-  (:require [clojure.java.io :as io]))
+  (:require
+   [clojure.java.io :as io]))
 
 (defn build []
   (if-let [b (io/resource "build.txt")]

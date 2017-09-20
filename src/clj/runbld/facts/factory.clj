@@ -1,12 +1,13 @@
 (ns runbld.facts.factory
-  (:require [runbld.schema :refer :all]
-            [schema.core :as s]
-            [slingshot.slingshot :refer [throw+]])
-  (:require [clj-yaml.core :as yaml]
-            [runbld.facts.facter1]
-            [runbld.facts.facter2]
-            [runbld.facts.facter3]
-            [runbld.io :as io]))
+  (:require
+   [clj-yaml.core :as yaml]
+   [runbld.facts.facter1]
+   [runbld.facts.facter2]
+   [runbld.facts.facter3]
+   [runbld.io :as io]
+   [runbld.schema :refer :all]
+   [schema.core :as s]
+   [slingshot.slingshot :refer [throw+]]))
 
 (defn facter-version []
   (when-let [facter-bin (io/which "facter")]

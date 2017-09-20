@@ -6,8 +6,8 @@
    [runbld.scm :as scm]
    [runbld.util.debug :as debug]
    [runbld.vcs :as vcs]
-   [runbld.vcs.subversion :as svn]
    [runbld.vcs.git :as git]
+   [runbld.vcs.subversion :as svn]
    [schema.core :as s]
    [slingshot.slingshot :refer [throw+]]))
 

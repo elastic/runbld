@@ -14,20 +14,19 @@
   :exclusions [org.clojure/clojure
                prismatic/schema]
   :source-paths ["src/clj"]
+  :clean-targets ["target" "tmp"]
   :java-source-paths ["src/java"]
   :javac-options ["-Xlint:unchecked"]
   :jvm-opts ["-server"]
-  :dependencies [[clj-time "0.13.0"]
-                 [circleci/clj-yaml "0.5.5"]
+  :dependencies [[clj-time "0.14.0"]
+                 [circleci/clj-yaml "0.5.6"]
                  [com.draines/postal "2.0.2"
-                  :exclusions
-                  [ ;; Newer one comes from clj-http
-                   commons-codec
-                   ]]
-                 [instaparse "1.4.5"]
+                  ;; Newer one comes from clj-http
+                  :exclusions [commons-codec]]
+                 [instaparse "1.4.7"]
 
                  ;; logging
-                 [org.clojure/tools.logging "0.3.1"]
+                 [org.clojure/tools.logging "0.4.0"]
                  [log4j/log4j "1.2.17"]
 
                  [com.palletops/thread-expr "1.3.0"]
@@ -36,13 +35,13 @@
                  [enlive "1.1.6"]
                  [environ "1.1.0"]
                  [listora/again "0.1.0"]
-                 [org.clojure/clojure "1.9.0-alpha17"]
-                 [org.clojure/core.async "0.3.442"]
+                 [org.clojure/clojure "1.9.0-beta1"]
+                 [org.clojure/core.async "0.3.443"]
                  [org.clojure/tools.cli "0.3.5"]
 
                  ;; Use 1.7 because the Jenkins plugin is pinned to 1.7
-                 [org.tmatesoft.svnkit/svnkit "1.8.14"]
-                 [prismatic/schema "1.1.5"]
+                 [org.tmatesoft.svnkit/svnkit "1.9.0"]
+                 [prismatic/schema "1.1.6"]
                  [robert/bruce "0.8.0"]
                  [slingshot "0.12.2"]
                  [stencil "0.5.0"]]
@@ -51,7 +50,8 @@
              :package {:plugins [[elastic/lein-bin "0.3.6"]]
                        :bin {:bootclasspath false}}}
   :plugins [[lein-environ "1.0.3"]]
-  :aliases {"package" ["with-profile" "package" "bin"]}
+  :aliases {"package" ["with-profile" "package" "bin"]
+            "test!" ["do" "clean," "test"]}
   :aot :all
   :main runbld.main
   :test-selectors {:default (complement :integration)

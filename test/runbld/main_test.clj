@@ -1,4 +1,4 @@
-(ns runbld.test.main-test
+(ns runbld.main-test
   (:require
    [cheshire.core :as json]
    [clj-git.core :refer [git git-branch git-clone git-log
@@ -11,6 +11,7 @@
    [runbld.build :as build]
    [runbld.env :as env]
    [runbld.io :as io]
+   [runbld.main :as main]
    [runbld.notifications.email :as email]
    [runbld.notifications.slack :as slack]
    [runbld.opts :as opts]
@@ -19,14 +20,13 @@
    [runbld.scheduler.default :as default-sched]
    [runbld.scm :as scm]
    [runbld.store :as store]
-   [runbld.test.support :as ts]
+   [runbld.test-support :as ts]
    [runbld.util.debug :as debug]
    [runbld.util.http :refer [wrap-retries]]
    [runbld.vcs.git :as git]
    [runbld.version :as version]
    [schema.test :as s]
-   [stencil.core :as mustache])
-  (:require [runbld.main :as main] :reload-all))
+   [stencil.core :as mustache]))
 
 (def email (atom []))
 (def slack (atom []))
@@ -44,7 +44,13 @@
 
 (use-fixtures :each
   ts/redirect-logging-fixture
-  ts/reset-debug-log-fixture)
+  ts/reset-debug-log-fixture
+  (fn jvm-death-rattle [f]
+    (with-redefs [main/really-die (fn [& args]
+                                    ;; tattle if someone tries to kill the JVM
+                                    (println "SOMEBODY TRIED TO KILL THE JVM!")
+                                    :dontdie)]
+      (f))))
 
 (s/deftest main
   ;; Change root bindings for these Vars, affects any execution no
@@ -628,10 +634,6 @@
         intake-dir "tmp/git/metadata-intake"
         periodic-dir "tmp/git/metadata-periodic"]
     (try
-      (when (.exists (jio/file periodic-dir))
-        (io/rmdir-r periodic-dir))
-      (when (.exists (jio/file intake-dir))
-        (io/rmdir-r intake-dir))
       (with-redefs [email/send* (fn [_ _ _ _ _ plain html attachments]
                                   (reset! email-body html)
                                   ;; to satisfy schema
@@ -667,7 +669,9 @@
               (str "the metadata should be in the environment\n"
                    "the test is in check-metadata.bash"))
           (testing "existing BUILD_METADATA environment is respected"
-            (with-redefs [environ/env {:build-metadata "existing;metadata"}]
+            (with-redefs [environ/env (assoc environ/env
+                                             :build-metadata
+                                             "existing;metadata")]
               (let [[opts-periodic res-periodic]
                     (run (conj
                           ["-c" "test/config/main.yml"
@@ -677,7 +681,6 @@
                           "test/check-existing-metadata.bash"))]
                 ;; 0 exit code means the second script got the
                 ;; metadata- the check is in the bash script
-                (println (environ/env :build-metadata))
                 (is (= 0 (:exit-code res-periodic))
                     (str "the metadata was incorrect in the environment\n"
                          "the test is in check-existing-metadata.bash")))))))

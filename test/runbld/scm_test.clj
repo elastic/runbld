@@ -1,7 +1,8 @@
-(ns runbld.test.scm-test
-  (:require [clojure.test :refer :all]
-            [environ.core :as environ]
-            [runbld.scm :refer :all]))
+(ns runbld.scm-test
+  (:require
+   [clojure.test :refer :all]
+   [environ.core :as environ]
+   [runbld.scm :refer :all]))
 
 (defn test-choose-branch [env-branch scm-branch job-branch]
   (with-redefs [environ/env {:branch-specifier env-branch}]

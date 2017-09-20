@@ -12,7 +12,8 @@
    [postal.core :as mail]
    [runbld.util.email :as email]
    [slingshot.slingshot :refer [try+ throw+]])
-  (:import (java.util Date)))
+  (:import
+   (java.util Date)))
 
 (def date-format (f/formatters :date-time))
 

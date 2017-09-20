@@ -1,20 +1,22 @@
 (ns runbld.store
   (:refer-clojure :exclude [get])
-  (:require [clojure.core.async :as async]
-            [clojure.string :as str]
-            [elasticsearch.connection :as conn]
-            [elasticsearch.connection.http :as http]
-            [elasticsearch.document :as doc]
-            [elasticsearch.indices :as indices]
-            [robert.bruce :refer [*try* try-try-again]]
-            [runbld.io :as io]
-            [runbld.schema :refer :all]
-            [runbld.util.date :as date]
-            [runbld.util.debug :as debug]
-            [runbld.vcs :refer [VcsRepo]]
-            [schema.core :as s]
-            [slingshot.slingshot :refer [try+ throw+]])
-  (:import (elasticsearch.connection Connection)))
+  (:require
+   [clojure.core.async :as async]
+   [clojure.string :as str]
+   [elasticsearch.connection :as conn]
+   [elasticsearch.connection.http :as http]
+   [elasticsearch.document :as doc]
+   [elasticsearch.indices :as indices]
+   [robert.bruce :refer [*try* try-try-again]]
+   [runbld.io :as io]
+   [runbld.schema :refer :all]
+   [runbld.util.date :as date]
+   [runbld.util.debug :as debug]
+   [runbld.vcs :refer [VcsRepo]]
+   [schema.core :as s]
+   [slingshot.slingshot :refer [try+ throw+]])
+  (:import
+   (elasticsearch.connection Connection)))
 
 (def MAX_INDEX_BYTES (* 1024 1024 1024))
 

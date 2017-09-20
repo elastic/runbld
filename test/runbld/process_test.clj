@@ -1,14 +1,15 @@
-(ns runbld.test.process-test
-  (:require [clojure.test :refer :all]
-            [runbld.test.support :as ts]
-            [schema.test])
-  (:require [cheshire.core :as json]
-            [runbld.java :as java]
-            [runbld.opts :as opts]
-            [runbld.process :as proc]
-            [runbld.store :as store]
-            [runbld.util.data :as data]
-            [runbld.io :as io] :reload-all))
+(ns runbld.process-test
+  (:require
+   [cheshire.core :as json]
+   [clojure.test :refer :all]
+   [runbld.io :as io]
+   [runbld.java :as java]
+   [runbld.opts :as opts]
+   [runbld.process :as proc]
+   [runbld.store :as store]
+   [runbld.test-support :as ts]
+   [runbld.util.data :as data]
+   [schema.test]))
 
 (use-fixtures :once schema.test/validate-schemas)
 (use-fixtures :each ts/redirect-logging-fixture)

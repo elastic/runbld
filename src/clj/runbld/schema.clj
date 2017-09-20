@@ -1,8 +1,10 @@
 (ns runbld.schema
-  (:require [schema.core :as s]
-            [runbld.scheduler :refer [Scheduler]]
-            [runbld.schema.mapping :as m])
-  (:import (elasticsearch.connection Connection)))
+  (:require
+   [runbld.scheduler :refer [Scheduler]]
+   [runbld.schema.mapping :as m]
+   [schema.core :as s])
+  (:import
+   (elasticsearch.connection Connection)))
 
 (def DocType :t)
 

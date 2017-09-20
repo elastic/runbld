@@ -1,9 +1,9 @@
-(ns runbld.test.vcs-test
-  (:require [clojure.test :refer :all]
-            [schema.test])
-  (:require [runbld.vcs :as vcs]
-            [runbld.vcs.git :as git]
-            :reload-all))
+(ns runbld.vcs-test
+  (:require
+   [clojure.test :refer :all]
+   [runbld.vcs :as vcs]
+   [runbld.vcs.git :as git]
+   [schema.test]))
 
 (use-fixtures :once schema.test/validate-schemas)
 
@@ -20,4 +20,3 @@
            (:message
             (vcs/log-latest
              (git/make-repo d "elastic" "foo" "master")))))))
-

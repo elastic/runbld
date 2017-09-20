@@ -1,8 +1,9 @@
-(ns clj-git.test.core-test
-  (:require [clojure.java.io :as io]
-            [clojure.test :refer :all]
-            [environ.core :as environ])
-  (:require [clj-git.core :as git] :reload-all))
+(ns clj-git.core-test
+  (:require
+   [clj-git.core :as git]
+   [clojure.java.io :as io]
+   [clojure.test :refer :all]
+   [environ.core :as environ]))
 
 (defn abspath [path]
   (-> path

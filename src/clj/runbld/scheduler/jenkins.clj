@@ -1,9 +1,10 @@
 (ns runbld.scheduler.jenkins
-  (:require [runbld.schema :refer :all]
-            [schema.core :as s])
-  (:require [clojure.string :as str]
-            [runbld.scheduler :refer [Scheduler] :as scheduler]
-            [runbld.util.data :refer [strip-trailing-slashes]]))
+  (:require
+   [clojure.string :as str]
+   [runbld.scheduler :refer [Scheduler] :as scheduler]
+   [runbld.schema :refer :all]
+   [runbld.util.data :refer [strip-trailing-slashes]]
+   [schema.core :as s]))
 
 (defrecord JenkinsScheduler [opts]
   Scheduler

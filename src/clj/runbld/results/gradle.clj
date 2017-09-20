@@ -1,10 +1,11 @@
 (ns runbld.results.gradle
-  (:require [clojure.spec.alpha :as s]
-            [runbld.schema])
-  (:require [elasticsearch.connection.http :as es.conn]
-            [elasticsearch.document :as es.doc]
-            [elasticsearch.indices :as indices]
-            [runbld.store :as store]))
+  (:require
+   [clojure.spec.alpha :as s]
+   [elasticsearch.connection.http :as es.conn]
+   [elasticsearch.document :as es.doc]
+   [elasticsearch.indices :as indices]
+   [runbld.schema]
+   [runbld.store :as store]))
 
 (def T
   (name runbld.schema/DocType))

@@ -1,21 +1,21 @@
 (ns runbld.opts
-  (:require [runbld.schema :refer :all]
-            [schema.core :as s]
-            [slingshot.slingshot :refer [throw+]]
-            [runbld.util.debug :as debug])
-  (:require [clj-yaml.core :as yaml]
-            [clojure.string :as str]
-            [clojure.tools.cli :as cli]
-            [environ.core :as environ]
-            [runbld.env :as env]
-            [runbld.java :as java]
-            [runbld.store :as store]
-            [runbld.util.data :refer [deep-merge-with deep-merge]]
-            [runbld.util.date :as date]
-            [runbld.util.debug :as debug]
-            [runbld.util.http :refer [wrap-retries]]
-            [runbld.io :as io]
-            [runbld.version :as version]))
+  (:require
+   [clj-yaml.core :as yaml]
+   [clojure.string :as str]
+   [clojure.tools.cli :as cli]
+   [environ.core :as environ]
+   [runbld.env :as env]
+   [runbld.io :as io]
+   [runbld.java :as java]
+   [runbld.schema :refer :all]
+   [runbld.store :as store]
+   [runbld.util.data :refer [deep-merge-with deep-merge]]
+   [runbld.util.date :as date]
+   [runbld.util.debug :as debug]
+   [runbld.util.http :refer [wrap-retries]]
+   [runbld.version :as version]
+   [schema.core :as s]
+   [slingshot.slingshot :refer [throw+]]))
 
 (defn windows? []
   (.startsWith (System/getProperty "os.name") "Windows"))
@@ -73,7 +73,7 @@
     (apply deep-merge-with deep-merge
            (for [ms profiles]
              (let [[k v] (first ms)
-                   pat ((comp re-pattern name) k)]
+                   pat (re-pattern (name k))]
                (if (re-find pat job-name)
                  (do
                    (debug/log "Job" job-name
@@ -148,8 +148,13 @@
    ["-j" "--job-name JOBNAME" (str "Job name: org,project,branch,etc "
                                    "also read from $JOB_NAME")
     :default (environ/env :job-name)]
-   [nil "--last-good-commit JOBNAME" "Whether to checkout the latest commit to have passed a matching job."]
-   [nil "--java-home PATH" "If different from JAVA_HOME or need to override what will be discovered in PATH"]
+   [nil
+    "--last-good-commit JOBNAME"
+    "Whether to checkout the latest commit to have passed a matching job."]
+   [nil
+    "--java-home PATH"
+    (str "If different from JAVA_HOME or need to "
+         " override what will be discovered in PATH")]
    ["-p" "--program PROGRAM" "Program that will run the scriptfile"
     :default (if (windows?) "CMD.EXE" "bash")]
    ["-a" "--args ARGS" "Args to pass PROGRAM"
