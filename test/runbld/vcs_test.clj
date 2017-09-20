@@ -20,4 +20,3 @@
            (:message
             (vcs/log-latest
              (git/make-repo d "elastic" "foo" "master")))))))
-
