@@ -1,10 +1,11 @@
 (ns runbld.java
-  (:require [runbld.schema :refer :all]
-            [schema.core :as s]
-            [slingshot.slingshot :refer [throw+]])
-  (:require [clojure.edn]
-            [clojure.string :as str]
-            [runbld.io :as io]))
+  (:require
+   [clojure.edn]
+   [clojure.string :as str]
+   [runbld.io :as io]
+   [runbld.schema :refer :all]
+   [schema.core :as s]
+   [slingshot.slingshot :refer [throw+]]))
 
 (defn source []
   (with-out-str

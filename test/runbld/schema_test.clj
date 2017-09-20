@@ -1,10 +1,10 @@
 (ns runbld.schema-test
-  (:require [clojure.test :refer :all]
-            [schema.test]
-            [schema.core :as s])
-  (:require [clj-time.core :as t]
-            [runbld.schema.mapping :as m :refer [schema-walk mapping-walk]]
-            :reload-all))
+  (:require
+   [clj-time.core :as t]
+   [clojure.test :refer :all]
+   [runbld.schema.mapping :as m :refer [schema-walk mapping-walk]]
+   [schema.core :as s]
+   [schema.test]))
 
 (use-fixtures :once schema.test/validate-schemas)
 

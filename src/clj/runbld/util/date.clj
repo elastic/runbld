@@ -1,10 +1,12 @@
 (ns runbld.util.date
-  (:require [clj-time.coerce :as c]
-            [clj-time.core :as t]
-            [clj-time.format :as f]
-            [clojure.string :as str]
-            [slingshot.slingshot :refer [throw+]])
-  (:import [org.joda.time Period]))
+  (:require
+   [clj-time.coerce :as c]
+   [clj-time.core :as t]
+   [clj-time.format :as f]
+   [clojure.string :as str]
+   [slingshot.slingshot :refer [throw+]])
+  (:import
+   (org.joda.time Period)))
 
 (defn now []
   (t/now))

@@ -1,16 +1,17 @@
 (ns runbld.vcs.git
-  (:require [runbld.schema :refer :all]
-            [schema.core :as s])
-  (:require [clj-git.core :as git]
-            [clojure.java.io :as jio]
-            [clojure.java.shell :as sh]
-            [environ.core :as environ]
-            [runbld.util.data :refer [strip-trailing-slashes]]
-            [runbld.util.date :as date]
-            [runbld.util.debug :as debug]
-            [runbld.io :as io]
-            [runbld.vcs :as vcs :refer [VcsRepo]]
-            [slingshot.slingshot :refer [throw+]]))
+  (:require
+   [clj-git.core :as git]
+   [clojure.java.io :as jio]
+   [clojure.java.shell :as sh]
+   [environ.core :as environ]
+   [runbld.io :as io]
+   [runbld.schema :refer :all]
+   [runbld.util.data :refer [strip-trailing-slashes]]
+   [runbld.util.date :as date]
+   [runbld.util.debug :as debug]
+   [runbld.vcs :as vcs :refer [VcsRepo]]
+   [schema.core :as s]
+   [slingshot.slingshot :refer [throw+]]))
 
 (def provider "git")
 

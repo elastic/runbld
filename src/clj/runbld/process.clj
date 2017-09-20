@@ -1,21 +1,22 @@
 (ns runbld.process
-  (:require [runbld.schema :refer :all]
-            [schema.core :as s]
-            [runbld.util.debug :as debug])
-  (:require [cheshire.core :as json]
-            [clojure.core.async :as async
-             :refer [thread go go-loop chan
-                     >! <! >!! <!! alts! alts!! close!]]
-            [runbld.env :as env]
-            [runbld.store :as store]
-            [runbld.util.data :as data]
-            [runbld.util.date :as date]
-            [runbld.io :as io])
-  (:import (clojure.core.async.impl.channels ManyToManyChannel)
-           (clojure.lang Atom Ref)
-           (java.io File InputStream)
-           (java.util UUID)
-           (java.util.concurrent TimeUnit)))
+  (:require
+   [cheshire.core :as json]
+   [clojure.core.async :as async :refer [thread go go-loop chan >! <! >!! <!!
+                                         alts! alts!! close!]]
+   [runbld.env :as env]
+   [runbld.io :as io]
+   [runbld.schema :refer :all]
+   [runbld.store :as store]
+   [runbld.util.data :as data]
+   [runbld.util.date :as date]
+   [runbld.util.debug :as debug]
+   [schema.core :as s])
+  (:import
+   (clojure.core.async.impl.channels ManyToManyChannel)
+   (clojure.lang Atom Ref)
+   (java.io File InputStream)
+   (java.util UUID)
+   (java.util.concurrent TimeUnit)))
 
 (s/defn inc-ordinals
   [m :- clojure.lang.Ref

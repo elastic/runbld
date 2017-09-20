@@ -1,21 +1,21 @@
 (ns runbld.opts
-  (:require [runbld.schema :refer :all]
-            [schema.core :as s]
-            [slingshot.slingshot :refer [throw+]]
-            [runbld.util.debug :as debug])
-  (:require [clj-yaml.core :as yaml]
-            [clojure.string :as str]
-            [clojure.tools.cli :as cli]
-            [environ.core :as environ]
-            [runbld.env :as env]
-            [runbld.java :as java]
-            [runbld.store :as store]
-            [runbld.util.data :refer [deep-merge-with deep-merge]]
-            [runbld.util.date :as date]
-            [runbld.util.debug :as debug]
-            [runbld.util.http :refer [wrap-retries]]
-            [runbld.io :as io]
-            [runbld.version :as version]))
+  (:require
+   [clj-yaml.core :as yaml]
+   [clojure.string :as str]
+   [clojure.tools.cli :as cli]
+   [environ.core :as environ]
+   [runbld.env :as env]
+   [runbld.io :as io]
+   [runbld.java :as java]
+   [runbld.schema :refer :all]
+   [runbld.store :as store]
+   [runbld.util.data :refer [deep-merge-with deep-merge]]
+   [runbld.util.date :as date]
+   [runbld.util.debug :as debug]
+   [runbld.util.http :refer [wrap-retries]]
+   [runbld.version :as version]
+   [schema.core :as s]
+   [slingshot.slingshot :refer [throw+]]))
 
 (defn windows? []
   (.startsWith (System/getProperty "os.name") "Windows"))

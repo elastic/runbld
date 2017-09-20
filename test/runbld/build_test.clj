@@ -1,7 +1,8 @@
 (ns runbld.build-test
-  (:require [clojure.test :refer :all]
-            [runbld.build :as build]
-            [schema.test :as s]))
+  (:require
+   [clojure.test :refer :all]
+   [runbld.build :as build]
+   [schema.test :as s]))
 
 (use-fixtures :once schema.test/validate-schemas)
 

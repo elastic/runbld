@@ -1,5 +1,6 @@
 (ns runbld.results
-  (:require [runbld.results.gradle :as gradle]))
+  (:require
+   [runbld.results.gradle :as gradle]))
 
 (defn summary [conn idx build-id]
   (when-let [s (gradle/summary conn idx build-id)]

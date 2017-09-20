@@ -2,10 +2,10 @@
   (:require
    [clojure.stacktrace :as stacktrace]
    [clojure.test :refer :all]
-   [schema.test]
    [runbld.test-support :as ts]
    [runbld.tests :as tests]
-   [runbld.util.debug :as debug]))
+   [runbld.util.debug :as debug]
+   [schema.test]))
 
 (use-fixtures :once schema.test/validate-schemas)
 

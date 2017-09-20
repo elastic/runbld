@@ -1,10 +1,10 @@
 (ns runbld.system-test
-  (:require [clojure.test :refer :all]
-            [schema.test])
-  (:require [runbld.facts.factory :as facter]
-            [runbld.fs.factory :as fs]
-            [runbld.system :as system]
-            :reload-all))
+  (:require
+   [clojure.test :refer :all]
+   [runbld.facts.factory :as facter]
+   [runbld.fs.factory :as fs]
+   [runbld.system :as system]
+   [schema.test]))
 
 (use-fixtures :once schema.test/validate-schemas)
 

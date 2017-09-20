@@ -1,6 +1,7 @@
 (ns runbld.facts.facter1
-  (:require [runbld.facts :refer [Facter] :as facts]
-            [runbld.util.data :as data]))
+  (:require
+   [runbld.facts :refer [Facter] :as facts]
+   [runbld.util.data :as data]))
 
 (defrecord Facter1 [facts]
   Facter

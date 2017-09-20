@@ -1,15 +1,16 @@
 (ns runbld.notifications.email
   (:refer-clojure :exclude [send])
-  (:require [runbld.schema :refer :all]
-            [schema.core :as s])
-  (:require [clojure.string :as str]
-            [postal.core :as mail]
-            [runbld.store :as store]
-            [runbld.io :as io]
-            [runbld.notifications :as n]
-            [runbld.util.email :as email]
-            [runbld.vcs :as vcs]
-            [stencil.core :as mustache]))
+  (:require
+   [clojure.string :as str]
+   [postal.core :as mail]
+   [runbld.io :as io]
+   [runbld.notifications :as n]
+   [runbld.schema :refer :all]
+   [runbld.store :as store]
+   [runbld.util.email :as email]
+   [runbld.vcs :as vcs]
+   [schema.core :as s]
+   [stencil.core :as mustache]))
 
 (defn split-addr [s]
   (vec

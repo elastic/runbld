@@ -1,17 +1,18 @@
 (ns runbld.build
-  (:require [clojure.java.io :as io]
-            [clojure.string :as string]
-            [elasticsearch.document :as doc]
-            [environ.core :as environ]
-            [runbld.io :as rio]
-            [runbld.scheduler :as scheduler]
-            [runbld.schema :refer :all]
-            [runbld.util.data :refer [deep-merge-with deep-merge]]
-            [runbld.util.date :as date]
-            [runbld.util.debug :as debug]
-            [runbld.vcs.middleware :as vcs]
-            [schema.core :as s]
-            [slingshot.slingshot :refer [throw+]]))
+  (:require
+   [clojure.java.io :as io]
+   [clojure.string :as string]
+   [elasticsearch.document :as doc]
+   [environ.core :as environ]
+   [runbld.io :as rio]
+   [runbld.scheduler :as scheduler]
+   [runbld.schema :refer :all]
+   [runbld.util.data :refer [deep-merge-with deep-merge]]
+   [runbld.util.date :as date]
+   [runbld.util.debug :as debug]
+   [runbld.vcs.middleware :as vcs]
+   [schema.core :as s]
+   [slingshot.slingshot :refer [throw+]]))
 
 (defn make-rand-uuid []
   (.toUpperCase

@@ -1,12 +1,14 @@
 (ns runbld.io
   (:refer-clojure :exclude [spit])
-  (:require [schema.core :as s]
-            [runbld.util.debug :as debug])
-  (:require [clojure.java.io :as jio]
-            [clojure.java.shell :as sh]
-            [pallet.thread-expr :refer [when->]]
-            [slingshot.slingshot :refer [throw+]])
-  (:import (org.apache.commons.io FileUtils)))
+  (:require
+   [clojure.java.io :as jio]
+   [clojure.java.shell :as sh]
+   [pallet.thread-expr :refer [when->]]
+   [runbld.util.debug :as debug]
+   [schema.core :as s]
+   [slingshot.slingshot :refer [throw+]])
+  (:import
+   (org.apache.commons.io FileUtils)))
 
 (def logger (agent nil))
 

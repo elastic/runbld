@@ -1,7 +1,8 @@
 (ns runbld.facts
-  (:require [schema.core :as s]
-            [slingshot.slingshot :refer [throw+]])
-  (:require [runbld.io :as io]))
+  (:require
+   [runbld.io :as io]
+   [schema.core :as s]
+   [slingshot.slingshot :refer [throw+]]))
 
 (defprotocol Facter
   (arch            [_])

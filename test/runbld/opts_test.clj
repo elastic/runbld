@@ -1,11 +1,12 @@
 (ns runbld.opts-test
-  (:require [clojure.test :refer :all]
-            [runbld.test-support :as ts]
-            [schema.test])
-  (:require [clj-time.core :as t]
-            [runbld.io :as io]
-            [runbld.opts :as opts]
-            [runbld.java :as java] :reload-all))
+  (:require
+   [clj-time.core :as t]
+   [clojure.test :refer :all]
+   [runbld.io :as io]
+   [runbld.java :as java]
+   [runbld.opts :as opts]
+   [runbld.test-support :as ts]
+   [schema.test]))
 
 (use-fixtures :once schema.test/validate-schemas)
 (use-fixtures :each ts/redirect-logging-fixture)

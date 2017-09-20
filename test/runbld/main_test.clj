@@ -11,6 +11,7 @@
    [runbld.build :as build]
    [runbld.env :as env]
    [runbld.io :as io]
+   [runbld.main :as main]
    [runbld.notifications.email :as email]
    [runbld.notifications.slack :as slack]
    [runbld.opts :as opts]
@@ -25,8 +26,7 @@
    [runbld.vcs.git :as git]
    [runbld.version :as version]
    [schema.test :as s]
-   [stencil.core :as mustache])
-  (:require [runbld.main :as main] :reload-all))
+   [stencil.core :as mustache]))
 
 (def email (atom []))
 (def slack (atom []))

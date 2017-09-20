@@ -1,7 +1,8 @@
 (ns runbld.schema.mapping
   (:refer-clojure :exclude [boolean long double map-entry? keyword])
-  (:require [clojure.walk :as walk]
-            [schema.core :as s]))
+  (:require
+   [clojure.walk :as walk]
+   [schema.core :as s]))
 
 (defn map-entry? [x]
   (or (instance? java.util.Map$Entry x)

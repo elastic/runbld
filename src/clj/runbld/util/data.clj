@@ -1,8 +1,9 @@
 (ns runbld.util.data
   (:refer-clojure :exclude [bigdec])
-  (:require [clojure.string :as str]
-            [clojure.walk]
-            [slingshot.slingshot :refer [throw+]]))
+  (:require
+   [clojure.string :as str]
+   [clojure.walk]
+   [slingshot.slingshot :refer [throw+]]))
 
 ;; http://dev.clojure.org/jira/browse/CLJ-1468
 (defn deep-merge

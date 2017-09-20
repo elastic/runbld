@@ -7,9 +7,7 @@
    [environ.core :as environ]
    [runbld.io :as io]
    [runbld.schema :refer :all]
-   [schema.core :as s]
-   [clojure.string :as str]
-   [clojure.string :as string]))
+   [schema.core :as s]))
 
 (defn find-workspace
   "just to override in tests"
@@ -99,7 +97,7 @@
                    (string? x)
                    (boolean
                     (re-matches #"^[a-fA-F0-9]{5,40}$"
-                                (str/trim x)))))]
+                                (string/trim x)))))]
     (let [branches (cond->> [build-branch]
                      (and (not (empty? scm-branch)))
                      (cons scm-branch)

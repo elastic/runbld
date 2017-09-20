@@ -1,6 +1,7 @@
 (ns runbld.pipeline
-  (:require [runbld.io :as io]
-            [runbld.util.debug :as debug]))
+  (:require
+   [runbld.io :as io]
+   [runbld.util.debug :as debug]))
 
 (defn symbol-name [fn-sym]
   (try

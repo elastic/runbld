@@ -1,17 +1,18 @@
 (ns runbld.email-test
-  (:require [clojure.edn :as edn]
-            [clojure.test :refer :all]
-            [postal.core :as mail]
-            [runbld.io :as io]
-            [runbld.main :as main]
-            [runbld.notifications.email :as email]
-            [runbld.opts :as opts]
-            [runbld.store :as store]
-            [runbld.test-support :as ts]
-            [runbld.util.email :as email-util]
-            [runbld.vcs.git :as git]
-            [schema.test]
-            [stencil.core :as mustache]))
+  (:require
+   [clojure.edn :as edn]
+   [clojure.test :refer :all]
+   [postal.core :as mail]
+   [runbld.io :as io]
+   [runbld.main :as main]
+   [runbld.notifications.email :as email]
+   [runbld.opts :as opts]
+   [runbld.store :as store]
+   [runbld.test-support :as ts]
+   [runbld.util.email :as email-util]
+   [runbld.vcs.git :as git]
+   [schema.test]
+   [stencil.core :as mustache]))
 
 (use-fixtures :once schema.test/validate-schemas)
 (use-fixtures :each ts/redirect-logging-fixture)

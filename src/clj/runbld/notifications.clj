@@ -1,11 +1,12 @@
 (ns runbld.notifications
-  (:require [clojure.string :as str]
-            [pallet.thread-expr :refer [when-> when-not->]]
-            [runbld.build :as build]
-            [runbld.schema :refer :all]
-            [runbld.results :as results]
-            [runbld.util.date :as date]
-            [schema.core :as s]))
+  (:require
+   [clojure.string :as str]
+   [pallet.thread-expr :refer [when-> when-not->]]
+   [runbld.build :as build]
+   [runbld.results :as results]
+   [runbld.schema :refer :all]
+   [runbld.util.date :as date]
+   [schema.core :as s]))
 
 (defn strip-out-runbld [src]
   (->> src

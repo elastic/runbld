@@ -1,13 +1,14 @@
 (ns runbld.system
-  (:require [runbld.schema :refer :all]
-            [schema.core :as s]
-            [slingshot.slingshot :refer [throw+]])
-  (:require [clj-yaml.core :as yaml]
-            [runbld.facts :as facts]
-            [runbld.facts.factory :as facter]
-            [runbld.fs.factory :as fs]
-            [runbld.hosting.factory :as hosting]
-            [runbld.io :as io]))
+  (:require
+   [clj-yaml.core :as yaml]
+   [runbld.facts :as facts]
+   [runbld.facts.factory :as facter]
+   [runbld.fs.factory :as fs]
+   [runbld.hosting.factory :as hosting]
+   [runbld.io :as io]
+   [runbld.schema :refer :all]
+   [schema.core :as s]
+   [slingshot.slingshot :refer [throw+]]))
 
 (defmacro non-nil-proto-map
   "Walk through and execute the given protocol fns, dropping if nil"

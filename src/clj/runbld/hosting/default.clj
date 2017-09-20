@@ -1,8 +1,9 @@
 (ns runbld.hosting.default
-  (:require [runbld.schema :refer :all]
-            [schema.core :as s]
-            [slingshot.slingshot :refer [try+ throw+]])
-  (:require [runbld.hosting :refer [HostingProvider]]))
+  (:require
+   [runbld.hosting :refer [HostingProvider]]
+   [runbld.schema :refer :all]
+   [schema.core :as s]
+   [slingshot.slingshot :refer [try+ throw+]]))
 
 (defrecord DefaultHosting [facts]
   HostingProvider

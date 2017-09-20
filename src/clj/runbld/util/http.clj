@@ -1,5 +1,6 @@
 (ns runbld.util.http
-  (:require [robert.bruce :refer [try-try-again]]))
+  (:require
+   [robert.bruce :refer [try-try-again]]))
 
 (defn wrap-retries*
   [client {:keys [retries-config] :as req} & args]

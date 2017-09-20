@@ -1,11 +1,13 @@
 (ns clj-git.core
-  (:require [clojure.edn :as edn]
-            [clojure.java.shell :as sh]
-            [clojure.java.io :as io]
-            [clojure.string :as str]
-            [clojure.zip :as zip]
-            [instaparse.core :as i])
-  (:import (java.time Instant ZoneOffset)))
+  (:require
+   [clojure.edn :as edn]
+   [clojure.java.io :as io]
+   [clojure.java.shell :as sh]
+   [clojure.string :as str]
+   [clojure.zip :as zip]
+   [instaparse.core :as i])
+  (:import
+   (java.time Instant ZoneOffset)))
 
 (defrecord Repository [path])
 

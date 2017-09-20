@@ -1,15 +1,16 @@
 (ns runbld.notifications.slack
   (:refer-clojure :exclude [send])
-  (:require [cheshire.core :as json]
-            [clj-http.client :as http]
-            [elasticsearch.document :as doc]
-            [runbld.io :as io]
-            [runbld.notifications :as n]
-            [runbld.schema :refer :all]
-            [runbld.store :as store]
-            [runbld.util.http :refer [wrap-retries]]
-            [schema.core :as s]
-            [stencil.core :as mustache]))
+  (:require
+   [cheshire.core :as json]
+   [clj-http.client :as http]
+   [elasticsearch.document :as doc]
+   [runbld.io :as io]
+   [runbld.notifications :as n]
+   [runbld.schema :refer :all]
+   [runbld.store :as store]
+   [runbld.util.http :refer [wrap-retries]]
+   [schema.core :as s]
+   [stencil.core :as mustache]))
 
 (defn api-send
   "Make the Slack REST API call"

@@ -1,10 +1,11 @@
 (ns runbld.scheduler.middleware
-  (:require [runbld.schema :refer :all]
-            [schema.core :as s]
-            [slingshot.slingshot :refer [throw+]])
-  (:require [runbld.scheduler :as scheduler]
-            [runbld.scheduler.jenkins :as jenkins]
-            [runbld.scheduler.default :as default]))
+  (:require
+   [runbld.scheduler :as scheduler]
+   [runbld.scheduler.default :as default]
+   [runbld.scheduler.jenkins :as jenkins]
+   [runbld.schema :refer :all]
+   [schema.core :as s]
+   [slingshot.slingshot :refer [throw+]]))
 
 (s/defn make-scheduler :- (s/protocol scheduler/Scheduler)
   [opts]
