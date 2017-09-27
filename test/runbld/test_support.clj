@@ -7,7 +7,10 @@
    [runbld.util.debug :as debug])
   (:import (java.io FileOutputStream)))
 
-(def log-file (clojure.java.io/file "target" "test.log"))
+(def log-file (clojure.java.io/file
+               (System/getProperty "user.dir")
+               "target"
+               "test.log"))
 
 (defn test-log [& x]
   (io/spit (.getAbsolutePath log-file)

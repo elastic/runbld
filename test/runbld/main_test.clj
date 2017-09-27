@@ -432,10 +432,16 @@
 
 (deftest scm-basedir
   (let [wipe-workspace-orig scm/wipe-workspace
+        user-dir (System/getProperty "user.dir")
         workspace "tmp/git/base+dir+master"
         master-commit (atom nil)]
     (try
-      (with-redefs [email/send* (fn [& args]
+      (with-redefs [main/really-die (fn [& args] :dontdie)
+                    opts/config-file-defaults
+                    (assoc-in opts/config-file-defaults
+                              [:process :cwd]
+                              (str user-dir "/" workspace))
+                    email/send* (fn [& args]
                                   (swap! email concat args)
                                   ;; to satisfy schema
                                   {})
@@ -444,24 +450,33 @@
                     scm/find-workspace (constantly workspace)]
         (let [[opts res] (run
                            (conj
-                            ["-c" "test/config/scm.yml"
-                             "-j" "base+dir+master"
-                             "-d" workspace]
-                            (if (opts/windows?)
-                              "test/fail.bat"
-                              "test/fail.bash")))]
+                            ["-c" (str user-dir "/" "test/config/scm.yml")
+                             "-j" "base+dir+master"]
+                            (str user-dir "/" "test/check-cwd.bash")))]
           (testing "the elasticsearch repo was cloned correctly into the subdir"
             (let [branch (-> opts :scm :branch)
                   depth (-> opts :scm :depth)
-                  repo (load-repo (scm/checkout-dir opts))]
-              (is (re-find (re-pattern "/some/other/dir") (:path repo)))
+                  repo (load-repo (get-in opts [:process :cwd]))]
+              (is (= 0 (:exit-code res)))
+              (is (re-find (re-pattern "/some/other/dir$")
+                           (get-in opts [:process :cwd])))
               (is (= branch (git-branch repo)))
               (let [log (git-log repo)]
                 (is (= depth (count (git-log repo))))
                 (reset! master-commit (last log)))
-              (is (shallow-clone? repo))))))
+              (is (shallow-clone? repo)))))
+        (testing "setting the cwd from the command line take precedence"
+          (let [[opts res] (run
+                             (conj
+                              ["-c" (str user-dir "/" "test/config/scm.yml")
+                               "-j" "base+dir+master"
+                               "-d" workspace]
+                              (str user-dir "/" "test/success.bash")))]
+            (is (= (io/abspath workspace)
+                   (get-in opts [:process :cwd]))))))
       (finally
-        (io/rmdir-r workspace)))))
+        (when (.exists (jio/file (str user-dir "/" workspace)))
+          (io/rmdir-r (str user-dir "/" workspace)))))))
 
 (deftest http-retries
   (let [call-count (atom 0)]
