@@ -106,28 +106,6 @@
      "c:\\runbld\\runbld.conf"
      "/etc/runbld/runbld.conf")))
 
-(s/defn assemble-all-opts :- java.util.Map
-  "Merge the options gathered from defaults, system config, the config
-  file specified on the command line, and any separate opts specified
-  by command line arguments"
-  [{:keys [job-name] :as opts} :- {(s/required-key :job-name) s/Str
-                                   s/Keyword s/Any}]
-  (deep-merge-with deep-merge
-                   config-file-defaults
-                   (if (environ/env :dev)
-                     (do
-                       (io/log "DEV enabled, not attempting to read"
-                               (str (system-config)))
-                       {})
-                     (let [sys (system-config)]
-                       (if (.isFile sys)
-                         (load-config-with-profiles job-name (system-config))
-                         {})))
-                   (if (:configfile opts)
-                     (load-config-with-profiles job-name (:configfile opts))
-                     {})
-                   opts))
-
 (defn normalize
   "Normalize the tools.cli map to the local structure."
   [cli-opts]
@@ -140,6 +118,48 @@
      {:java-home (:java-home cli-opts)})
    (when (:last-good-commit cli-opts)
      {:last-good-commit (:last-good-commit cli-opts)})))
+
+(defn assemble-all-opts
+  "Merge the options gathered from defaults, system config, the config
+  file specified on the command line, and any separate opts specified
+  by command line arguments"
+  [{:keys [job-name]
+    cli-cwd :cwd
+    :as cli-opts}]
+  (let [opts (normalize cli-opts)
+        merged (deep-merge-with
+                deep-merge
+                config-file-defaults
+                (if (environ/env :dev)
+                  (do
+                    (io/log "DEV enabled, not attempting to read"
+                            (str (system-config)))
+                    {})
+                  (let [sys (system-config)]
+                    (if (.isFile sys)
+                      (load-config-with-profiles job-name (system-config))
+                      {})))
+                (if (:configfile opts)
+                  (load-config-with-profiles job-name (:configfile opts))
+                  {})
+                opts)
+        cfg-cwd (get-in merged [:process :cwd])
+        scm-basedir (get-in merged [:scm :basedir])]
+    ;; Need to fix the precedence of the cwd
+    (assoc-in merged [:process :cwd]
+              (cond
+                ;; -d option was provided
+                cli-cwd
+                cli-cwd
+
+                ;; basedir was provided
+                scm-basedir
+                (str/replace
+                 (str/join "/" [cfg-cwd scm-basedir])
+                 #"/+" "/")
+
+                :else
+                cfg-cwd))))
 
 (def opts
   [["-v" "--version" "Print version"]
@@ -218,7 +238,6 @@
   ([args :- [s/Str]]
    (let [{:keys [options arguments summary errors]
           :as parsed-opts} (cli/parse-opts args opts :nodefault true)]
-
      (when (:help options)
        (throw+ {:help ::usage
                 :msg summary}))
@@ -245,8 +264,7 @@
        (throw+ {:help ::usage
                 :msg "must set -j or $JOB_NAME"}))
 
-     (let [options (assemble-all-opts
-                    (normalize options))
+     (let [options (assemble-all-opts options)
            java-facts (java/jvm-facts
                        (or
                         (options :java-home)
