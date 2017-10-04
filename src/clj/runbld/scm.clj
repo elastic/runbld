@@ -114,12 +114,6 @@
       (string/replace #"^refs/heads/" "")
       (string/replace #"^origin/" "")))
 
-(defn checkout-dir [opts]
-  (let [cwd (-> opts :process :cwd)]
-    (if-let [basedir (-> opts :scm :basedir)]
-      (string/replace (string/join "/" [cwd basedir]) #"/+" "/")
-      cwd)))
-
 (s/defn bootstrap-workspace
   "Prepare the local workspace by cloning or updating the repository,
   as necessary."
@@ -128,7 +122,7 @@
             (s/optional-key :scm) OptsScm
             s/Keyword s/Any}]
   (let [clone? (boolean (-> opts :scm :clone))
-        local (checkout-dir opts)
+        local (-> opts :process :cwd)
         remote (-> opts :scm :url)
         reference (-> opts :scm :reference-repo)
         {:keys [branch commit]} (choose-branch opts)

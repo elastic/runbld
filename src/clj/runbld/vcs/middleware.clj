@@ -13,7 +13,7 @@
 
 (s/defn make-repo :- (s/protocol vcs/VcsRepo)
   [opts]
-  (let [source-dir (scm/checkout-dir opts)]
+  (let [source-dir (get-in opts [:process :cwd])]
     (cond
       (.isDirectory
        (io/file source-dir ".git")) (git/make-repo
