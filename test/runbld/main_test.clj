@@ -42,15 +42,15 @@
       first
       :title))
 
+(defn fake-slack-send [opts ctx]
+  (reset! slack (slack/render opts ctx)))
+
+(use-fixtures :once
+  ts/dont-die-fixture)
+
 (use-fixtures :each
   ts/redirect-logging-fixture
-  ts/reset-debug-log-fixture
-  (fn jvm-death-rattle [f]
-    (with-redefs [main/really-die (fn [& args]
-                                    ;; tattle if someone tries to kill the JVM
-                                    (println "SOMEBODY TRIED TO KILL THE JVM!")
-                                    :dontdie)]
-      (f))))
+  ts/reset-debug-log-fixture)
 
 (s/deftest main
   ;; Change root bindings for these Vars, affects any execution no
@@ -89,15 +89,7 @@
                                 (swap! email concat args)
                                 ;; to satisfy schema
                                 {})
-                  slack/send (fn [opts ctx]
-                               (let [f (-> opts :slack :template)
-                                     tmpl (-> f io/resolve-resource slurp)
-                                     color (if (-> ctx :process :failed)
-                                             "danger"
-                                             "good")
-                                     js (mustache/render-string
-                                         tmpl (assoc ctx :color color))]
-                                 (reset! slack js)))]
+                  slack/send fake-slack-send]
       (testing "build failure -- default notification settings"
         (git/with-tmp-repo [d "tmp/git/main-test-2"]
           (let [[opts res] (run
@@ -146,15 +138,7 @@
                                 (swap! email concat args)
                                 ;; to satisfy schema
                                 {})
-                  slack/send (fn [opts ctx]
-                               (let [f (-> opts :slack :template)
-                                     tmpl (-> f io/resolve-resource slurp)
-                                     color (if (-> ctx :process :failed)
-                                             "danger"
-                                             "good")
-                                     js (mustache/render-string
-                                         tmpl (assoc ctx :color color))]
-                                 (reset! slack js)))]
+                  slack/send fake-slack-send]
       (testing "build success: notify on first success after failure(s)"
         (reset! email [])
         (reset! slack [])
@@ -201,7 +185,7 @@
                                 (reset! email-body html)
                                 ;; to satisfy schema
                                 {})
-                  slack/send (fn [& _] (prn 'slack))]
+                  slack/send fake-slack-send]
       (testing "successful intake"
         (let [intake-dir "tmp/git/main-intake"
               periodic-dir "tmp/git/main-periodic"]
@@ -353,15 +337,7 @@
                                   (swap! email concat args)
                                   ;; to satisfy schema
                                   {})
-                    slack/send (fn [opts ctx]
-                                 (let [f (-> opts :slack :template)
-                                       tmpl (-> f io/resolve-resource slurp)
-                                       color (if (-> ctx :process :failed)
-                                               "danger"
-                                               "good")
-                                       js (mustache/render-string
-                                           tmpl (assoc ctx :color color))]
-                                   (reset! slack js)))
+                    slack/send fake-slack-send
                     scm/wipe-workspace (fn [opts] opts)
                     scm/find-workspace (constantly workspace)]
         (try
@@ -426,6 +402,26 @@
                     (is (= (:parent @master-commit)
                            (:commit (first (git-log repo3)))))
                     (is (shallow-clone? repo3)))))
+              (testing "branch is updated and indexed properly"
+                (with-redefs [environ/env
+                              {:dev "true"
+                               ;; this shouldn't have been fetched above
+                               :branch-specifier "6.0"}]
+                  (let [[opts res] (run
+                                     (conj
+                                      ["-c" "test/config/scm.yml"
+                                       "-j" "elastic+foo+master"
+                                       "-d" workspace]
+                                      (if (opts/windows?)
+                                        "test/fail.bat"
+                                        "test/fail.bash")))
+                        repo (load-repo workspace)
+                        slack-msg (get-in (json/parse-string @slack true)
+                                          [:attachments 0 :title])]
+                    (is (= "6.0" (git-branch repo)))
+                    (is (= "6.0" (get-in res [:store-result :build-doc
+                                              :build :branch])))
+                    (is (re-find #"foo 6.0" slack-msg)))))
               (testing "wiping the workspace"
                 (wipe-workspace-orig opts)
                 ;; Should only have the top-level workspace dir left
@@ -443,15 +439,7 @@
                                   (swap! email concat args)
                                   ;; to satisfy schema
                                   {})
-                    slack/send (fn [opts ctx]
-                                 (let [f (-> opts :slack :template)
-                                       tmpl (-> f io/resolve-resource slurp)
-                                       color (if (-> ctx :process :failed)
-                                               "danger"
-                                               "good")
-                                       js (mustache/render-string
-                                           tmpl (assoc ctx :color color))]
-                                   (reset! slack js)))
+                    slack/send fake-slack-send
                     scm/wipe-workspace (fn [opts] opts)
                     scm/find-workspace (constantly workspace)]
         (let [[opts res] (run
@@ -484,15 +472,7 @@
                                 (swap! email concat args)
                                 ;; to satisfy schema
                                 {})
-                  slack/send (fn [opts ctx]
-                               (let [f (-> opts :slack :template)
-                                     tmpl (-> f io/resolve-resource slurp)
-                                     color (if (-> ctx :process :failed)
-                                             "danger"
-                                             "good")
-                                     js (mustache/render-string
-                                         tmpl (assoc ctx :color color))]
-                                 (reset! slack js)))]
+                  slack/send fake-slack-send]
       (testing "The live path will retry correctly"
         (is (thrown-with-msg? Exception #"oh noes"
                               (git/with-tmp-repo [d "tmp/git/main-test-3"]
@@ -638,7 +618,7 @@
                                   (reset! email-body html)
                                   ;; to satisfy schema
                                   {})
-                    slack/send (fn [& _] (prn 'slack))]
+                    slack/send fake-slack-send]
         (git/init-test-clone periodic-dir intake-dir)
         (let [[opts-intake res-intake]
               (run (conj
