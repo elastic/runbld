@@ -426,6 +426,26 @@
                     (is (= (:parent @master-commit)
                            (:commit (first (git-log repo3)))))
                     (is (shallow-clone? repo3)))))
+              (testing "branch is updated and indexed properly"
+                (with-redefs [environ/env
+                              {:dev "true"
+                               ;; this shouldn't have been fetched above
+                               :branch-specifier "6.0"}]
+                  (let [[opts res] (run
+                                     (conj
+                                      ["-c" "test/config/scm.yml"
+                                       "-j" "elastic+foo+master"
+                                       "-d" workspace]
+                                      (if (opts/windows?)
+                                        "test/fail.bat"
+                                        "test/fail.bash")))
+                        repo (load-repo workspace)
+                        slack-msg (get-in (json/parse-string @slack true)
+                                          [:attachments 0 :title])]
+                    (is (= "6.0" (git-branch repo)))
+                    (is (= "6.0" (get-in res [:store-result :build-doc
+                                              :build :branch])))
+                    (is (re-find #"foo 6.0" slack-msg)))))
               (testing "wiping the workspace"
                 (wipe-workspace-orig opts)
                 ;; Should only have the top-level workspace dir left
