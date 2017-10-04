@@ -20,17 +20,18 @@
     (http/with-additional-middleware [wrap-retries]
       (http/post hook {:body js}))))
 
+(defn render [{{:keys [template]} :slack :as opts}
+              {{:keys [failed]} :process :as ctx}]
+  (mustache/render-string
+   (slurp (io/resolve-resource template))
+   (assoc ctx :color (if failed "danger" "good"))))
+
 (s/defn send :- s/Any
   "Format and send the Slack notifcation"
   [opts :- MainOpts
    ctx  :- NotifyCtx]
-  (let [f     (-> opts :slack :template)
-        tmpl  (-> f io/resolve-resource slurp)
-        color (if (-> ctx :process :failed)
-                "danger"
-                "good")
-        js    (mustache/render-string tmpl (assoc ctx :color color))
-        hooks (-> opts :slack :hook)]
+  (let [js (render opts ctx)
+        hooks (get-in opts [:slack :hook])]
     (if (string? hooks)
       (api-send opts js hooks)
       (doall (map #(api-send opts js %) hooks)))))
