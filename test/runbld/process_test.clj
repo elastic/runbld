@@ -30,8 +30,8 @@
           output (io/file dir (-> opts :process :output))
           err (java.io.StringWriter.)]
       (with-open [out (java.io.PrintWriter. master)]
-        (let [res (binding [*out* out
-                            *err* err]
+        (let [res (binding [proc/*process-out* out
+                            proc/*process-err* err]
                     (proc/run
                       (-> opts
                           (assoc-in [:id] build-id)

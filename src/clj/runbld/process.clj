@@ -200,6 +200,9 @@
                  (println (:log x))))
              (recur)))])))
 
+(def ^:dynamic *process-out* *out*)
+(def ^:dynamic *process-err* *err*)
+
 (s/defn exec-with-capture :- ProcessResult
   [program    :- s/Str
    args       :- [s/Str]
@@ -214,8 +217,10 @@
         outputfile* (io/prepend-path dir outputfile)
         [file-ch file-process] (start-file-listener! outputfile*)
         [es-ch es-process] (start-es-listener! es-opts)
-        [stdout-ch stdout-process] (start-writer-listener! *out* :stdout)
-        [stderr-ch stderr-process] (start-writer-listener! *err* :stderr)
+        [stdout-ch stdout-process] (start-writer-listener! *process-out*
+                                                           :stdout)
+        [stderr-ch stderr-process] (start-writer-listener! *process-err*
+                                                           :stderr)
         listeners [file-ch es-ch stdout-ch stderr-ch]
         result (exec program args scriptfile cwd
                      env listeners log-extra timeout)

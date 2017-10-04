@@ -1,12 +1,16 @@
 (ns runbld.test-support
   (:require
+   [clojure.java.io :as jio]
    [runbld.io :as io]
    [runbld.main :as main]
    [runbld.util.date :as date]
-   [runbld.util.debug :as debug]))
+   [runbld.util.debug :as debug])
+  (:import (java.io FileOutputStream)))
+
+(def log-file (clojure.java.io/file "target" "test.log"))
 
 (defn test-log [& x]
-  (io/spit (.getAbsolutePath (clojure.java.io/file "target" "test.log"))
+  (io/spit (.getAbsolutePath log-file)
            (str (apply print-str x) (System/getProperty "line.separator"))
            :append true))
 
@@ -16,8 +20,12 @@
   [f]
   (test-log "==========" (date/yyyymmdd-hhmmss) "==========")
   ;; Don't pollute the console
-  (with-redefs [io/log test-log]
-    (f)))
+  (let [fos (FileOutputStream. log-file)
+        w (jio/writer fos)]
+    (binding [runbld.process/*process-err* w
+              runbld.process/*process-out* w]
+      (with-redefs [io/log test-log]
+        (f)))))
 
 (defn reset-debug-log-fixture
   "Clears out the debug log between tests."
