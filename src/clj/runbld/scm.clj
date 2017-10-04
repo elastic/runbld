@@ -99,7 +99,7 @@
                     (re-matches #"^[a-fA-F0-9]{5,40}$"
                                 (string/trim x)))))]
     (let [branches (cond->> [build-branch]
-                     (and (not (empty? scm-branch)))
+                     (not (empty? scm-branch))
                      (cons scm-branch)
 
                      (and (not (empty? env-branch))
@@ -108,6 +108,11 @@
           commit (first (take-while commit? branches))
           branch (first (drop-while commit? branches))]
       {:commit commit :branch (or branch "master")})))
+
+(defn clean-branch-name [branch]
+  (-> branch
+      (string/replace #"^refs/heads/" "")
+      (string/replace #"^origin/" "")))
 
 (defn checkout-dir [opts]
   (let [cwd (-> opts :process :cwd)]
@@ -133,5 +138,6 @@
         (update-workspace local branch depth)
         (clone-workspace local remote reference branch depth))
       (when commit
-        (checkout-commit local commit))))
-  opts)
+        (checkout-commit local commit)))
+    ;; Update the build data
+    (assoc-in opts [:build :branch] (clean-branch-name branch))))
