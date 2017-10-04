@@ -14,8 +14,10 @@
    [schema.test]
    [stencil.core :as mustache]))
 
-(use-fixtures :once schema.test/validate-schemas)
 (use-fixtures :each ts/redirect-logging-fixture)
+(use-fixtures :once
+  schema.test/validate-schemas
+  ts/dont-die-fixture)
 
 (defn run [args]
   (let [opts (opts/parse-args args)

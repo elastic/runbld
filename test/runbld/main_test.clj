@@ -44,15 +44,13 @@
 
 (defn fake-slack-send [opts ctx]
   (reset! slack (slack/render opts ctx)))
+
+(use-fixtures :once
+  ts/dont-die-fixture)
+
 (use-fixtures :each
   ts/redirect-logging-fixture
-  ts/reset-debug-log-fixture
-  (fn jvm-death-rattle [f]
-    (with-redefs [main/really-die (fn [& args]
-                                    ;; tattle if someone tries to kill the JVM
-                                    (println "SOMEBODY TRIED TO KILL THE JVM!")
-                                    :dontdie)]
-      (f))))
+  ts/reset-debug-log-fixture)
 
 (s/deftest main
   ;; Change root bindings for these Vars, affects any execution no

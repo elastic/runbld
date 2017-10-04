@@ -1,6 +1,7 @@
 (ns runbld.test-support
   (:require
    [runbld.io :as io]
+   [runbld.main :as main]
    [runbld.util.date :as date]
    [runbld.util.debug :as debug]))
 
@@ -23,3 +24,11 @@
   [f]
   (debug/reset)
   (f))
+
+(defn dont-die-fixture [f]
+  (with-redefs [main/really-die
+                (fn [& args]
+                  ;; tattle if someone tries to kill the JVM
+                  (println "SOMEBODY TRIED TO KILL THE JVM!" args)
+                  :dontdie)]
+    (f)))
