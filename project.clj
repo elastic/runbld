@@ -24,6 +24,9 @@
                   :exclusions [commons-codec]]
                  [instaparse "1.4.7"]
 
+                 ;; fact gathering
+                 [com.github.oshi/oshi-json "3.4.3"]
+
                  ;; logging
                  [org.clojure/tools.logging "0.4.0"]
                  [log4j/log4j "1.2.17"]
