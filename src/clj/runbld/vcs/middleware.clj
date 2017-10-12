@@ -7,7 +7,6 @@
    [runbld.util.debug :as debug]
    [runbld.vcs :as vcs]
    [runbld.vcs.git :as git]
-   [runbld.vcs.subversion :as svn]
    [schema.core :as s]
    [slingshot.slingshot :refer [throw+]]))
 
@@ -22,17 +21,9 @@
                                      (get-in opts [:build :project])
                                      (get-in opts [:build :branch]))
 
-      ;; TODO remove svn - it's not needed and is no longer 100% supported
-      (.isDirectory
-       (io/file source-dir ".svn")) (svn/make-repo
-                                     (get-in opts [:env :SVN_URL])
-                                     (get-in opts [:build :org])
-                                     (get-in opts [:build :project])
-                                     (get-in opts [:env :SVN_REVISION]))
-
       :else
       (let [msg (str source-dir ": unknown repository type "
-                     "(only know about git and svn currently). "
+                     "(only know about git currently). "
                      "Most common cause: no clone exists in ${PWD} directory; "
                      " ensure a clone is present and basedir is correct.")
             f (io/file source-dir)

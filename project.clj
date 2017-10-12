@@ -38,8 +38,6 @@
                  [org.clojure/core.async "0.3.443"]
                  [org.clojure/tools.cli "0.3.5"]
 
-                 ;; Use 1.7 because the Jenkins plugin is pinned to 1.7
-                 [org.tmatesoft.svnkit/svnkit "1.9.0"]
                  [prismatic/schema "1.1.6"]
                  [robert/bruce "0.8.0"]
                  [slingshot "0.12.2"]
