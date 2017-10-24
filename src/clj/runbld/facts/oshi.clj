@@ -51,7 +51,14 @@
     (first (primary-network x)))
 
   (ip6 [{x :facts}]
-    (last (primary-network x)))
+    ;; this silliness is to compress the ipv6 address as that's what
+    ;; facter provides.  There are libraries to do this, but a regex
+    ;; doesn't introduce new deps
+    ;; https://stackoverflow.com/questions/7043983/ipv6-address-into-compressed-form-in-java
+    (string/replace
+     (last (primary-network x))
+     #"((?:(?:^|:)0+\b){2,}):?(?!\S*\b\1:0+\b)(\S*)"
+     "::$2"))
 
   (kernel-name [{x :facts}]
     (get-in x [:uname :name]))
@@ -90,14 +97,19 @@
     (get-in x [:properties :user.timezone]))
 
   (uptime-days [{x :facts}]
-    (/ (get-in x [:hardware :processor :systemUptime])
-       (* 60 60 24)))
+    (int
+     (/ (get-in x [:hardware :processor :systemUptime])
+        (* 60 60 24))))
 
   (uptime-secs [{x :facts}]
     (get-in x [:hardware :processor :systemUptime]))
 
-  (uptime [{x :facts}]
-    (str (get-in x [:hardware :processor :systemUptime])))
+  (uptime [{x :facts :as raw}]
+    (let [days (.uptime-days raw)]
+      (str days
+           (if (> days 1)
+             " days"
+             " day"))))
 
   ;; OSHI doesn't report this, and figuring it out generically appears
   ;; to be impossible (facter tries a bunch of different strategies to
@@ -115,7 +127,7 @@
        (remove (comp empty? :ipv4))
        (sort-by #(+ (:bytesSent %)
                     (:bytesRecv %)))
-       first
+       last
        ((juxt :ipv4 :ipv6))
        (map first)))
 

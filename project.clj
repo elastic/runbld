@@ -25,7 +25,7 @@
                  [instaparse "1.4.7"]
 
                  ;; fact gathering
-                 [com.github.oshi/oshi-json "3.4.3"]
+                 [com.github.oshi/oshi-json "3.4.4"]
 
                  ;; logging
                  [org.slf4j/slf4j-nop "1.7.25"]
