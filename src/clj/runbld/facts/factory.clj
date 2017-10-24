@@ -4,6 +4,7 @@
    [runbld.facts.facter1]
    [runbld.facts.facter2]
    [runbld.facts.facter3]
+   [runbld.facts.oshi :as oshi]
    [runbld.io :as io]
    [runbld.schema :refer :all]
    [schema.core :as s]
@@ -35,4 +36,6 @@
     (condp = major
       3 (runbld.facts.facter3.Facter3. (facter))
       2 (runbld.facts.facter2.Facter2. (facter))
-      1 (runbld.facts.facter1.Facter1. (facter)))))
+      1 (runbld.facts.facter1.Facter1. (facter)))
+    ;; No facter?  Try OSHI
+    (runbld.facts.oshi.Oshi. (oshi/facts))))

@@ -6,4 +6,5 @@
   (instance-id      [_] "i-65465465")
   (instance-type    [_] "m4.xlarge")
   (provider         [_] "aws-ec2")
-  (region           [_] "us-west-2"))
+  (region           [_] "us-west-2")
+  (virtual          [_] "true"))

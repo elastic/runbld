@@ -1,5 +1,6 @@
 (ns runbld.hosting.hetzner
   (:require
+   [runbld.facts :as facts]
    [runbld.hosting :refer [HostingProvider]]
    [runbld.io :as io]
    [runbld.schema :refer :all]
@@ -12,9 +13,9 @@
    "5.9.0.0/16"])
 
 (s/defn this-host?
-  ([ip4]
+  ([facter]
    (->> ip-ranges
-        (map (partial cidr/in-range? ip4))
+        (map (partial cidr/in-range? (facts/ip4 facter)))
         (some true?)
         boolean)))
 
@@ -44,7 +45,9 @@
   (provider [_]
     "hetzner")
 
-  (region [_]))
+  (region [_])
+
+  (virtual [_] false))
 
 (s/defn make
   ([facts]

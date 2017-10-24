@@ -63,7 +63,9 @@
     "aws-ec2")
 
   (region        [x]
-    (region-name (hosting/datacenter x))))
+    (region-name (hosting/datacenter x)))
+
+  (virtual [_] true))
 
 (s/defn make
   ([facts]

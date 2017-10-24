@@ -28,8 +28,7 @@
                  [com.github.oshi/oshi-json "3.4.3"]
 
                  ;; logging
-                 [org.clojure/tools.logging "0.4.0"]
-                 [log4j/log4j "1.2.17"]
+                 [org.slf4j/slf4j-nop "1.7.25"]
 
                  [com.palletops/thread-expr "1.3.0"]
                  [elastic/elasticsearch-clojure "0.99.6"

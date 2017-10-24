@@ -5,6 +5,7 @@
    [runbld.hosting.aws-ec2 :as ec2]
    [runbld.hosting.default :as default]
    [runbld.hosting.hetzner :as hetz]
+   [runbld.hosting.vagrant :as vagrant]
    [runbld.io :as io]
    [runbld.schema :refer :all]
    [runbld.util.data :as data]
@@ -14,6 +15,7 @@
 (s/defn make-hosting
   ([facter]
    (cond
-     (hetz/this-host? (facts/ip4 facter)) (hetz/make facter)
-     (ec2/this-host?)                     (ec2/make facter)
-     :else                                (default/make facter))))
+     (ec2/this-host? facter)     (ec2/make facter)
+     (hetz/this-host? facter)    (hetz/make facter)
+     (vagrant/this-host? facter) (vagrant/make facter)
+     :else                       (default/make facter))))
