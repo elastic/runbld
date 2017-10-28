@@ -1,4 +1,7 @@
 * runbld changes
+** 1.5.5
+   - Parse git commits that are GPG-signed, but the signature doesn't include
+     header information.
 ** 1.5.4
    - Search for =build_metadata= files in the root execution directory
      (Java's =user.dir=) rather than from the wrapped script's
