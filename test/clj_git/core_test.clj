@@ -45,7 +45,8 @@
 
 (deftest parse-samples
   (doseq [f (->> ["clj_git/commit.txt"
-                  "clj_git/commit-no-name.txt"]
+                  "clj_git/commit-no-name.txt"
+                  "clj_git/commit-gpg-no-header.txt"]
                  (map io/resource)
                  (map io/file))]
     (testing f

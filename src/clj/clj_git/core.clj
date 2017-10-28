@@ -175,8 +175,10 @@
 (defn parse-raw-commit [s]
   (let [res (i/transform raw-transforms (parse-log-raw s))]
     (if (instance? instaparse.gll.Failure res)
-      (throw (ex-info "parse failure" {:res res
-                                       :commit s}))
+      (do
+        (println s)
+        (throw (ex-info "parse failure" {:res res
+                                         :commit s})))
       res)))
 
 (defn git-log-commit
