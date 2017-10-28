@@ -4,8 +4,8 @@ git = commitLine <newline>
       [ parentLine <newline> ]
       authorLine <newline>
       committerLine <newline>
-      [ gpgsig <newline> ]
-      <newline>
+      [ gpgsig ]
+      ( <oneSp>? <newline> )+
       msgTitle
       [ msgBody <newline> ]
       [ <newline> ]
@@ -20,7 +20,7 @@ committerLine = <'committer'> <sp> name? <bracket> emailAddr <bracket> <sp> time
 gpgsig = <'gpgsig'>
          <oneSp> gpgPrefix newline
          ( <oneSp> gpgHeader newline )*
-           <oneSp> newline
+         <oneSp>? newline
          ( <oneSp> gpgData newline )+
          <oneSp> gpgPostfix
 

@@ -1,0 +1,21 @@
+commit 1a0c8e83e292e9ccb99e985232418515581ce16e
+tree b73e35b2638f6478bcd276343a4bd4ab852f270f
+parent 1d76cac9b0527779ee6e75d20d4651cc75429775
+author CJ Cenizal <cj@cenizal.com> 1509152865 -0700
+committer GitHub <noreply@github.com> 1509152865 -0700
+gpgsig -----BEGIN PGP SIGNATURE-----
+ 
+ wsBcBAABCAAQBQJZ89hhCRBK7hj4Ov3rIwAAdHIIAEeGSOwoRX1PMc5zFubZtc/K
+ Hp73SSVcOU0PeFjXiauDC0M7SiAnFsi9Wf5Fr1aRVnwgR1Cjt7ryEh6hTE71zGmX
+ dnqdAGKibKiim4mobUyfyakB9jKkVPRNyHXknCBZF7hse5dFKz5egZ3Enff+IYlI
+ eskCvVHKPWN7cwxcim6mJvJjmbNds41xQk6cJj6jHR5yTf06GhL0u8dbekTNpIV5
+ dTqHnfFxP9qyGCOwp9O0g49dBpXbVTIlIa+cEDqm2hucdNe1vQWK3zAiXJqBnFJh
+ XUBGb4lM2Wn9813DI5PiSWytC481dmHamrIKM/xJ7rjVniKcEAsnBGYgW3XXbRg=
+ =udVh
+ -----END PGP SIGNATURE-----
+ 
+
+    [eslint-config-kibana] Upgrade eslint-config-kibana to 0.13.0 (#2938)
+    
+    * Upgrade eslint-config-kibana to 0.13.0 and autofix linting errors (spacing).
+    * Manual linting fixes.
