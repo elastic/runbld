@@ -29,18 +29,12 @@
 (defn split-job-name
   [s]
   (when s
-    (let [delim "+"
-          [job-name org project branch job-name-extra]
-          (re-find
-           (re-pattern
-            (format
-             "^([^%s]+)\\%s([^%s]+)\\%s([^%s]+)\\%s?([^%s]*)?$"
-             delim delim delim delim delim delim delim)) s)]
-      {:job-name job-name
-       :org org
-       :project project
-       :branch branch
-       :job-name-extra job-name-extra
+    (let [[org project branch job-name-extra] (string/split s #"\+" 4)]
+      {:job-name s
+       :org (or org "")
+       :project (or project "")
+       :branch (or branch "")
+       :job-name-extra (or job-name-extra "")
        :org-project-branch (format "%s/%s#%s" org project branch)})))
 
 (defn find-build [opts id]
