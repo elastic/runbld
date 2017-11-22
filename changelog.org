@@ -1,4 +1,8 @@
 * runbld changes
+** 1.5.7
+   - Small bugfix to make sure that the =first-success= setting takes
+     precedence over =success= (i.e., no need to set =success= to
+     false to make =first-success= work)
 ** 1.5.6
    - Parse the job name by splitting on + rather than via regex
 ** 1.5.5
