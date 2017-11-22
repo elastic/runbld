@@ -4,7 +4,7 @@ es:
   log-index: runbld-log
 
 slack:
-  success: false
+  first-success: true
 
 process:
   env:

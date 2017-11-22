@@ -60,7 +60,7 @@
     :disable false}
 
    :slack
-   {:first-success true
+   {:first-success false
     :success true
     :failure true
     :template "templates/slack.mustache.json"

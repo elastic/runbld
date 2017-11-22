@@ -58,8 +58,9 @@
           (= "FAILURE")))))
 
 (defn send-success? [opts build]
-  (or (-> opts :slack :success)
-      (first-successful-build? opts build)))
+  (if (-> opts :slack :first-success)
+    (first-successful-build? opts build)
+    (-> opts :slack :success)))
 
 (defn send?
   "Determine whether to send a slack alert depending on configs"
