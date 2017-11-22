@@ -153,15 +153,11 @@
         (reset! email [])
         (reset! slack [])
         (git/with-tmp-repo [d "tmp/git/main-test-5"]
-          (let [args (conj
-                      ["-c" "test/config/slack.yml"
-                       "-j" "elastic+foo+master"
-                       "-d" d]
-                      "test/success.bash")
-                opts (merge (opts/parse-args args)
-                            {:slack
-                             {:success false}})
-                res (apply main/-main args)]
+          (let [[opts res] (run (conj
+                                 ["-c" "test/config/slack.yml"
+                                  "-j" "elastic+foo+master"
+                                  "-d" d]
+                                 "test/success.bash"))]
             (is (empty? @email))
             ;; we should get a slack notification
             (is (.contains (slack-msg) "SUCCESS")))))
