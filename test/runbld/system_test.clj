@@ -8,9 +8,13 @@
    [runbld.test-support :as ts]
    [schema.test]))
 
+(def log-lines (atom []))
+
 (use-fixtures :once
-  schema.test/validate-schemas
-  ts/redirect-logging-fixture)
+  schema.test/validate-schemas)
+
+(use-fixtures :each
+  (ts/redirect-logging-fixture log-lines))
 
 (deftest basic
   ;; schema does most of the work here, just want to see if it returns
@@ -26,18 +30,23 @@
                     system/report-retry (fn [err]
                                           (swap! tries inc)
                                           (orig-retry err))]
-        (is (thrown? Exception (system/inspect-system ".")))
+        (is (thrown-with-msg? Exception #"test failure"
+                              (system/inspect-system ".")))
         (is (= 5 @tries)))))
   (testing "success after retries"
     (let [tries (atom 0)
           orig-retry system/report-retry
           orig-make-facter facter/make-facter]
+      (reset! log-lines [])
       (with-redefs [facter/make-facter (fn []
                                          (if (<= *try* 3)
-                                           (throw (Exception. "test failure"))
+                                           (throw (Exception.
+                                                   (str "test failure " *try*)))
                                            (orig-make-facter)))
                     system/report-retry (fn [err]
                                           (swap! tries inc)
                                           (orig-retry err))]
         (is (system/inspect-system "."))
-        (is (= 3 @tries))))))
+        (is (= 3 @tries))
+        (is (= 3 (count (filter #(re-find #"test failure \d" %)
+                                @log-lines))))))))

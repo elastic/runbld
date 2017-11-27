@@ -49,7 +49,7 @@
   ts/dont-die-fixture)
 
 (use-fixtures :each
-  ts/redirect-logging-fixture
+  (ts/redirect-logging-fixture)
   ts/reset-debug-log-fixture)
 
 (s/deftest main

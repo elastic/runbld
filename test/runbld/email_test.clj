@@ -14,7 +14,7 @@
    [schema.test]
    [stencil.core :as mustache]))
 
-(use-fixtures :each ts/redirect-logging-fixture)
+(use-fixtures :each (ts/redirect-logging-fixture))
 (use-fixtures :once
   schema.test/validate-schemas
   ts/dont-die-fixture)

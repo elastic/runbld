@@ -9,7 +9,7 @@
    [schema.test]))
 
 (use-fixtures :once schema.test/validate-schemas)
-(use-fixtures :each ts/redirect-logging-fixture)
+(use-fixtures :each (ts/redirect-logging-fixture))
 
 (deftest basic
   (let [java-home (:home (java/jvm-facts))

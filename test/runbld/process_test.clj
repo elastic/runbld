@@ -12,7 +12,7 @@
    [schema.test]))
 
 (use-fixtures :once schema.test/validate-schemas)
-(use-fixtures :each ts/redirect-logging-fixture)
+(use-fixtures :each (ts/redirect-logging-fixture))
 
 (deftest output-io
   (io/with-tmp-dir [dir ["tmp" (str *ns* "-")]]
