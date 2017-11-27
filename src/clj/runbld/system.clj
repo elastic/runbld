@@ -1,6 +1,7 @@
 (ns runbld.system
   (:require
    [clj-yaml.core :as yaml]
+   [robert.bruce :refer [*last-try* try-try-again]]
    [runbld.facts :as facts]
    [runbld.facts.factory :as facter]
    [runbld.fs.factory :as fs]
@@ -70,13 +71,27 @@
      :provider
      :region])))
 
+(defn report-retry [err]
+  (io/log
+   (format "Error while gathering system facts. %s (Error was: %s)"
+           (if-not *last-try*
+             "Retrying."
+             "Not retrying - out of attempts.")
+           (.getMessage err)))
+  ;; explicitly return nil so tries continue accordingly
+  nil)
+
 (s/defn inspect-system :- BuildSystem
-  ([cwd :- s/Str]
-   (let [facter (facter/make-facter)]
-     (merge
-      (make-facts facter)
-      (make-fs cwd)
-      (make-hosting facter)))))
+  [cwd :- s/Str]
+  (try-try-again
+   {:sleep 5000
+    :tries 5
+    :error-hook report-retry}
+   #(let [facter (facter/make-facter)]
+      (merge
+       (make-facts facter)
+       (make-fs cwd)
+       (make-hosting facter)))))
 
 (s/defn add-system-facts :- OptsWithSys
   [opts :- Opts]
