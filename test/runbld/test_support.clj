@@ -12,23 +12,31 @@
                "target"
                "test.log"))
 
-(defn test-log [& x]
-  (io/spit (.getAbsolutePath log-file)
-           (str (apply print-str x) (System/getProperty "line.separator"))
-           :append true))
+(defn test-log
+  [log-atom]
+  (fn [& x]
+    (let [log-msg (str (apply print-str x)
+                       (System/getProperty "line.separator"))]
+      (when log-atom
+        (swap! log-atom conj log-msg))
+      (io/spit (.getAbsolutePath log-file)
+               log-msg
+               :append true))))
 
 (defn redirect-logging-fixture
   "Redirects all io/log calls to a test.log file.  Intended to be used
   as an :each fixture as it will print a separator between each test."
-  [f]
-  (test-log "==========" (date/yyyymmdd-hhmmss) "==========")
-  ;; Don't pollute the console
-  (let [fos (FileOutputStream. log-file)
-        w (jio/writer fos)]
-    (binding [runbld.process/*process-err* w
-              runbld.process/*process-out* w]
-      (with-redefs [io/log test-log]
-        (f)))))
+  ([]
+   (redirect-logging-fixture nil))
+  ([log-atom]
+   (fn [f]
+     ;; Don't pollute the console
+     (let [w (jio/writer log-file :append true)]
+       (binding [runbld.process/*process-err* w
+                 runbld.process/*process-out* w]
+         (with-redefs [io/log (test-log log-atom)]
+           (io/log "==========" (date/yyyymmdd-hhmmss) "==========")
+           (f)))))))
 
 (defn reset-debug-log-fixture
   "Clears out the debug log between tests."
