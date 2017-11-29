@@ -124,8 +124,9 @@ removing the Ruby deploy directives from the cmake files.
 
 Once all of the dependencies are installed go to the `runbld`
 directory and run `make`.  This will run a few sample projects and
-produce various Maven formatted XML test output files.  It finishes
-by running the Clojure tests, which should print a bunch of output
+produce various Maven formatted XML test output files (some of
+which will look like failures, but don't panic). It finishes by
+running the Clojure tests, which should print a bunch of output
 but ultimately pass.
 
 Future test runs can skip the `make` step and run `lein test`
