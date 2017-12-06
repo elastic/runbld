@@ -25,7 +25,10 @@
   (model [{x :facts}]
     ;; The field that we use from facter is [:os :hardware] which
     ;; appears to basically return the system architecture.
-    (get-in x [:properties :os.arch]))
+    (let [arch (get-in x [:properties :os.arch])]
+      (if (= "amd64" arch)
+        "x86_64"
+        arch)))
 
   (cpu-type [{x :facts}]
     (get-in x [:hardware :processor :name]))
@@ -67,7 +70,9 @@
     (get-in x [:uname :version]))
 
   (kernel-version [{x :facts}]
-    (get-in x [:uname :version]))
+    (first
+     (string/split
+      (get-in x [:uname :version]) #"-")))
 
   (os [{x :facts}]
     (get-in x [:operatingSystem :family]))
