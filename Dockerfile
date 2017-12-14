@@ -44,16 +44,19 @@ USER root
 RUN ln -s /usr/local/go/bin/go /usr/local/bin/go
 RUN ln -s /usr/share/elasticsearch/go/bin/go-junit-report /usr/local/bin/go-junit-report
 RUN ln -s /opt/puppetlabs/bin/facter /usr/local/bin/facter
+
+# push runbld code into docker image
+COPY . /usr/share/elasticsearch/runbld/
+RUN chown -R elasticsearch /usr/share/elasticsearch/runbld
+
 USER elasticsearch
 
 # setup git config
 RUN git config --global user.name "Docker"
 RUN git config --global user.email "docker@elastic.co"
 
-# get runbld code itself
-RUN wget https://github.com/elastic/runbld/archive/master.tar.gz
-RUN tar xzvf master.tar.gz
-WORKDIR /usr/share/elasticsearch/runbld-master
+# fetch runbld's clojure deps
+WORKDIR /usr/share/elasticsearch/runbld
 RUN lein deps
 
 WORKDIR /usr/share/elasticsearch
