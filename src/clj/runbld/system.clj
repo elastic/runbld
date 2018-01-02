@@ -86,6 +86,7 @@
   (try-try-again
    {:sleep 5000
     :tries 5
+    :catch java.lang.Throwable
     :error-hook report-retry}
    #(let [facter (facter/make-facter)]
       (merge
