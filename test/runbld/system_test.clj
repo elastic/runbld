@@ -26,11 +26,11 @@
     (let [tries (atom 0)
           orig-retry system/report-retry]
       (with-redefs [facter/make-facter (fn []
-                                         (throw (Exception. "test failure")))
+                                         (assert nil "test failure"))
                     system/report-retry (fn [err]
                                           (swap! tries inc)
                                           (orig-retry err))]
-        (is (thrown-with-msg? Exception #"test failure"
+        (is (thrown-with-msg? AssertionError #"test failure"
                               (system/inspect-system ".")))
         (is (= 5 @tries)))))
   (testing "success after retries"
