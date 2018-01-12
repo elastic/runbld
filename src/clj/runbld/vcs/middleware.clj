@@ -33,7 +33,8 @@
       :else
       (let [msg (str source-dir ": unknown repository type "
                      "(only know about git and svn currently). "
-                     "Most common cause: run from the wrong directory.")
+                     "Most common cause: no clone exists in ${PWD} directory; "
+                     " ensure a clone is present and basedir is correct.")
             f (io/file source-dir)
             exists? (.exists f)]
         (debug/log msg
