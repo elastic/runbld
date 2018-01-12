@@ -32,7 +32,8 @@
 
       :else
       (let [msg (str source-dir ": unknown repository type "
-                     "(only know about git and svn currently)")
+                     "(only know about git and svn currently). "
+                     "Most common cause: run from the wrong directory.")
             f (io/file source-dir)
             exists? (.exists f)]
         (debug/log msg
