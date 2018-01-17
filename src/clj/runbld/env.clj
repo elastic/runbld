@@ -11,4 +11,4 @@
       (clojure.walk/keywordize-keys
        (into {} (System/getenv))))
      ([k]
-      ((get-env) k)))))
+      ((get-env) (keyword k))))))
