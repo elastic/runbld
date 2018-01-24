@@ -302,7 +302,8 @@
 (def StoredBuildIndexSettings
   {:settings
    {:analysis
-    {:analyzer m/classpath-analyzer}}
+    {:analyzer m/classpath-analyzer}
+    :index {:number_of_shards 2}}
    :mappings
    {DocType
     {:_all {:enabled false}
@@ -433,7 +434,9 @@
                 :version m/multi-string}}}}}}}})
 
 (def StoredFailureIndexSettings
-  {:mappings
+  {:settings
+   {:index {:number_of_shards 2}}
+   :mappings
    {DocType
     {:_all {:enabled false}
      :properties
@@ -450,7 +453,9 @@
     :total  s/Num}})
 
 (def StoredLogIndexSettings
-  {:mappings
+  {:settings
+   {:index {:number_of_shards 2}}
+   :mappings
    {DocType
     {:_all {:enabled false}
      :properties
