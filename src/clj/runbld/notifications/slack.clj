@@ -3,6 +3,7 @@
   (:require
    [cheshire.core :as json]
    [clj-http.client :as http]
+   [clojure.string :as string]
    [elasticsearch.document :as doc]
    [runbld.io :as io]
    [runbld.notifications :as n]
@@ -24,7 +25,10 @@
               {{:keys [failed]} :process :as ctx}]
   (mustache/render-string
    (slurp (io/resolve-resource template))
-   (assoc ctx :color (if failed "danger" "good"))))
+   (assoc ctx
+          :color (if failed "danger" "good")
+          :base-url (string/replace (get-in ctx [:build :url]) #"/job/.*" "")
+          :failure (if failed "FAILURE · " ""))))
 
 (s/defn send :- s/Any
   "Format and send the Slack notifcation"
