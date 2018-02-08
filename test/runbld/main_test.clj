@@ -39,8 +39,7 @@
       json/decode
       keywordize-keys
       :attachments
-      first
-      :title))
+      first))
 
 (defn fake-slack-send [opts ctx]
   (reset! slack (slack/render opts ctx)))
@@ -111,7 +110,7 @@
               (is (.startsWith subj "FAILURE"))
               (is (re-find (re-pattern (-> res :store-result :build-doc :id))
                            subj)))
-            (is (.contains (slack-msg) "FAILURE")))))
+            (is (.contains (:title (slack-msg)) "FAILURE")))))
       (testing "build success: default notification settings"
         (reset! email [])
         (reset! slack [])
@@ -130,7 +129,7 @@
                          :process
                          :exit-code)))
             (is (empty? @email))
-            (is (not (empty? (slack-msg))))))))))
+            (is (= (:color (slack-msg)) "good"))))))))
 
 (s/deftest execution-with-slack-overrides
   (testing "slack overrides:"
@@ -160,7 +159,7 @@
                                  "test/success.bash"))]
             (is (empty? @email))
             ;; we should get a slack notification
-            (is (not (empty? (slack-msg)))))))
+            (is (= (:color (slack-msg)) "good")))))
       (testing "build success: don't notify on subsequent successes"
         ;; succeed once more
         (reset! email [])
@@ -364,7 +363,7 @@
                              :exit-code)))
                 (is (.startsWith
                      (let [[_ _ _ _ subj _ _] @email] subj) "FAILURE"))
-                (is (.contains (slack-msg) "FAILURE")))
+                (is (.contains (:title (slack-msg)) "FAILURE")))
               (testing "Running again w/o wipe-workspace should update the repo"
                 (let [[opts2 res2] (run
                                      (conj
