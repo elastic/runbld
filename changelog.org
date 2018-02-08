@@ -1,4 +1,7 @@
 * runbld changes
+** 1.5.10
+   - Reduce number of shards to 2
+   - Rework the slack notifications more visually pleasant and concise
 ** 1.5.9
    - Retry assertion failures when calling Facter
    - Improve error message when runbld is run from the wrong directory
