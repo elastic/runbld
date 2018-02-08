@@ -130,7 +130,7 @@
                          :process
                          :exit-code)))
             (is (empty? @email))
-            (is (.contains (slack-msg) "SUCCESS"))))))))
+            (is (not (empty? (slack-msg))))))))))
 
 (s/deftest execution-with-slack-overrides
   (testing "slack overrides:"
@@ -160,7 +160,7 @@
                                  "test/success.bash"))]
             (is (empty? @email))
             ;; we should get a slack notification
-            (is (.contains (slack-msg) "SUCCESS")))))
+            (is (not (empty? (slack-msg)))))))
       (testing "build success: don't notify on subsequent successes"
         ;; succeed once more
         (reset! email [])
