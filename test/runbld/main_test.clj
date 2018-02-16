@@ -541,7 +541,8 @@
                      "-j" "elastic+foo+master"
                      "-d" d]
                     "test/success.bash")
-              opts (opts/parse-args args)]
+              opts (opts/parse-args args)
+              time-start (atom nil)]
           (future (apply main/-main args))
           (when (is (deref ready 4000 nil)
                     "Timed out waiting on pipeline")
@@ -551,7 +552,11 @@
                                       (-> @res :store-result :addr :type)
                                       (-> @res :store-result :addr :id))]
                 (is (= "elastic" (-> record :build :org)))
+                (is (-> record :process :time-start))
+                (reset! time-start (-> record :process :time-start))
                 (is (nil? (-> record :process :exit-code)))))
+            ;; nudge the time so we can check that process :time-start changes
+            (Thread/sleep 100)
             (deliver proceed true)
             (when (is (deref done 10000 nil)
                       "Timed out waiting on pipeline to finish")
@@ -559,6 +564,9 @@
                                       (-> @res :store-result :addr :index)
                                       (-> @res :store-result :addr :type)
                                       (-> @res :store-result :addr :id))]
+                (is (-> record :process :time-start))
+                (is (not (= (-> record :process :time-start)
+                            @time-start)))
                 (is (= "elastic" (-> record :build :org)))
                 (is (zero? (-> record :process :exit-code)))))))))))
 
