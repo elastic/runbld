@@ -203,22 +203,31 @@
 (def MainOpts
   (merge Opts {:vcs {s/Keyword s/Any}}))
 
+(def MinimalProcessResult
+  {:time-start s/Str})
+
 (def ProcessResult
-  (merge
-   {:exit-code      s/Num
-    :millis-end     s/Num
-    :millis-start   s/Num
-    :status         s/Str
-    :time-end       s/Str
-    :time-start     s/Str
-    :took           s/Num
+  {:exit-code      s/Num
+   :millis-end     s/Num
+   :millis-start   s/Num
+   :status         s/Str
+   :time-end       s/Str
+   :time-start     s/Str
+   :took           s/Num
 
-    :cmd            [s/Str]
-    :cmd-source     s/Str
+   :cmd            [s/Str]
+   :cmd-source     s/Str
 
-    :err-bytes      s/Int
-    :out-bytes      s/Int
-    :total-bytes    s/Num}))
+   :err-bytes      s/Int
+   :out-bytes      s/Int
+   :total-bytes    s/Num})
+
+(def EitherProcessResult
+  (s/conditional
+   #(and (map? %) (= (keys MinimalProcessResult) (keys %)))
+   MinimalProcessResult
+   :else
+   ProcessResult))
 
 (def StoredProcessResult
   ProcessResult)
@@ -296,7 +305,7 @@
    :java    JavaProperties
    (s/optional-key :sys) BuildSystem
    (s/optional-key :vcs) VcsLog
-   :process (s/maybe StoredProcessResult)
+   :process (s/maybe EitherProcessResult)
    :test (s/maybe StoredTestSummary)})
 
 (def StoredBuildIndexSettings

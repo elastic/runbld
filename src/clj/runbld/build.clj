@@ -182,7 +182,9 @@
   (let [build-meta (merge (split-job-name (:job-name opts))
                           (scheduler/as-map (:scheduler opts)))]
     (debug/log "Build meta:" build-meta)
-    (assoc opts :build build-meta)))
+    (assoc opts
+           :process-result {:time-start (date/ms-to-iso)}
+           :build build-meta)))
 
 (s/defn add-last-success
   [opts :- OptsWithBuild]
