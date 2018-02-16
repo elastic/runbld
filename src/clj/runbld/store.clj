@@ -157,7 +157,7 @@
 
 (s/defn save! :- {s/Keyword s/Any}
   ([opts :- (merge Opts JavaOpts EnvOpts BuildOpts)
-    result :- (s/maybe ProcessResult)
+    result :- (s/maybe EitherProcessResult)
     test-report :- (s/maybe TestReport)]
    (when (:report-has-tests test-report)
      ((opts :logger) (format "FAILURES: %d"
@@ -299,7 +299,7 @@
   "Stores the result of the build.  This is the final payload indexed
   into ES"
   [opts :- {(s/optional-key :test-report) TestReport
-            (s/optional-key :process-result) ProcessResult
+            (s/optional-key :process-result) (s/maybe EitherProcessResult)
             s/Keyword s/Any}]
   (let [{:keys [test-report process-result]} opts]
     (assoc opts :store-result
