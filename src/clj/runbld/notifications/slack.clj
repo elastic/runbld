@@ -25,10 +25,13 @@
               {{:keys [failed]} :process :as ctx}]
   (mustache/render-string
    (slurp (io/resolve-resource template))
-   (assoc ctx
-          :color (if failed "danger" "good")
-          :base-url (string/replace (get-in ctx [:build :url]) #"/job/.*" "")
-          :failure (if failed "FAILURE · " ""))))
+   (-> ctx
+       (assoc
+        :color (if failed "danger" "good")
+        :base-url (string/replace (get-in ctx [:build :url]) #"/job/.*" "")
+        :failure (if failed "FAILURE · " ""))
+       (update-in [:build :job-name-extra]
+                  #(when-not (empty? %) %)))))
 
 (s/defn send :- s/Any
   "Format and send the Slack notifcation"
