@@ -4,7 +4,9 @@
         {
             "color": "{{color}}",
             "title": "{{failure}}<{{vcs.branch-url}}|{{build.project}}/{{build.branch}}> · <{{vcs.commit-url}}|{{vcs.commit-short}}>",
+            {{#build.job-name-extra}}
             "text": "`{{build.job-name-extra}}`",
+            {{/build.job-name-extra}}
             "footer": "<{{base-url}}> | <{{build.url}}|Build #{{build.number}}> | <{{build.console-url}}|Log>",
             "mrkdwn_in": [
                 "text"
