@@ -1,4 +1,8 @@
 * runbld changes
+** 1.5.11
+   - Hide the empty line when there is no text to display in the Slack
+     message
+   - Add the start time when we initially add the build to ES.
 ** 1.5.10
    - Reduce number of shards to 2
    - Rework the slack notifications more visually pleasant and concise
