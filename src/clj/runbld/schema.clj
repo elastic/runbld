@@ -175,7 +175,8 @@
    (s/optional-key :number)    s/Str
    (s/optional-key :executor)  s/Str
    (s/optional-key :node)      s/Str
-   (s/optional-key :last-success) LastGoodBuild})
+   (s/optional-key :last-success) LastGoodBuild
+   (s/optional-key :user-specified-branch) s/Bool})
 
 (def OptsWithSys
   (merge Opts
@@ -336,6 +337,7 @@
                :executor            m/keyword
                :node                m/keyword
                :metadata            m/multi-string
+               :user-specified-branch m/boolean
                :last-success
                {:properties
                 {:id                m/keyword
