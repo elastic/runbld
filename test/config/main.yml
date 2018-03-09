@@ -18,3 +18,10 @@ email:
   template-txt: templates/email.mustache.txt
   template-html: templates/email.mustache.html
 
+profiles:
+  - '^elastic\+foo\+master\+user-specified$':
+      scm:
+        clone: true
+        url: "/tmp/git/user-intake"
+        branch: master
+        wipe-workspace: false
