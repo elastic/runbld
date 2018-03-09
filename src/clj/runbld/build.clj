@@ -48,16 +48,15 @@
         :hits :hits first :_source)))
 
 (defn query-for-build [keyword-mapping? job-name vcs-provider]
-  (let [clauses (if keyword-mapping?
-                  ;; pre-5.0 mapping for string fields
-                  [{:term {:build.job-name job-name}}
-                   {:term {:process.status "SUCCESS"}}
-                   {:term {:vcs.provider vcs-provider}}]
-                  ;; post-5.0 mapping for string fields, before the
-                  ;; mapping was updated in the code
-                  [{:term {:build.job-name.keyword job-name}}
-                   {:term {:process.status.keyword "SUCCESS"}}
-                   {:term {:vcs.provider.keyword vcs-provider}}])]
+  (let [clauses
+        [{:term {:build.job-name job-name}}
+         {:term {:process.status "SUCCESS"}}
+         {:bool {:minimum_should_match 1
+                 :should
+                 [{:term {:build.user-specified-branch false}}
+                  {:bool {:must_not
+                          {:exists
+                           {:field :build.user-specified-branch}}}}]}}]]
     {:body
      {:query
       {:bool

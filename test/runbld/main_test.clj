@@ -747,7 +747,19 @@
                    (get-in res-2 [:store-result
                                   :build-doc
                                   :vcs
-                                  :commit-id]))))))
+                                  :commit-id])))))
+        ;; user specified commits should not affect the
+        ;; last-good-commit
+        (is (= lgc
+               (get-in (build/last-good-build
+                        job-name
+                        opts-1
+                        (runbld.vcs.middleware/make-repo
+                         {:process {:cwd source-dir}
+                          :build {:org "elastic"
+                                  :project "foo"
+                                  :branch "master"}}))
+                       [:vcs :commit-id]))))
       (finally
         (io/rmdir-r dest-dir)
         (io/rmdir-r source-dir)))))
