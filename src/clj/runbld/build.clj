@@ -48,16 +48,15 @@
         :hits :hits first :_source)))
 
 (defn query-for-build [keyword-mapping? job-name vcs-provider]
-  (let [clauses (if keyword-mapping?
-                  ;; pre-5.0 mapping for string fields
-                  [{:term {:build.job-name job-name}}
-                   {:term {:process.status "SUCCESS"}}
-                   {:term {:vcs.provider vcs-provider}}]
-                  ;; post-5.0 mapping for string fields, before the
-                  ;; mapping was updated in the code
-                  [{:term {:build.job-name.keyword job-name}}
-                   {:term {:process.status.keyword "SUCCESS"}}
-                   {:term {:vcs.provider.keyword vcs-provider}}])]
+  (let [clauses
+        [{:term {:build.job-name job-name}}
+         {:term {:process.status "SUCCESS"}}
+         {:bool {:minimum_should_match 1
+                 :should
+                 [{:term {:build.user-specified-branch false}}
+                  {:bool {:must_not
+                          {:exists
+                           {:field :build.user-specified-branch}}}}]}}]]
     {:body
      {:query
       {:bool
@@ -188,16 +187,20 @@
 
 (s/defn add-last-success
   [opts :- OptsWithBuild]
-  (let [[last-good-build checked-out?]
-        (maybe-find-last-good-build-and-checkout opts)]
-    (cond-> opts
-      last-good-build
-      (update :build merge {:last-success (abbreviate-last-good-build
-                                           last-good-build checked-out?)})
+  (if (get-in opts [:build :user-specified-branch])
+    ;; The user specified a specific branch or commit and runbld
+    ;; shouldn't override it with the last-good-commit
+    opts
+    (let [[last-good-build checked-out?]
+          (maybe-find-last-good-build-and-checkout opts)]
+      (cond-> opts
+        last-good-build
+        (update :build merge {:last-success (abbreviate-last-good-build
+                                             last-good-build checked-out?)})
 
-      (and last-good-build checked-out?)
-      (update :vcs merge
-              (:vcs (find-build opts (:id last-good-build)))))))
+        (and last-good-build checked-out?)
+        (update :vcs merge
+                (:vcs (find-build opts (:id last-good-build))))))))
 
 (s/defn maybe-log-last-success
   [opts :- (merge {:logger clojure.lang.IFn}

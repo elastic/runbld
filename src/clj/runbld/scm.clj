@@ -97,17 +97,20 @@
                    (string? x)
                    (boolean
                     (re-matches #"^[a-fA-F0-9]{5,40}$"
-                                (string/trim x)))))]
-    (let [branches (cond->> [build-branch]
-                     (not (empty? scm-branch))
-                     (cons scm-branch)
+                                (string/trim x)))))
+        user-specified-branch (and (not (empty? env-branch))
+                                   (not= default-env-branch env-branch))
+        branches (cond->> [build-branch]
+                   (not (empty? scm-branch))
+                   (cons scm-branch)
 
-                     (and (not (empty? env-branch))
-                          (not= default-env-branch env-branch))
-                     (cons env-branch))
-          commit (first (take-while commit? branches))
-          branch (first (drop-while commit? branches))]
-      {:commit commit :branch (or branch "master")})))
+                   user-specified-branch
+                   (cons env-branch))
+        commit (first (take-while commit? branches))
+        branch (first (drop-while commit? branches))]
+    {:commit commit
+     :branch (or branch "master")
+     :user-specified-branch user-specified-branch}))
 
 (defn clean-branch-name [branch]
   (-> branch
@@ -125,7 +128,7 @@
         local (-> opts :process :cwd)
         remote (-> opts :scm :url)
         reference (-> opts :scm :reference-repo)
-        {:keys [branch commit]} (choose-branch opts)
+        {:keys [branch commit :user-specified-branch]} (choose-branch opts)
         depth (-> opts :scm :depth)]
     (when clone?
       (if (.exists (jio/file local ".git"))
@@ -134,4 +137,6 @@
       (when commit
         (checkout-commit local commit)))
     ;; Update the build data
-    (assoc-in opts [:build :branch] (clean-branch-name branch))))
+    (-> opts
+        (assoc-in [:build :branch] (clean-branch-name branch))
+        (assoc-in [:build :user-specified-branch] user-specified-branch))))

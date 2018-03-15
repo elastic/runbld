@@ -687,3 +687,79 @@
       (finally
         (io/rmdir-r periodic-dir)
         (io/rmdir-r intake-dir)))))
+
+(s/deftest user-specified-commit
+  ;; This tests that branch_specifier is honored.  we basically need a
+  ;; repo with several commits where lgc is some commit A and
+  ;; branch_specifier points to commit B
+  (let [script (if (opts/windows?) "test/success.bat" "test/success.bash")
+        job-name "elastic+foo+master+user-specified"
+        source-dir "/tmp/runbld/user-source"
+        dest-dir "/tmp/runbld/user-dest"]
+    ;; because we need to use the scm feature we need the repo to be
+    ;; somewhere on disk at a known location, therefore we should make
+    ;; sure to clean up before trying anything
+    (if (.exists (jio/file dest-dir))
+      (io/rmdir-r dest-dir))
+    (if (.exists (jio/file source-dir))
+      (io/rmdir-r source-dir))
+    (try
+      ;; create the dummy repo in source-dir and clone it to dest-dir
+      (git/init-test-clone dest-dir source-dir)
+      (let [first-commit (:commit-id (git/head-commit source-dir))
+            [opts-1 res-1]
+            (run ["-c" "test/config/main.yml"
+                  "-j" job-name
+                  "-d" dest-dir
+                  script])
+            ;; at this point we should have a l-g-c at the first
+            ;; commit, so we will add a second commit that the
+            ;; user can specify with branch_specifier
+            lgc (get-in (build/last-good-build
+                         job-name
+                         opts-1
+                         (runbld.vcs.middleware/make-repo
+                          {:process {:cwd source-dir}
+                           :build {:org "elastic"
+                                   :project "foo"
+                                   :branch "master"}}))
+                        [:vcs :commit-id])
+            _ (git/add-test-commit source-dir)
+            second-commit (:commit-id (git/head-commit source-dir))
+            ;; we will also add a third commit to ensure we aren't
+            ;; accidentally getting the head commit later
+            _ (git/add-test-commit source-dir)
+            third-commit (:commit-id (git/head-commit source-dir))]
+        (is (= 0 (:exit-code res-1)))
+        (is (= lgc first-commit))
+        ;; specify the second commit in the "environment" and run the
+        ;; script again, specifying that we want the l-g-c
+        (with-redefs [environ/env {:dev "true"
+                                   :branch-specifier second-commit}]
+          (let [[opts-2 res-2]
+                (run ["-c" "test/config/main.yml"
+                      "-j" job-name
+                      "-d" dest-dir
+                      "--last-good-commit" job-name
+                      script])]
+            (is (= 0 (:exit-code res-2)))
+            (is (= second-commit
+                   (get-in res-2 [:store-result
+                                  :build-doc
+                                  :vcs
+                                  :commit-id])))))
+        ;; user specified commits should not affect the
+        ;; last-good-commit
+        (is (= lgc
+               (get-in (build/last-good-build
+                        job-name
+                        opts-1
+                        (runbld.vcs.middleware/make-repo
+                         {:process {:cwd source-dir}
+                          :build {:org "elastic"
+                                  :project "foo"
+                                  :branch "master"}}))
+                       [:vcs :commit-id]))))
+      (finally
+        (io/rmdir-r dest-dir)
+        (io/rmdir-r source-dir)))))
