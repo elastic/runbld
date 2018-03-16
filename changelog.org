@@ -1,4 +1,7 @@
 * runbld changes
+** 1.5.12
+   - prefer a non-default =branch_specifier= environment variable over
+     =--last-good-commit= when choosing which commit/branch to pull
 ** 1.5.11
    - Hide the empty line when there is no text to display in the Slack
      message
