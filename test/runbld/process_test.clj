@@ -2,6 +2,7 @@
   (:require
    [cheshire.core :as json]
    [clojure.test :refer :all]
+   [runbld.env :as env]
    [runbld.io :as io]
    [runbld.java :as java]
    [runbld.opts :as opts]
@@ -100,3 +101,22 @@
               (proc/run (assoc opts :id (str (java.util.UUID/randomUUID))))]
           (is (= "FAILURE" status))
           (is (= 1 exit-code)))))))
+
+(deftest test-update-path
+  (testing "Explodes if there is no JAVA_HOME"
+    (is (thrown-with-msg? AssertionError
+                          #"JAVA_HOME is required"
+                          (proc/update-path {}))))
+  (testing "Updating the path works for various path keys"
+    (doseq [path-key [:path :Path :PATH]]
+      (let [path "thepath"
+            env (proc/update-path {path-key path
+                                   :JAVA_HOME "javahome"})
+            expected (if (io/windows?) :Path :PATH)]
+        (is (= (get env path-key) )))))
+  (testing "Updating the path works when there is no path in the env"
+    (let [env (proc/update-path {:JAVA_HOME "javahome"})]
+      (is (re-find #"^javahome/bin:" (:PATH env))
+          "The java home should come first")
+      (is (re-find (re-pattern (env/get-env :PATH)) (:PATH env))
+          "The system env should have been appended"))))
