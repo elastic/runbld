@@ -767,16 +767,9 @@
 (s/deftest java-home-in-path
   (let [logs (atom [])
         orig-save-logs store/save-logs!]
-    (with-redefs [email/send* (fn [& args]
-                                (swap! email concat args)
-                                ;; to satisfy schema
-                                {})
-                  slack/send fake-slack-send
-                  store/save-logs! (fn [opts docs]
+    (with-redefs [store/save-logs! (fn [opts docs]
                                      (reset! logs docs)
                                      (orig-save-logs opts docs))]
-      (reset! email [])
-      (reset! slack [])
       (git/with-tmp-repo [d "tmp/git/java-home-test"]
         (let [java-home (:home (java/jvm-facts))
               [opts res] (run
