@@ -152,6 +152,13 @@
      :took took
      :bytes bytes}))
 
+(defn update-path [env]
+  (let [path-key (or (some (set (keys env)) [:Path :PATH :path])
+                     (if (io/windows?) :Path :PATH))
+        java-bin (str (:JAVA_HOME env) File/separator "bin")]
+    (io/log "Adding" java-bin "to the path.")
+    (update env path-key #(str java-bin File/pathSeparator %))))
+
 (defn exec
   [program args scriptfile cwd
    env listeners log-extra timeout]
@@ -161,7 +168,7 @@
         pb (doto (ProcessBuilder. cmd)
              (.directory dir))
         ;; can only alter the env via this mutable map
-        _ (add-env! (.environment pb) env)
+        _ (add-env! (.environment pb) (update-path env))
         res (exec-pb pb listeners log-extra timeout)]
     (debug/log "Exec:"
                "CWD:" dir
