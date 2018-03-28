@@ -153,6 +153,9 @@
      :bytes bytes}))
 
 (defn update-path [env]
+  (assert (:JAVA_HOME env)
+          (str ":JAVA_HOME is required to be in the process env map"
+               " (and should have been under normal circumstances)."))
   (let [path-key (or (some (set (keys env)) [:Path :PATH :path])
                      (if (io/windows?) :Path :PATH))
         java-bin (str (:JAVA_HOME env) File/separator "bin")]
