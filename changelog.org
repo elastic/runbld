@@ -1,4 +1,6 @@
 * runbld changes
+** 1.5.13
+   - add =JAVA_HOME/bin= to the =PATH= of the wrapped process.
 ** 1.5.12
    - prefer a non-default =branch_specifier= environment variable over
      =--last-good-commit= when choosing which commit/branch to pull
