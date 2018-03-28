@@ -157,7 +157,13 @@
                      (if (io/windows?) :Path :PATH))
         java-bin (str (:JAVA_HOME env) File/separator "bin")]
     (io/log "Adding" java-bin "to the path.")
-    (update env path-key #(str java-bin File/pathSeparator %))))
+    (if (empty? (get env path-key))
+      ;; If the path wasn't specified in the config the process will
+      ;; inherit the system path.  We need to preserve this behavior
+      ;; as we add the PATH here.
+      (assoc env path-key
+             (str java-bin File/pathSeparator (get (env/get-env) path-key)))
+      (update env path-key #(str java-bin File/pathSeparator %)))))
 
 (defn exec
   [program args scriptfile cwd
