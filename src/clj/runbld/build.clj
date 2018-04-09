@@ -87,6 +87,15 @@
     (or (build false)
         (build true))))
 
+(defn checkout-last-good-commit
+  "Checks out the commit id found in the last good build.  Will deepen
+  a shallow clone to include that commit, if necessary."
+  [vcs-repo {{:keys [commit-id commit-time]} :vcs :as build}]
+  (if (runbld.vcs/is-shallow? vcs-repo)
+    (runbld.vcs/fetch-latest vcs-repo :shallow-since commit-time)
+    (runbld.vcs/fetch-latest vcs-repo))
+  (runbld.vcs/check-out vcs-repo commit-id))
+
 (defn maybe-find-last-good-build-and-checkout
   "Usually this should find /something/.
 
@@ -94,8 +103,7 @@
 
     * Fresh install
     * New --last-good-commit job name
-    * Bogus --last-good-commit job name
-  "
+    * Bogus --last-good-commit job name"
   [opts]
   (let [check-out? (boolean (:last-good-commit opts))
         job-name (if check-out?
@@ -107,8 +115,7 @@
        ;; only actually check out as working copy if the command line
        ;; opt has been supplied
        (when check-out?
-         (runbld.vcs/fetch-latest vcs-repo)
-         (runbld.vcs/check-out vcs-repo (-> build :vcs :commit-id)))
+         (checkout-last-good-commit vcs-repo build))
        build)
      check-out?]))
 
