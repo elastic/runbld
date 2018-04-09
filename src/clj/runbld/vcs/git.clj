@@ -31,10 +31,8 @@
 
 (defn init-test-clone
   ([local-path remote-path]
-   (let [local-repo (git/load-repo local-path)
-         remote-repo (git/load-repo remote-path)]
-     (init-test-repo remote-path)
-     (git/git-clone local-path remote-path))))
+   (init-test-repo remote-path)
+   (git/git-clone local-path remote-path)))
 
 (defmacro with-tmp-repo [bindings & body]
   `(let ~bindings
@@ -143,9 +141,15 @@
       (when-let [u (commit-url this commit-id)]
         {:commit-url u})))))
 
-(defn fetch-latest [this]
+(defn is-shallow? [this]
+  (git/shallow-clone? (git/load-repo (.dir this))))
+
+(defn fetch-latest [this & {:as opts-map}]
   (let [repo (git/load-repo (.dir this))]
-    (git/git-fetch repo)
+    (git/git-fetch
+     repo
+     (map (fn [[k v]]
+            (str "--" (name k) "=" v)) opts-map))
     (git/git-checkout repo "HEAD")))
 
 ;; Assume GitHub for now...
@@ -160,6 +164,7 @@
   {:log-latest log-latest
    :provider (constantly provider)
    :check-out checkout-commit
+   :is-shallow? is-shallow?
    :fetch-latest fetch-latest})
 
 (s/defn make-repo :- GitRepo
