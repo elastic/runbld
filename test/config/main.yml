@@ -25,3 +25,6 @@ profiles:
         url: "/tmp/git/user-intake"
         branch: master
         wipe-workspace: false
+  - "disabled-metadata":
+      build-metadata:
+        disable: true

@@ -688,6 +688,40 @@
         (io/rmdir-r periodic-dir)
         (io/rmdir-r intake-dir)))))
 
+(deftest disabled-build-metadata
+  (let [set-calls (atom 0)
+        record-calls (atom 0)]
+    (with-redefs [build/set-build-meta-environment (fn [opts]
+                                                     (swap! set-calls inc)
+                                                     opts)
+                  build/record-build-meta (fn [opts]
+                                            (swap! record-calls inc)
+                                            opts)]
+      (testing "metadata fns are skipped when disabled"
+        (git/with-tmp-repo [d "tmp/git/disabled-metadata-test"]
+          (let [[opts res] (run
+                             (conj
+                              ["-c" "test/config/main.yml"
+                               "-j" "disabled-metadata+foo+master"
+                               "-d" d]
+                              "test/success.bash"))]
+            (is (= 0 (:exit-code res)))
+            (is (= 0 @set-calls))
+            (is (= 0 @record-calls)))))
+      (testing "metadata fns are called as expected when enabled"
+        (reset! set-calls 0)
+        (reset! record-calls 0)
+        (git/with-tmp-repo [d "tmp/git/disabled-metadata-test"]
+          (let [[opts res] (run
+                             (conj
+                              ["-c" "test/config/main.yml"
+                               "-j" "enabled-metadata+foo+master"
+                               "-d" d]
+                              "test/success.bash"))]
+            (is (= 0 (:exit-code res)))
+            (is (= 1 @set-calls))
+            (is (= 1 @record-calls))))))))
+
 (s/deftest user-specified-commit
   ;; This tests that branch_specifier is honored.  we basically need a
   ;; repo with several commits where lgc is some commit A and
