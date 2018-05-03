@@ -1,5 +1,5 @@
 * runbld changes
-** 1.5.14
+** 1.5.15
    - deepen a shallow clone to include the last good commit
    - add config option to disable searching for =build_metadata=
 ** 1.5.13
