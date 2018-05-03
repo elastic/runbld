@@ -44,7 +44,7 @@
       (when (.exists (clojure.java.io/file clone-dir))
         (io/rmdir-r clone-dir))
       (git/git-clone clone-dir
-                     "git@github.com:elastic/runbld.git"
+                     "https://github.com/elastic/runbld.git"
                      ["--depth" "1"])
       (is (vcs-git/is-shallow? vcs-repo)
           "We should have a shallow repo.")

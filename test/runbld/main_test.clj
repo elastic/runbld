@@ -233,13 +233,13 @@
               ;; soon be out of date
               (git-clone first-clone origin)
               (git/add-test-commit first-clone)
-              (git first-repo "push")
+              (git first-repo "push" ["origin" "master"])
               ;; now create a new clone that will have the previous
               ;; commit and push another new commit that first won't
               ;; have
               (git-clone second-clone origin)
               (git/add-test-commit second-clone)
-              (git second-repo "push")
+              (git second-repo "push" ["origin" "master"])
               ;; Run runbld on the second clone to store the l-g-c as
               ;; one that doesn't exist in the first
               (let [second-commit (:commit (git/head-commit second-repo))
