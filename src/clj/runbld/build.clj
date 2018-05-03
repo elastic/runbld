@@ -232,8 +232,10 @@
   opts)
 
 (defn add-build-meta
-  [proc opts]
-  (-> opts
-      set-build-meta-environment
-      proc
-      record-build-meta))
+  [proc {{:keys [disable]} :build-metadata :keys [logger] :as opts}]
+  (when disable
+    (logger "Storing/retrieving build metadata is disabled."))
+  (cond-> opts
+    (not disable) set-build-meta-environment
+    true          proc
+    (not disable) record-build-meta))

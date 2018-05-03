@@ -64,7 +64,10 @@
     :success true
     :failure true
     :template "templates/slack.mustache.json"
-    :disable false}})
+    :disable false}
+
+   :build-metadata
+   {:disable false}})
 
 (s/defn merge-profiles :- java.util.Map
   [job-name :- s/Str
