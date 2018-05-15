@@ -39,8 +39,8 @@
 
 (s/defn this-host? :- s/Bool
   "Is this host in AWS EC2?"
-  ([]
-   (boolean (ec2-meta))))
+  []
+  (boolean (ec2-meta "/ami-id")))
 
 (defrecord AwsEc2Hosting [facts]
   HostingProvider
