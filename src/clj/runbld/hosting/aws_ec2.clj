@@ -3,6 +3,7 @@
    [clj-http.client :as http]
    [robert.bruce :refer [try-try-again]]
    [runbld.hosting :refer [HostingProvider] :as hosting]
+   [runbld.io :as rio]
    [runbld.schema :refer :all]
    [schema.core :as s]
    [slingshot.slingshot :refer [try+ throw+]]))
@@ -18,25 +19,28 @@
   ([]
    (ec2-meta "/"))
   ([postfix]
-   (try-try-again
-    {:sleep 500
-     :tries 20}
-    #(try+
-      (:body
-       (http/get (str "http://169.254.169.254/latest/meta-data" postfix)
-                 {:socket-timeout 500 :conn-timeout 500}))
-      (catch java.net.SocketTimeoutException _)
-      (catch org.apache.http.conn.ConnectTimeoutException _)
-      (catch org.apache.http.NoHttpResponseException _)
-      (catch java.net.ConnectException _)
-      ;; Non-AWS Windows
-      (catch java.net.SocketException _)
-      (catch java.net.UnknownHostException _)))))
+   (try
+     (try-try-again
+      {:sleep 500
+       :tries 20}
+      #(try+
+        (:body
+         (http/get (str "http://169.254.169.254/latest/meta-data" postfix)
+                   {:socket-timeout 500 :conn-timeout 500}))
+        (catch java.net.SocketTimeoutException _)
+        (catch org.apache.http.conn.ConnectTimeoutException _)
+        (catch org.apache.http.NoHttpResponseException _)
+        (catch java.net.ConnectException _)
+        ;; Non-AWS Windows
+        (catch java.net.SocketException _)
+        (catch java.net.UnknownHostException _)))
+     (catch Exception e
+       (rio/log "Warning: Got exception during ec2-meta." (.getMessage e))))))
 
 (s/defn this-host? :- s/Bool
   "Is this host in AWS EC2?"
-  ([]
-   (boolean (ec2-meta))))
+  []
+  (boolean (ec2-meta "/ami-id")))
 
 (defrecord AwsEc2Hosting [facts]
   HostingProvider
