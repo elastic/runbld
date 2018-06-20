@@ -164,11 +164,7 @@
                   [:email :port]
                   #(if (string? %)
                      (try
-                       (Integer/parseInt %)
-                       (catch NumberFormatException _
-                         (logger "Failed to parse smtp port" %
-                                 "trying default port 587 instead.")
-                         587))
+                       (Integer/parseInt %))
                      %))
        (make-context opts build-doc failure-docs))
       (logger "NO MAIL GENERATED"))))

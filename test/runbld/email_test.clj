@@ -14,7 +14,9 @@
    [schema.test]
    [stencil.core :as mustache]))
 
-(use-fixtures :each (ts/redirect-logging-fixture))
+(def log-atom (atom []))
+
+(use-fixtures :each (ts/redirect-logging-fixture log-atom))
 (use-fixtures :once
   schema.test/validate-schemas
   ts/dont-die-fixture)
@@ -174,7 +176,7 @@
         (is (= (:reply-to @email) "replyto@example.com"))))))
 
 (deftest string-port
-  (let [conn-atom (atom [])
+  (let [conn-atom (atom nil)
         out (java.io.StringWriter.)]
     (with-redefs [mail/send-message (fn [conn msg]
                                       (reset! conn-atom conn))]
@@ -188,6 +190,7 @@
                        "test/fail.bat"
                        "test/fail.bash"))))
         (is (= 1234 (:port @conn-atom))))
+      (reset! conn-atom nil)
       (git/with-tmp-repo [d "tmp/git/string-email-port"]
         (binding [*out* out
                   *err* out]
@@ -198,6 +201,8 @@
                        "test/fail.bat"
                        "test/fail.bash"))))
         (is (= 2525 (:port @conn-atom))))
+      (reset! conn-atom nil)
+      (reset! log-atom [])
       (git/with-tmp-repo [d "tmp/git/bad-string-email-port"]
         (binding [*out* out
                   *err* out]
@@ -207,4 +212,7 @@
                      (if (opts/windows?)
                        "test/fail.bat"
                        "test/fail.bash"))))
-        (is (= 587 (:port @conn-atom)))))))
+        (is (nil? @conn-atom)
+            "conn-atom shouldn't be set because of an exception")
+        (is (re-find #"NumberFormatException" (str @log-atom)))
+        (is (re-find #"For input string:.*ohnoes" (str @log-atom)))))))
