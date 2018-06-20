@@ -172,3 +172,39 @@
                        "test/fail.bat"
                        "test/fail.bash"))))
         (is (= (:reply-to @email) "replyto@example.com"))))))
+
+(deftest string-port
+  (let [conn-atom (atom [])
+        out (java.io.StringWriter.)]
+    (with-redefs [mail/send-message (fn [conn msg]
+                                      (reset! conn-atom conn))]
+      (git/with-tmp-repo [d "tmp/git/int-email-port"]
+        (binding [*out* out
+                  *err* out]
+          (run (conj ["-c" "test/config/main.yml"
+                      "-j" "int-email-port"
+                      "-d" d]
+                     (if (opts/windows?)
+                       "test/fail.bat"
+                       "test/fail.bash"))))
+        (is (= 1234 (:port @conn-atom))))
+      (git/with-tmp-repo [d "tmp/git/string-email-port"]
+        (binding [*out* out
+                  *err* out]
+          (run (conj ["-c" "test/config/main.yml"
+                      "-j" "string-email-port"
+                      "-d" d]
+                     (if (opts/windows?)
+                       "test/fail.bat"
+                       "test/fail.bash"))))
+        (is (= 2525 (:port @conn-atom))))
+      (git/with-tmp-repo [d "tmp/git/bad-string-email-port"]
+        (binding [*out* out
+                  *err* out]
+          (run (conj ["-c" "test/config/main.yml"
+                      "-j" "bad-string-email-port"
+                      "-d" d]
+                     (if (opts/windows?)
+                       "test/fail.bat"
+                       "test/fail.bash"))))
+        (is (= 587 (:port @conn-atom)))))))

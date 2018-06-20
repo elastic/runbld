@@ -155,11 +155,23 @@
     (-> build :process :exit-code))))
 
 (defn maybe-send! [opts {:keys [index type id]}]
-  (let [build-doc (store/get (-> opts :es :conn) index type id)
+  (let [logger (:logger opts)
+        build-doc (store/get (-> opts :es :conn) index type id)
         failure-docs (store/get-failures opts (:id build-doc))]
     (if (send? (-> opts :email) build-doc)
-      (send opts (make-context opts build-doc failure-docs))
-      ((opts :logger) "NO MAIL GENERATED"))))
+      (send
+       (update-in opts
+                  [:email :port]
+                  #(if (string? %)
+                     (try
+                       (Integer/parseInt %)
+                       (catch NumberFormatException _
+                         (logger "Failed to parse smtp port" %
+                                 "trying default port 587 instead.")
+                         587))
+                     %))
+       (make-context opts build-doc failure-docs))
+      (logger "NO MAIL GENERATED"))))
 
 (s/defn send-email :- {:email-result s/Any
                        s/Keyword s/Any}

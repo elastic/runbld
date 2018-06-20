@@ -28,3 +28,12 @@ profiles:
   - "disabled-metadata":
       build-metadata:
         disable: true
+  - "int-email-port":
+      email:
+        port: 1234
+  - "string-email-port":
+      email:
+        port: "2525"
+  - "bad-string-email-port":
+      email:
+        port: "ohnoes"
