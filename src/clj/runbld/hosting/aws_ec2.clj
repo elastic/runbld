@@ -27,6 +27,9 @@
         (:body
          (http/get (str "http://169.254.169.254/latest/meta-data" postfix)
                    {:socket-timeout 500 :conn-timeout 500}))
+        ;; If we get a 404 then this is another cloud provider which uses the same
+        ;; metadata server IP as AWS but is not AWS
+        (catch [:status 404] _)
         (catch java.net.SocketTimeoutException _)
         (catch org.apache.http.conn.ConnectTimeoutException _)
         (catch org.apache.http.NoHttpResponseException _)
