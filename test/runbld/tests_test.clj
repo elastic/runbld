@@ -80,8 +80,8 @@
     (let [out (with-out-str (tests/capture-failures "test/xmls"))
           log (debug/get-log)]
       (is (re-find #"Failed to parse" out))
-      (is (re-find #"(?m)ErrorHandlerWrapper.createSAXParseException"
-                   (second log))))
+      (is (some #(re-find #"(?m)ErrorHandlerWrapper.createSAXParseException" %)
+                log)))
     (catch Exception e
       (is false "There shouldn't have been any exceptions")
       (stacktrace/print-cause-trace e))))
