@@ -23,9 +23,9 @@ RUN yum install -y puppet-agent maven-compiler-plugin
 RUN wget https://bootstrap.pypa.io/get-pip.py && python get-pip.py && pip install nose
 
 WORKDIR /opt
-RUN wget http://mirrors.ocf.berkeley.edu/apache/maven/maven-3/3.5.2/binaries/apache-maven-3.5.2-bin.tar.gz
-RUN tar xvzf apache-maven-3.5.2-bin.tar.gz
-RUN ln -s /opt/apache-maven-3.5.2/bin/mvn /usr/local/bin/mvn
+RUN wget http://mirrors.ocf.berkeley.edu/apache/maven/maven-3/3.5.4/binaries/apache-maven-3.5.4-bin.tar.gz
+RUN tar xvzf apache-maven-3.5.4-bin.tar.gz
+RUN ln -s /opt/apache-maven-3.5.4/bin/mvn /usr/local/bin/mvn
 
 WORKDIR /usr/local
 RUN wget https://redirector.gvt1.com/edgedl/go/go1.9.2.linux-amd64.tar.gz
