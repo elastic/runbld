@@ -7,6 +7,7 @@
    [runbld.notifications :as n]
    [runbld.schema :refer :all]
    [runbld.store :as store]
+   [runbld.util.debug :as debug]
    [runbld.util.email :as email]
    [runbld.vcs :as vcs]
    [schema.core :as s]
@@ -176,5 +177,6 @@
                            :build-doc {s/Keyword s/Any}}
             :email OptsEmail
             s/Keyword s/Any}]
+  (debug/log "Send email stage")
   (assoc opts :email-result
          (io/try-log (maybe-send! opts (-> opts :store-result :addr)))))

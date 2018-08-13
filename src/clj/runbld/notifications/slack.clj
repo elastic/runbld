@@ -9,6 +9,7 @@
    [runbld.notifications :as n]
    [runbld.schema :refer :all]
    [runbld.store :as store]
+   [runbld.util.debug :as debug]
    [runbld.util.http :refer [wrap-retries]]
    [schema.core :as s]
    [stencil.core :as mustache]))
@@ -97,5 +98,6 @@
                            :build-doc {s/Keyword s/Any}}
             :slack OptsSlack
             s/Keyword s/Any}]
+  (debug/log "Send slack stage")
   (assoc opts :slack-result
          (io/try-log (maybe-send! opts (-> opts :store-result :addr)))))

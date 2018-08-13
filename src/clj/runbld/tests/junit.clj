@@ -56,6 +56,7 @@
           (x/select xml [:testcase])))
 
 (defn make-failure-report [xml]
+  (debug/log "making failure report")
   (let [meta (select-keys
               (testcase-meta xml)
               [:name :errors :failures :tests :skipped])]
@@ -86,21 +87,32 @@
   (merge default-failure-report m))
 
 (defn find-failures [dir]
-  (->> (rio/find-files dir #"TEST-.*\.xml$")
-       (map #(try
-               (x/xml-resource %)
-               (catch SAXParseException e
-                 (rio/log "Failed to parse" (rio/abspath %)
-                          "because of" (.getMessage e))
-                 (debug/log e "Full trace")
-                 nil)))
-       (remove nil?)
-       (mapcat #(x/select % [[(x/tag= :testsuite)]]))
-       (map make-failure-report)
-       (filter identity)
-       (map merge-default)
-       (reduce combine-failure-reports {:errors 0
-                                        :failures 0
-                                        :tests 0
-                                        :skipped 0
-                                        :failed-testcases []})))
+  ;; find the xml files
+  (debug/log "Searching for junit test output files")
+  (let [failures (rio/find-files dir #"TEST-.*\.xml$")
+        _ (debug/log "Found" (count failures) "test failures")
+        reports (for [failure failures
+                      :let [xml (try
+                                  (debug/log "Parsing" (rio/abspath failure))
+                                  (x/xml-resource failure)
+                                  (catch SAXParseException e
+                                    (rio/log "Failed to parse"
+                                             (rio/abspath failure)
+                                             "because of" (.getMessage e))
+                                    (debug/log e "Full trace")
+                                    nil))]
+                      :when xml]
+                  (do
+                    (debug/log "Looking for testsuite node")
+                    (if-let [testsuite (x/select xml [[(x/tag= :testsuite)]])]
+                      (merge-default (make-failure-report testsuite))
+                      (debug/log "none found"))))]
+    (debug/log "Made" (count reports) "reports")
+    (debug/log "Combining reports")
+    (reduce combine-failure-reports
+            {:errors 0
+             :failures 0
+             :tests 0
+             :skipped 0
+             :failed-testcases []}
+            reports)))
