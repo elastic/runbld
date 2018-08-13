@@ -113,7 +113,7 @@
             env (proc/update-path {path-key path
                                    :JAVA_HOME "javahome"})
             expected (if (io/windows?) :Path :PATH)]
-        (is (= (get env path-key) )))))
+        (is (= (get env path-key) (str "javahome/bin:" path))))))
   (testing "Updating the path works when there is no path in the env"
     (let [env (proc/update-path {:JAVA_HOME "javahome"})]
       (is (re-find #"^javahome/bin:" (:PATH env))

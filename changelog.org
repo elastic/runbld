@@ -1,4 +1,6 @@
 * runbld changes
+** 1.5.17
+   - added more debug logging
 ** 1.5.16
    - prevent errors from =runbld.hosting.aws-ec2/ec2-meta= from
      killing the build

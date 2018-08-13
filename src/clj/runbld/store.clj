@@ -301,6 +301,7 @@
   [opts :- {(s/optional-key :test-report) TestReport
             (s/optional-key :process-result) (s/maybe EitherProcessResult)
             s/Keyword s/Any}]
+  (debug/log "Storing result")
   (let [{:keys [test-report process-result]} opts]
     (assoc opts :store-result
            (save! opts process-result test-report))))

@@ -8,7 +8,6 @@
   :url "https://github.com/elastic/runbld"
   :license {:name "Apache License, Version 2.0"
             :url "https://www.apache.org/licenses/LICENSE-2.0"}
-  :repositories {"jenkins" "http://repo.jenkins-ci.org/releases"}
   :global-vars {*warn-on-reflection* false}
   :min-lein-version "2.0.0"
   :exclusions [org.clojure/clojure
