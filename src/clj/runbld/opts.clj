@@ -67,7 +67,10 @@
     :disable false}
 
    :build-metadata
-   {:disable false}})
+   {:disable false}
+
+   :tests
+   {:junit-filename-pattern "/TEST-.*\\.xml$"}})
 
 (s/defn merge-profiles :- java.util.Map
   [job-name :- s/Str
