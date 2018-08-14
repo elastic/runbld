@@ -12,6 +12,11 @@ endif
 	rm -rf tmp/git
 	lein do clean, test
 
+package: test
+	./check.sh
+	git rev-parse HEAD >resources/build.txt
+	LEIN_SNAPSHOTS_IN_RELEASE=whynot lein package
+
 junit:
 ifndef GOLANG
 	$(error "golang not installed")
@@ -32,8 +37,3 @@ endif
 	go test -v | go-junit-report > TEST-no-errors.xml
 	-cd test/repo/go/some-errors && \
 	go test -v | go-junit-report > TEST-some-errors.xml
-
-package: test
-	./check.sh
-	git rev-parse HEAD >resources/build.txt
-	LEIN_SNAPSHOTS_IN_RELEASE=whynot lein package
