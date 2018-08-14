@@ -86,10 +86,10 @@
 (defn merge-default [m]
   (merge default-failure-report m))
 
-(defn find-failures [dir]
+(defn find-failures [dir filename-format]
   ;; find the xml files
   (debug/log "Searching for junit test output files")
-  (let [failures (rio/find-files dir #"TEST-.*\.xml$")
+  (let [failures (rio/find-files dir (re-pattern filename-format))
         _ (debug/log "Found" (count failures) "test failures")
         reports (for [failure failures
                       :let [xml (try
