@@ -1,6 +1,23 @@
 .PHONY: package test
 
+FACTER := $(shell command -v facter 2>/dev/null)
+GOLANG := $(shell command -v go 2>/dev/null)
+GOJUNIT := $(shell command -v go-junit-report 2>/dev/null)
+NOSE := $(shell command -v nosetests 2>/dev/null)
+
 test:
+ifndef FACTER
+	$(error "facter not installed")
+endif
+ifndef GOLANG
+	$(error "golang not installed")
+endif
+ifndef GOJUNIT
+	$(error "go-junit-report not installed")
+endif
+ifndef NOSE
+	$(error "nosetests not installed")
+endif
 	cd test/repo/java/no-errors && mvn test
 	-cd test/repo/java/some-errors && mvn test
 	-cd test/repo/python/no-errors && \
@@ -18,4 +35,3 @@ package: test
 	./check.sh
 	git rev-parse HEAD >resources/build.txt
 	LEIN_SNAPSHOTS_IN_RELEASE=whynot lein package
-
