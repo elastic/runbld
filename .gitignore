@@ -1,4 +1,4 @@
-target/
+/target/
 /classes
 /checkouts
 /pom.xml
@@ -15,7 +15,8 @@ target/
 .stdout.log
 /envg*
 *.pyc
-TEST-*
 /test.log
 /.cider-history
 /test/elasticsearch-src
+maven-status/
+com.example.AppTest.txt

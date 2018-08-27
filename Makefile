@@ -1,4 +1,4 @@
-.PHONY: package test
+.PHONY: junit package test
 
 FACTER := $(shell command -v facter 2>/dev/null)
 GOLANG := $(shell command -v go 2>/dev/null)
@@ -9,6 +9,15 @@ test:
 ifndef FACTER
 	$(error "facter not installed")
 endif
+	rm -rf tmp/git
+	lein do clean, test
+
+package: test
+	./check.sh
+	git rev-parse HEAD >resources/build.txt
+	LEIN_SNAPSHOTS_IN_RELEASE=whynot lein package
+
+junit:
 ifndef GOLANG
 	$(error "golang not installed")
 endif
@@ -28,10 +37,3 @@ endif
 	go test -v | go-junit-report > TEST-no-errors.xml
 	-cd test/repo/go/some-errors && \
 	go test -v | go-junit-report > TEST-some-errors.xml
-	rm -rf tmp/git
-	lein do clean, test
-
-package: test
-	./check.sh
-	git rev-parse HEAD >resources/build.txt
-	LEIN_SNAPSHOTS_IN_RELEASE=whynot lein package

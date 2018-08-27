@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?><testsuite name="nosetests" tests="2" errors="1" failures="1" skip="0"><testcase classname="test.HelloWorld" name="test_error" time="0.000"><error type="exceptions.Exception" message="Goodbye, world!"><![CDATA[Traceback (most recent call last):
+  File "/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/unittest/case.py", line 331, in run
+    testMethod()
+  File "/Users/runbld/elastic/src/runbld/test/repo/python/some-errors/tests/test.py", line 8, in test_error
+    raise Exception('Goodbye, world!')
+Exception: Goodbye, world!
+]]></error></testcase><testcase classname="test.HelloWorld" name="test_hello" time="0.000"><failure type="exceptions.AssertionError" message="False is not true"><![CDATA[Traceback (most recent call last):
+  File "/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/unittest/case.py", line 331, in run
+    testMethod()
+  File "/Users/runbld/elastic/src/runbld/test/repo/python/some-errors/tests/test.py", line 5, in test_hello
+    self.assert_('Hello, world!' != 'Hello, world!')
+  File "/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/unittest/case.py", line 424, in assertTrue
+    raise self.failureException(msg)
+AssertionError: False is not true
+]]></failure></testcase></testsuite>
