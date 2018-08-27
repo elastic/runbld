@@ -239,7 +239,7 @@
         listeners [file-ch es-ch stdout-ch stderr-ch]
         result (exec program args scriptfile cwd
                      env listeners log-extra timeout)
-        ;; The process has exited, flush the channels
+        ;; The process has exited, wait for these channels to close
         _ (doall (map <!!
                       [file-process es-process]))
         ;; stdout and stderr channels might hang on bad input.
