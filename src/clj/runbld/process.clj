@@ -1,8 +1,9 @@
 (ns runbld.process
   (:require
    [cheshire.core :as json]
-   [clojure.core.async :as async :refer [thread go go-loop chan >! <! >!! <!!
-                                         alts! alts!! close!]]
+   [clojure.core.async
+    :as async
+    :refer [go-loop chan >! <! >!! <!! alts!! close!]]
    [runbld.env :as env]
    [runbld.io :as io]
    [runbld.schema :refer :all]
@@ -53,7 +54,7 @@
     ords      :- Ref
     bytes     :- Ref
     log-extra :- {s/Any s/Any}]
-   (thread
+   (async/thread
      (doseq [line (line-seq (io/reader is))]
        (let [log (dosync
                   (inc-ordinals ords label)
@@ -240,11 +241,13 @@
         listeners [file-ch es-ch stdout-ch stderr-ch]
         result (exec program args scriptfile cwd
                      env listeners log-extra timeout)
-        listeners-done (doall
-                        (map <!! [file-process
-                                  es-process
-                                  stdout-process
-                                  stderr-process]))
+        ;; The process has exited, flush the channels
+        _ (doall (map <!!
+                      [file-process es-process]))
+        ;; stdout and stderr channels might hang on bad input.
+        ;; Waiting indefinitely is a bad idea
+        _ (doall (map #(alts!! [% (async/timeout (* 1000 60 5))])
+                      [stderr-process stdout-process]))
         out-bytes (@(:bytes result) :stdout)
         err-bytes (@(:bytes result) :stderr)
         total-bytes (@(:bytes result) :total)]
