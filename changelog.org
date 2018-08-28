@@ -1,8 +1,8 @@
 * runbld changes
-** 1.5.18
-   - Add timeout around reading from stdout/stderr.  Sometimes
-     subprocesses can spawn other processes and somewhere along the
-     line never end up closing the streams.
+** 1.5.19
+   - Add timeout when reading from stdin.  Sometimes subprocesses can
+     spawn other processes and somewhere along the line never end up
+     closing the streams.
 ** 1.5.17
    - added more debug logging
    - fail fast when encountering a 404 during ec2-meta

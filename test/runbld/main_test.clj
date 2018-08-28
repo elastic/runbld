@@ -417,7 +417,7 @@
                     (is (= "6.0" (git-branch repo)))
                     (is (= "6.0" (get-in res [:store-result :build-doc
                                               :build :branch])))
-                    (is (re-find #"foo 6.0" slack-msg)))))
+                    (is (re-find #"foo.6.0" slack-msg)))))
               (testing "wiping the workspace"
                 (wipe-workspace-orig opts)
                 ;; Should only have the top-level workspace dir left
