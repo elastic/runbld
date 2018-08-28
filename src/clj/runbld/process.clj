@@ -97,14 +97,22 @@
 
 (s/defn start-input-multiplexer!
   ([in-ch   :- ManyToManyChannel
-    out-chs :- [ManyToManyChannel]]
-   (go-loop [x (<! in-ch)]
-     (if x
-       (do (doseq [ch out-chs]
-             (>! ch x))
-           (recur (<! in-ch)))
-       (doseq [c out-chs]
-         (close! c))))))
+    out-chs :- [ManyToManyChannel]
+    proc]
+   (go-loop []
+     ;; wait 5 minutes for input
+     (let [[x] (async/alts! [in-ch (async/timeout (* 1000 60 5))])]
+       (if x
+         ;; process input when found
+         (do (doseq [ch out-chs]
+               (>! ch x))
+             (recur))
+         ;; if no input or timeout, check if process is done and wait
+         ;; for more input, if not
+         (if (.isAlive proc)
+           (recur)
+           (doseq [c out-chs]
+             (close! c))))))))
 
 (s/defn exec-pb :-
   {:exit-code      s/Num
@@ -120,7 +128,7 @@
    log-extra :- {s/Any s/Any}
    timeout   :- (s/maybe s/Str)]
   (let [{:keys [start proc out bytes threads]} (start pb log-extra)
-        multi (start-input-multiplexer! out listeners)
+        multi (start-input-multiplexer! out listeners proc)
         timeout-provided? (not (empty? timeout))
         exit-code (if timeout-provided?
                     (.waitFor proc
@@ -239,13 +247,9 @@
         listeners [file-ch es-ch stdout-ch stderr-ch]
         result (exec program args scriptfile cwd
                      env listeners log-extra timeout)
-        ;; The process has exited, wait for these channels to close
         _ (doall (map <!!
-                      [file-process es-process]))
-        ;; stdout and stderr channels might hang on bad input.
-        ;; Waiting indefinitely is a bad idea
-        _ (doall (map #(alts!! [% (async/timeout (* 1000 60 5))])
-                      [stderr-process stdout-process]))
+                      [stderr-process stdout-process
+                       file-process es-process]))
         out-bytes (@(:bytes result) :stdout)
         err-bytes (@(:bytes result) :stderr)
         total-bytes (@(:bytes result) :total)]
