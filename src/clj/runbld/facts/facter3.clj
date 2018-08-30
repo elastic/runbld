@@ -31,10 +31,10 @@
     (-> (.facts x) :networking :hostname))
 
   (ip4 [x]
-    (-> (.facts x) :networking :ip))
+    [(-> (.facts x) :networking :ip)])
 
   (ip6 [x]
-    (-> (.facts x) :networking :ip6))
+    [(-> (.facts x) :networking :ip6)])
 
   (kernel-name [x]
     (-> (.facts x) :kernel))

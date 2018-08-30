@@ -13,11 +13,13 @@
    "5.9.0.0/16"])
 
 (s/defn this-host?
-  ([facter]
-   (->> ip-ranges
-        (map (partial cidr/in-range? (facts/ip4 facter)))
-        (some true?)
-        boolean)))
+  [facter]
+  (some
+   (fn [ip]
+     (boolean
+      (some true?
+            (map #(cidr/in-range? ip %) ip-ranges))))
+   (facts/ip4 facter)))
 
 (s/defn discover-datacenter
   "Based on

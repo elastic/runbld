@@ -51,17 +51,10 @@
     (get-in x [:operatingSystem :networkParams :hostName]))
 
   (ip4 [{x :facts}]
-    (first (primary-network x)))
+    (seq (mapcat :ipv4 (get-in facts [:hardware :networks]))))
 
   (ip6 [{x :facts}]
-    ;; this silliness is to compress the ipv6 address as that's what
-    ;; facter provides.  There are libraries to do this, but a regex
-    ;; doesn't introduce new deps
-    ;; https://stackoverflow.com/questions/7043983/ipv6-address-into-compressed-form-in-java
-    (string/replace
-     (last (primary-network x))
-     #"((?:(?:^|:)0+\b){2,}):?(?!\S*\b\1:0+\b)(\S*)"
-     "::$2"))
+    (seq (mapcat :ipv6 (get-in facts [:hardware :networks]))))
 
   (kernel-name [{x :facts}]
     (get-in x [:uname :name]))
