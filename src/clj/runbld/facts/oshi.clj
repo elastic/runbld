@@ -37,7 +37,7 @@
     (get-in x [:hardware :processor :logicalProcessorCount]))
 
   (cpus-physical [{x :facts}]
-    (get-in x [:hardware :processor :physicalProcessorCount]))
+    (get-in x [:hardware :processor :physicalPackageCount]))
 
   (facter-provider [{x :facts}]
     "oshi")
