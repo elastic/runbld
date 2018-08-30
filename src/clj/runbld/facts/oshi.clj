@@ -12,7 +12,7 @@
    (oshi.json SystemInfo)))
 
 ;; just wanted the defrecord near the top
-(declare facts primary-network)
+(declare facts arch)
 
 (defrecord Oshi [facts]
   Facter
@@ -20,15 +20,10 @@
   (raw [x] x)
 
   (arch [{x :facts}]
-    (get-in x [:properties :os.arch]))
+    (arch x))
 
   (model [{x :facts}]
-    ;; The field that we use from facter is [:os :hardware] which
-    ;; appears to basically return the system architecture.
-    (let [arch (get-in x [:properties :os.arch])]
-      (if (= "amd64" arch)
-        "x86_64"
-        arch)))
+    (arch x))
 
   (cpu-type [{x :facts}]
     (get-in x [:hardware :processor :name]))
@@ -109,19 +104,11 @@
              " days"
              " day")))))
 
-(defn primary-network
-  "Takes the set of facts and returns a vector of [ipv4 ipv6] for the
-  primary network adapter.  Is somewhat naive in that it picks the
-  primary adapter based on total bytes sent and received."
-  [facts]
-  ;; TODO - is this sufficient to find the "primary"?
-  (->> (get-in facts [:hardware :networks])
-       (remove (comp empty? :ipv4))
-       (sort-by #(+ (:bytesSent %)
-                    (:bytesRecv %)))
-       last
-       ((juxt :ipv4 :ipv6))
-       (map first)))
+(defn arch [facts]
+  (let [arch (get-in facts [:properties :os.arch])]
+    (if (= "amd64" arch)
+      "x86_64"
+      arch)))
 
 (defn uname [{:keys [platform] :as facts}]
   (let [platform (string/lower-case platform)]
