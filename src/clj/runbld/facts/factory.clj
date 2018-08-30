@@ -1,7 +1,6 @@
 (ns runbld.facts.factory
   (:require
    [clj-yaml.core :as yaml]
-   [runbld.facts.facter3]
    [runbld.facts.oshi :as oshi]
    [runbld.io :as io]
    [runbld.schema :refer :all]
@@ -30,8 +29,4 @@
                  :msg (format "facter returned empty (%d): %s" exit err)})))))
 
 (defn make-facter []
-  (if-let [{:keys [major]} (facter-version)]
-    (condp = major
-      3 (runbld.facts.facter3.Facter3. (facter)))
-    ;; No facter?  Try OSHI
-    (runbld.facts.oshi.Oshi. (oshi/facts))))
+  (runbld.facts.oshi.Oshi. (oshi/facts)))
