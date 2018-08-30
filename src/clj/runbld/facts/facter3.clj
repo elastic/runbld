@@ -80,8 +80,4 @@
     (-> (.facts x) :system_uptime :seconds))
 
   (uptime [x]
-    (-> (.facts x) :system_uptime :uptime))
-
-  (virtual [x]
-    (boolean
-     (-> (.facts x) :is_virtual))))
+    (-> (.facts x) :system_uptime :uptime)))

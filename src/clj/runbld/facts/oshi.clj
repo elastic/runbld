@@ -107,13 +107,7 @@
       (str days
            (if (> days 1)
              " days"
-             " day"))))
-
-  ;; OSHI doesn't report this, and figuring it out generically appears
-  ;; to be impossible (facter tries a bunch of different strategies to
-  ;; figure it out).  Instead, for now, defer to the 'hosting'
-  ;; provider.
-  (virtual [_]))
+             " day")))))
 
 (defn primary-network
   "Takes the set of facts and returns a vector of [ipv4 ipv6] for the
