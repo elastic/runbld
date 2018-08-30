@@ -45,8 +45,7 @@
      :timezone
      :uptime-days
      :uptime-secs
-     :uptime
-     :virtual])))
+     :uptime])))
 
 (s/defn make-fs
   ([dir]
