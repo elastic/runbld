@@ -76,22 +76,28 @@
            (if-not *last-try*
              "Retrying."
              "Not retrying - out of attempts.")
-           (.getMessage err)))
+           (if-not *last-try*
+             (.getMessage err)
+             (with-out-str (clojure.stacktrace/print-cause-trace err)))))
   ;; explicitly return nil so tries continue accordingly
   nil)
 
 (s/defn inspect-system :- BuildSystem
   [cwd :- s/Str]
-  (try-try-again
-   {:sleep 5000
-    :tries 5
-    :catch java.lang.Throwable
-    :error-hook report-retry}
-   #(let [facter (facter/make-facter)]
-      (merge
-       (make-facts facter)
-       (make-fs cwd)
-       (make-hosting facter)))))
+  (try
+    (try-try-again
+     {:sleep 5000
+      :tries 5
+      :catch java.lang.Throwable
+      :error-hook report-retry}
+     #(let [facter (facter/make-facter)]
+        (merge
+         (make-facts facter)
+         (make-fs cwd)
+         (make-hosting facter))))
+    (catch Exception _
+      ;; logged in report-error, don't die
+      {})))
 
 (s/defn add-system-facts :- OptsWithSys
   [opts :- Opts]
