@@ -46,10 +46,10 @@
     (get-in x [:operatingSystem :networkParams :hostName]))
 
   (ip4 [{x :facts}]
-    (seq (mapcat :ipv4 (get-in facts [:hardware :networks]))))
+    (seq (remove nil? (mapcat :ipv4 (get-in facts [:hardware :networks])))))
 
   (ip6 [{x :facts}]
-    (seq (mapcat :ipv6 (get-in facts [:hardware :networks]))))
+    (seq (remove nil? (mapcat :ipv6 (get-in facts [:hardware :networks])))))
 
   (kernel-name [{x :facts}]
     (get-in x [:uname :name]))
