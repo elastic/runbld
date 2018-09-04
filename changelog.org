@@ -1,4 +1,8 @@
 * runbld changes
+** NEXT
+   - Replaced Facter with a Java based solution called Oshi,
+     https://github.com/oshi/oshi  See
+     https://github.com/elastic/runbld/pull/125 for details.
 ** 1.5.19
    - Add timeout when reading from stdin.  Sometimes subprocesses can
      spawn other processes and somewhere along the line never end up
