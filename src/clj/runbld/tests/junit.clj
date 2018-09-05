@@ -88,9 +88,10 @@
 
 (defn find-failures [dir filename-format]
   ;; find the xml files
-  (debug/log "Searching for junit test output files")
+  (rio/log "Searching for junit test output files with the pattern:"
+           filename-format "in:" (rio/abspath dir))
   (let [failures (rio/find-files dir (re-pattern filename-format))
-        _ (debug/log "Found" (count failures) "test failures")
+        _ (rio/log "Found" (count failures) "test output files")
         reports (for [failure failures
                       :let [xml (try
                                   (debug/log "Parsing" (rio/abspath failure))

@@ -9,7 +9,9 @@
 
 (use-fixtures :once schema.test/validate-schemas)
 
-(use-fixtures :each ts/reset-debug-log-fixture)
+(use-fixtures :each
+  (ts/redirect-logging-fixture)
+  ts/reset-debug-log-fixture)
 
 (def filename-pattern "/TEST-.*\\.xml$")
 
