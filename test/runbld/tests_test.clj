@@ -9,8 +9,10 @@
 
 (use-fixtures :once schema.test/validate-schemas)
 
+(def logs (atom nil))
+
 (use-fixtures :each
-  (ts/redirect-logging-fixture)
+  (ts/redirect-logging-fixture logs)
   ts/reset-debug-log-fixture)
 
 (def filename-pattern "/TEST-.*\\.xml$")
@@ -46,7 +48,18 @@
               :tests 1
               :skipped 0}
              (select-keys res [:errors :failures :tests :skipped])))
-      (is (= ["Failed"] (map :message (:failed-testcases res)))))))
+      (is (= ["Failed"] (map :message (:failed-testcases res))))))
+  (testing "misc"
+    (let [res (tests/capture-failures "test/repo"
+                                      "/ABCD.*xml$")]
+      (is (= {:errors 1
+              :failures 0
+              :tests 1
+              :skipped 0}
+             (select-keys res [:errors :failures :tests :skipped])))
+      (is (= [(str "element (\"#sfdc_username_container\") still not visible"
+                   " after 10000ms")]
+             (map :message (:failed-testcases res)))))))
 
 (deftest no-errors
   (testing "java"
@@ -87,10 +100,9 @@
 
 (deftest bad-xmls
   (try
-    (let [out (with-out-str (tests/capture-failures "test/xmls"
-                                                    filename-pattern))
-          log (debug/get-log)]
-      (is (re-find #"Failed to parse" out))
+    (tests/capture-failures "test/xmls" filename-pattern)
+    (let [log (debug/get-log)]
+      (is (some #(re-find #"Failed to parse" %) @logs))
       (is (some #(re-find #"(?m)ErrorHandlerWrapper.createSAXParseException" %)
                 log)))
     (catch Exception e
