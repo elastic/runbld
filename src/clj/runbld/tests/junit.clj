@@ -104,16 +104,22 @@
                                     nil))]
                       :when xml]
                   (do
-                    (debug/log "Looking for testsuite node")
+                    (rio/log "Looking for testsuite node in"
+                             (.getName (io/file failure)))
                     (if-let [testsuite (x/select xml [[(x/tag= :testsuite)]])]
                       (merge-default (make-failure-report testsuite))
-                      (debug/log "none found"))))]
+                      (rio/log "No testsuite node found."))))]
     (debug/log "Made" (count reports) "reports")
     (debug/log "Combining reports")
-    (reduce combine-failure-reports
-            {:errors 0
-             :failures 0
-             :tests 0
-             :skipped 0
-             :failed-testcases []}
-            reports)))
+    (let [summary (reduce combine-failure-reports
+                          {:errors 0
+                           :failures 0
+                           :tests 0
+                           :skipped 0
+                           :failed-testcases []}
+                          reports)]
+      (rio/log "Errors:" (:errors summary)
+               "Failures:" (:failures summary)
+               "Tests:" (:tests summary)
+               "Skipped:" (:skipped summary))
+      summary)))
