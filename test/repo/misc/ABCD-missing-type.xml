@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Filter_My_Cases_All_Cases" timestamp="2018-09-04T02:21:09" time="10.424" tests="1" failures="0" errors="1" skipped="0">
+    <properties>
+      <property name="specId" value="0asdfasdfasdf"/>
+      <property name="suiteName" value="Filter My Cases/All Cases"/>
+      <property name="capabilities" value="chrome"/>
+      <property name="file" value="./test/specs/site/filterCases.js"/>
+    </properties>
+    <testcase classname="chrome.Filter_My_Cases_All_Cases" name="before_all_hook" time="196.721">
+      <error message="element (&quot;#sfdc_username_container&quot;) still not visible after 10000ms"/>
+      <system-err>
+        <![CDATA[
+Error: element ("#username_container") still not visible after 10000ms
+    at elements("#username_container") - isVisible.js:54:17
+    at isVisible("#username_container") - waitForVisible.js:73:22
+]]>
+      </system-err>
+    </testcase>
+  </testsuite>
+</testsuites>

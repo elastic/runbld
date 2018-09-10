@@ -88,9 +88,10 @@
 
 (defn find-failures [dir filename-format]
   ;; find the xml files
-  (debug/log "Searching for junit test output files")
+  (rio/log "Searching for junit test output files with the pattern:"
+           filename-format "in:" (rio/abspath dir))
   (let [failures (rio/find-files dir (re-pattern filename-format))
-        _ (debug/log "Found" (count failures) "test failures")
+        _ (rio/log "Found" (count failures) "test output files")
         reports (for [failure failures
                       :let [xml (try
                                   (debug/log "Parsing" (rio/abspath failure))
@@ -103,16 +104,22 @@
                                     nil))]
                       :when xml]
                   (do
-                    (debug/log "Looking for testsuite node")
+                    (rio/log "Looking for testsuite node in"
+                             (.getName (io/file failure)))
                     (if-let [testsuite (x/select xml [[(x/tag= :testsuite)]])]
                       (merge-default (make-failure-report testsuite))
-                      (debug/log "none found"))))]
+                      (rio/log "No testsuite node found."))))]
     (debug/log "Made" (count reports) "reports")
     (debug/log "Combining reports")
-    (reduce combine-failure-reports
-            {:errors 0
-             :failures 0
-             :tests 0
-             :skipped 0
-             :failed-testcases []}
-            reports)))
+    (let [summary (reduce combine-failure-reports
+                          {:errors 0
+                           :failures 0
+                           :tests 0
+                           :skipped 0
+                           :failed-testcases []}
+                          reports)]
+      (rio/log "Errors:" (:errors summary)
+               "Failures:" (:failures summary)
+               "Tests:" (:tests summary)
+               "Skipped:" (:skipped summary))
+      summary)))
