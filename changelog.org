@@ -1,4 +1,6 @@
 * runbld changes
+** 1.5.20
+   - Add logging around searching for junit test output files.
 ** 1.5.19
    - Add timeout when reading from stdin.  Sometimes subprocesses can
      spawn other processes and somewhere along the line never end up
