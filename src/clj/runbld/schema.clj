@@ -263,7 +263,7 @@
    :test       s/Str
    :stacktrace s/Str
    :summary    s/Str
-   :type       s/Str
+   (s/optional-key :type)    s/Str
    (s/optional-key :message) s/Str})
 
 (def TestSummary
