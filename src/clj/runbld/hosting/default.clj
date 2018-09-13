@@ -18,7 +18,9 @@
   (provider [_]
     "default")
 
-  (region        [_]))
+  (region [_])
+
+  (virtual [_]))
 
 (s/defn make
   ([facts]

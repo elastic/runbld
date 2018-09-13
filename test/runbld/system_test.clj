@@ -3,7 +3,6 @@
    [clojure.test :refer :all]
    [robert.bruce :refer [*try*]]
    [runbld.facts.factory :as facter]
-   [runbld.fs.factory :as fs]
    [runbld.system :as system]
    [runbld.test-support :as ts]
    [schema.test]))
@@ -15,11 +14,6 @@
 
 (use-fixtures :each
   (ts/redirect-logging-fixture log-lines))
-
-(deftest basic
-  ;; schema does most of the work here, just want to see if it returns
-  ;; a map that matches it
-  (is (system/inspect-system ".")))
 
 (deftest retries
   (testing "failures retry then bubble"

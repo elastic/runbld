@@ -1,14 +1,10 @@
 .PHONY: junit package test
 
-FACTER := $(shell command -v facter 2>/dev/null)
 GOLANG := $(shell command -v go 2>/dev/null)
 GOJUNIT := $(shell command -v go-junit-report 2>/dev/null)
 NOSE := $(shell command -v nosetests 2>/dev/null)
 
 test:
-ifndef FACTER
-	$(error "facter not installed")
-endif
 	rm -rf tmp/git
 	lein do clean, test
 

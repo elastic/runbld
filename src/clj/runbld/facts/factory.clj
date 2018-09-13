@@ -1,9 +1,7 @@
 (ns runbld.facts.factory
   (:require
    [clj-yaml.core :as yaml]
-   [runbld.facts.facter1]
-   [runbld.facts.facter2]
-   [runbld.facts.facter3]
+   [runbld.facts.oshi :as oshi]
    [runbld.io :as io]
    [runbld.schema :refer :all]
    [schema.core :as s]
@@ -31,8 +29,4 @@
                  :msg (format "facter returned empty (%d): %s" exit err)})))))
 
 (defn make-facter []
-  (if-let [{:keys [major]} (facter-version)]
-    (condp = major
-      3 (runbld.facts.facter3.Facter3. (facter))
-      2 (runbld.facts.facter2.Facter2. (facter))
-      1 (runbld.facts.facter1.Facter1. (facter)))))
+  (runbld.facts.oshi.Oshi. (oshi/facts)))

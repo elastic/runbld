@@ -24,9 +24,11 @@
                   :exclusions [commons-codec]]
                  [instaparse "1.4.7"]
 
+                 ;; fact gathering
+                 [com.github.oshi/oshi-json "3.4.4"]
+
                  ;; logging
-                 [org.clojure/tools.logging "0.4.0"]
-                 [log4j/log4j "1.2.17"]
+                 [org.slf4j/slf4j-nop "1.7.25"]
 
                  [com.palletops/thread-expr "1.3.0"]
                  [elastic/elasticsearch-clojure "0.99.6"
@@ -38,8 +40,6 @@
                  [org.clojure/core.async "0.3.443"]
                  [org.clojure/tools.cli "0.3.5"]
 
-                 ;; Use 1.7 because the Jenkins plugin is pinned to 1.7
-                 [org.tmatesoft.svnkit/svnkit "1.9.0"]
                  [prismatic/schema "1.1.6"]
                  [robert/bruce "0.8.0"]
                  [slingshot "0.12.2"]

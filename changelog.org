@@ -1,4 +1,8 @@
 * runbld changes
+** NEXT
+   - Replaced Facter with a Java based solution called Oshi,
+     https://github.com/oshi/oshi  See
+     https://github.com/elastic/runbld/pull/125 for details.
 ** 1.5.20
    - Add logging around searching for junit test output files.
 ** 1.5.19

@@ -28,7 +28,6 @@
   (uptime-days     [_])
   (uptime-secs     [_])
   (uptime          [_])
-  (virtual         [_])
 
   (raw             [_]))
 

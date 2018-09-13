@@ -65,42 +65,6 @@ need to be installed.
 Download the latest Elasticsearch from [here](https://www.elastic.co/downloads/elasticsearch) and start it via
 `bin/elasticsearch`.
 
-### facter
-
-`facter` is a command written by Puppet to gather data about the
-machine on which it is run.  You have a few options to install this
-one.
-
-#### Install the Puppet agent
-
-It is packaged with the puppet agent and Puppet supplies
-installers and instructions for various operating systems are at
-<https://docs.puppet.com/puppet/latest/>
-
-The direct link for Mac is (as of this writing):
-https://downloads.puppetlabs.com/mac/10.13/PC1/x86_64/puppet-agent-latest.dmg
-
-It appears that the `facter` executable will end up in
-`/opt/puppetlabs/puppet/bin` or someplace similar.
-
-#### Build and install manually
-
-The other option you have is to build facter by hand.  It requires
-2 other Puppet libraries be installed first.  I built specific
-tags in order to get a final bin that was reasonably close to what
-we need.  Facter's master branch has bumped the version to `4.0.0`
-which is untested and not supported in `runbld` at the moment.
-
--   <https://github.com/puppetlabs/leatherman> - Tag: 0.11.2
--   <https://github.com/puppetlabs/cpp-hocon> - Tag: 0.1.5
--   <https://github.com/puppetlabs/facter> - Tag: 3.6.4
-
-The instructions in the repos worked reasonably well.  I had one
-issue with running `make` in the `facter` repo due to some issue
-with copying a ruby file to Mac OS X's default Ruby location.  I
-failed to figure out why and eventually worked around it by
-removing the Ruby deploy directives from the cmake files.
-
 
 ## Running tests
 

@@ -134,8 +134,8 @@
    (s/optional-key :image-id) s/Str
    (s/optional-key :instance-id) s/Str
    (s/optional-key :instance-type) s/Str
-   :ip4                    s/Str
-   (s/optional-key :ip6)   s/Str
+   :ip4                    [s/Str]
+   (s/optional-key :ip6)   [s/Str]
    :kernel-name            s/Str
    :kernel-release         s/Str
    :kernel-version         s/Str
