@@ -1,5 +1,5 @@
 * runbld changes
-** NEXT
+** 1.6.0
    - Replaced Facter with a Java based solution called Oshi,
      https://github.com/oshi/oshi  See
      https://github.com/elastic/runbld/pull/125 for details.
