@@ -1,4 +1,6 @@
 * runbld changes
+** 1.6.1
+   - Quiet the log a bit
 ** 1.6.0
    - Replaced Facter with a Java based solution called Oshi,
      https://github.com/oshi/oshi  See
