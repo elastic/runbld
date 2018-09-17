@@ -105,7 +105,8 @@
                       :when xml]
                   (if-let [testsuite (x/select xml [[(x/tag= :testsuite)]])]
                     (merge-default (make-failure-report testsuite))
-                    (rio/log "No testsuite node found.")))]
+                    (rio/log "No testsuite node found in"
+                             (rio/abspath failure))))]
     (debug/log "Made" (count reports) "reports")
     (debug/log "Combining reports")
     (let [summary (reduce combine-failure-reports
@@ -115,7 +116,8 @@
                            :skipped 0
                            :failed-testcases []}
                           reports)]
-      (rio/log "Errors:" (:errors summary)
+      (rio/log "Test output logs contained:"
+               "Errors:" (:errors summary)
                "Failures:" (:failures summary)
                "Tests:" (:tests summary)
                "Skipped:" (:skipped summary))
