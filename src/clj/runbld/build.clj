@@ -164,7 +164,7 @@
                           (string/replace #";+$" ""))
         metadata (->> (rio/find-files
                        (System/getProperty "user.dir")
-                       #"/build_metadata")
+                       #"build_metadata")
                       (map slurp)
                       (map prep-content)
                       (string/join ";"))]
