@@ -1,4 +1,6 @@
 * runbld changes
+** 1.6.2
+   - Fix the junit output filename pattern for Windows
 ** 1.6.1
    - Quiet the log a bit
 ** 1.6.0
