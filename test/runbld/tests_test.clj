@@ -2,6 +2,7 @@
   (:require
    [clojure.stacktrace :as stacktrace]
    [clojure.test :refer :all]
+   [runbld.opts :as opts]
    [runbld.test-support :as ts]
    [runbld.tests :as tests]
    [runbld.util.debug :as debug]
@@ -15,7 +16,8 @@
   (ts/redirect-logging-fixture logs)
   ts/reset-debug-log-fixture)
 
-(def filename-pattern "/TEST-.*\\.xml$")
+(def filename-pattern (get-in opts/config-file-defaults
+                              [:tests :junit-filename-pattern]))
 
 (deftest some-errors
   (testing "java"
@@ -51,7 +53,7 @@
       (is (= ["Failed"] (map :message (:failed-testcases res))))))
   (testing "misc"
     (let [res (tests/capture-failures "test/repo"
-                                      "/ABCD.*xml$")]
+                                      "ABCD.*xml$")]
       (is (= {:errors 1
               :failures 0
               :tests 1
@@ -110,8 +112,8 @@
       (stacktrace/print-cause-trace e))))
 
 (deftest junit-filename-pattern
-  (let [res (tests/capture-failures "test"
-                                    "/(some-errors|more-errors)\\.xml$")]
+  (let [res (tests/capture-failures "test/filename-pattern-fixtures"
+                                    "(some-errors|more-errors)\\.xml$")]
     (is (= {:errors 2
             :failures 2
             :tests 6
@@ -121,7 +123,7 @@
                  "junit.framework.AssertionFailedError"])
            (set (map :type (:failed-testcases res))))))
   (let [res (tests/capture-failures "test"
-                                    "/more-errors\\.xml$")]
+                                    "more-errors\\.xml$")]
     (is (= {:errors 1
             :failures 1
             :tests 3
