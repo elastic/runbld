@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Verify_Home_Page_Recommendations" timestamp="2018-09-18T02:20:36" time="6.025" tests="3" failures="0" errors="0" skipped="0">
+    <testcase classname="chrome.Verify_Home_Page_Recommendations" name="There_should_be_7_recommendations" time="2.22">
+      <system-out>
+        <![CDATA[
+]]>
+      </system-out>
+    </testcase>
+    <testcase classname="chrome.Verify_Home_Page_Recommendations" name="Recommendations_should_not_have_duplicates" time="0.83">
+      <system-out>
+        <![CDATA[
+]]>
+      </system-out>
+    </testcase>
+    <testcase classname="chrome.Verify_Home_Page_Recommendations" name="Recommendations_should_have_a_value_for_the_data_url_attribute" time="2.974">
+      <system-out>
+        <![CDATA[
+]]>
+      </system-out>
+    </testcase>
+  </testsuite>
+  <testsuite name="Verify_Quick_Links" timestamp="2018-09-18T02:20:42" time="11.414" tests="4" failures="0" errors="0" skipped="0">
+    <testcase classname="chrome.Verify_Quick_Links" name="Verify_Quick_Link_navigation_Submit_a_Case" time="5.625">
+      <system-out>
+        <![CDATA[
+]]>
+      </system-out>
+    </testcase>
+    <testcase classname="chrome.Verify_Quick_Links" name="Verify_Quick_Link_navigation_View_My_Cases" time="1.891">
+      <system-out>
+        <![CDATA[
+]]>
+      </system-out>
+    </testcase>
+    <testcase classname="chrome.Verify_Quick_Links" name="Verify_Quick_Link_navigation_View_All_Cases" time="2.045">
+      <system-out>
+        <![CDATA[
+]]>
+      </system-out>
+    </testcase>
+    <testcase classname="chrome.Verify_Quick_Links" name="Verify_Quick_Link_navigation_My_Subscriptions" time="1.848">
+      <system-out>
+        <![CDATA[
+]]>
+      </system-out>
+    </testcase>
+  </testsuite>
+  <testsuite name="Verify_user_profile_menu_navigation" timestamp="2018-09-18T02:20:54" time="18.268" tests="7" failures="0" errors="1" skipped="0">
+    <testcase classname="chrome.Verify_user_profile_menu_navigation" name="Navigate_via_User_Profile_Menu_item_Home" time="1.001">
+      <system-out>
+        <![CDATA[
+]]>
+      </system-out>
+    </testcase>
+    <testcase classname="chrome.Verify_user_profile_menu_navigation" name="Navigate_via_User_Profile_Menu_item_Submit_a_Case" time="2.446">
+      <system-out>
+        <![CDATA[
+]]>
+      </system-out>
+    </testcase>
+    <testcase classname="chrome.Verify_user_profile_menu_navigation" name="Navigate_via_User_Profile_Menu_item_My_Subscriptions" time="1.401">
+      <system-out>
+        <![CDATA[
+]]>
+      </system-out>
+    </testcase>
+    <testcase classname="chrome.Verify_user_profile_menu_navigation" name="Navigate_via_User_Profile_Menu_item_My_Cases" time="6.727">
+      <error message="My Cases page did not load within 5 seconds"/>
+      <system-out>
+        <![CDATA[
+]]>
+      </system-out>
+      <system-err>
+        <![CDATA[
+Error: My Cases page did not load within 5 seconds
+    at elements("div[class="ui-widget cCustomerMyCasesPage"]") - isVisible.js:54:17
+    at isVisible("div[class="ui-widget cCustomerMyCasesPage"]") - errorHandler.js:112:39
+]]>
+      </system-err>
+    </testcase>
+    <testcase classname="chrome.Verify_user_profile_menu_navigation" name="Navigate_via_User_Profile_Menu_item_All_Cases" time="1.495">
+      <system-out>
+        <![CDATA[
+]]>
+      </system-out>
+    </testcase>
+    <testcase classname="chrome.Verify_user_profile_menu_navigation" name="Navigate_via_User_Profile_Menu_item_My_Profile" time="2.244">
+      <system-out>
+        <![CDATA[
+]]>
+      </system-out>
+    </testcase>
+    <testcase classname="chrome.Verify_user_profile_menu_navigation" name="Navigate_via_User_Profile_Menu_item_Logout" time="2.949">
+      <system-out>
+        <![CDATA[
+]]>
+      </system-out>
+    </testcase>
+  </testsuite>
+</testsuites>

@@ -132,3 +132,15 @@
     (is (= (set ["java.nio.file.NoSuchFileException"
                  "junit.framework.AssertionFailedError"])
            (set (map :type (:failed-testcases res)))))))
+
+(deftest multiple-testsuites
+  (let [res (tests/capture-failures "test"
+                                    "multiple-testsuites\\.xml$")]
+    (is (= {:errors 1
+            :failures 0
+            :tests 14
+            :skipped 0}
+           (select-keys res [:errors :failures :tests :skipped])))
+    (is (= 1 (count (:failed-testcases res))))
+    (is (= #{"My Cases page did not load within 5 seconds"}
+           (set (map :message (:failed-testcases res)))))))

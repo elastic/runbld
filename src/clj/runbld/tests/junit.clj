@@ -86,28 +86,30 @@
 (defn merge-default [m]
   (merge default-failure-report m))
 
+(defn testsuites [failure]
+  (try
+    (debug/log "Parsing" (rio/abspath failure))
+    (when-let [xml (x/xml-resource failure)]
+      (if-let [testsuites (seq (x/select xml [(x/tag= :testsuite)]))]
+        testsuites
+        (rio/log "No testsuite node found in" (rio/abspath failure))))
+    (catch SAXParseException e
+      (rio/log "Failed to parse"
+               (rio/abspath failure)
+               "because of" (.getMessage e))
+      (debug/log e "Full trace")
+      nil)))
+
 (defn find-failures [dir filename-format]
   ;; find the xml files
   (rio/log "Searching for junit test output files with the pattern:"
            filename-format "in:" (rio/abspath dir))
   (let [failures (rio/find-files dir (re-pattern filename-format))
         _ (rio/log "Found" (count failures) "test output files")
-        reports (for [failure failures
-                      :let [xml (try
-                                  (debug/log "Parsing" (rio/abspath failure))
-                                  (x/xml-resource failure)
-                                  (catch SAXParseException e
-                                    (rio/log "Failed to parse"
-                                             (rio/abspath failure)
-                                             "because of" (.getMessage e))
-                                    (debug/log e "Full trace")
-                                    nil))]
-                      :when xml]
-                  (if-let [testsuite (x/select xml [[(x/tag= :testsuite)]])]
-                    (merge-default (make-failure-report testsuite))
-                    (rio/log "No testsuite node found in"
-                             (rio/abspath failure))))]
-    (debug/log "Made" (count reports) "reports")
+        reports (map #(merge-default (make-failure-report %))
+                     (mapcat testsuites failures))]
+    (debug/log "Made" (count reports) "testsuite reports from"
+               (count failures) "files")
     (debug/log "Combining reports")
     (let [summary (reduce combine-failure-reports
                           {:errors 0
