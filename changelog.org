@@ -1,4 +1,6 @@
 * runbld changes
+** 1.6.4
+   - Handle multiple testsuites per junit output file
 ** 1.6.3
    - Fix build_metadata regex
 ** 1.6.2
