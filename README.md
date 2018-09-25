@@ -1,6 +1,9 @@
-# Run-B.L.D.
 
-[![Circle CI](https://circleci.com/gh/elastic/runbld/tree/master.svg?style=svg&circle-token=9f37d8182532f6539f497ca287a82a788e9007ef)](https://circleci.com/gh/elastic/runbld/tree/master)
+**Notice 2018/09/25: Runbld has been incorporated into some internal tooling and is no longer maintained as OSS.**
+
+----
+
+# Run-B.L.D.
 
 It wraps!
 
